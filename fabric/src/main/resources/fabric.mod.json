@@ -16,10 +16,10 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.example.examplemod.ExampleMod"
+            "com.example.examplemod.SkyTraderMod"
         ],
         "client": [
-            "com.example.examplemod.ExampleModClient"
+            "com.example.examplemod.SkyTraderModClient"
         ]
     },
     "mixins": [

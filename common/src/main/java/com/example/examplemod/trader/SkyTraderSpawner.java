@@ -8,6 +8,7 @@ import com.example.examplemod.entity.SkyTraderGhast;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -16,6 +17,8 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.LevelReader;
@@ -24,12 +27,12 @@ import net.minecraft.world.level.storage.SavedDataStorage;
 import org.jspecify.annotations.Nullable;
 
 public class SkyTraderSpawner implements CustomSpawner {
-    private static final int DEFAULT_TICK_DELAY = 1200;
-    public static final int DEFAULT_SPAWN_DELAY = 24000;
-    public static final int MIN_SPAWN_CHANCE = 25;
+    private static final int DEFAULT_TICK_DELAY = 60;
+    public static final int DEFAULT_SPAWN_DELAY = 61;
+    public static final int MIN_SPAWN_CHANCE = 75;
     private static final int MAX_SPAWN_CHANCE = 75;
     private static final int SPAWN_CHANCE_INCREASE = 25;
-    private static final int SPAWN_ONE_IN_X_CHANCE = 10;
+    private static final int SPAWN_ONE_IN_X_CHANCE = 1;
     private static final int NUMBER_OF_SPAWN_ATTEMPTS = 10;
     private final RandomSource random = RandomSource.create();
     private final SavedDataStorage savedDataStorage;
@@ -86,9 +89,9 @@ public class SkyTraderSpawner implements CustomSpawner {
         BlockPos playerPos = player.blockPosition();
         int radius = 48;
         PoiManager poiManager = level.getPoiManager();
-        Optional<BlockPos> poiPos = poiManager.find(p -> p.is(PoiTypes.MEETING), p -> true, playerPos, 48, PoiManager.Occupancy.ANY);
+        Optional<BlockPos> poiPos = poiManager.find(p -> p.is(PoiTypes.MEETING), p -> true, playerPos, radius, PoiManager.Occupancy.ANY);
         BlockPos referencePos = poiPos.orElse(playerPos);
-        BlockPos spawnPosition = this.findSpawnPositionNear(level, referencePos, 48);
+        BlockPos spawnPosition = this.findSpawnPositionNear(level, referencePos, radius);
         if (spawnPosition != null && this.hasEnoughSpace(level, spawnPosition)) {
             if (level.getBiome(spawnPosition).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) {
                 return false;
@@ -96,7 +99,7 @@ public class SkyTraderSpawner implements CustomSpawner {
 
             SkyTrader trader = ModEntities.SKY_TRADER.spawn(level, spawnPosition, EntitySpawnReason.EVENT);
             if (trader != null) {
-                this.tryToSpawnGhastFor(level, trader, 4);
+                this.tryToSpawnGhastFor(level, trader, 8);
 
                 trader.setDespawnDelay(48000);
                 trader.setWanderTarget(referencePos);
@@ -114,6 +117,9 @@ public class SkyTraderSpawner implements CustomSpawner {
             SkyTraderGhast ghast = ModEntities.SKY_TRADER_GHAST.spawn(level, spawnPosition, EntitySpawnReason.EVENT);
             if (ghast != null) {
                 ghast.setLeashedTo(trader, true);
+                ghast.equipItemIfPossible(level, new ItemStack(Items.HARNESS.white()));
+                boolean hasTag = ghast.getType().builtInRegistryHolder().is(EntityTypeTags.CAN_EQUIP_HARNESS);
+                System.out.println(hasTag);
             }
         }
     }

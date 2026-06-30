@@ -8,7 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.npc.villager.Villager;
 
-public class ExampleMod implements ModInitializer {
+public class SkyTraderMod implements ModInitializer {
 
     @Override
     public void onInitialize() {

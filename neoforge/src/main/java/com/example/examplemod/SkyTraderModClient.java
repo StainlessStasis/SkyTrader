@@ -10,10 +10,10 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 @Mod(value = ModConstants.MOD_ID, dist = Dist.CLIENT)
 @EventBusSubscriber
-public class ExampleModClient {
+public class SkyTraderModClient {
     @SubscribeEvent
     static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ExampleMod.TRADER_HOLDER.get(), WanderingTraderRenderer::new);
-        event.registerEntityRenderer(ExampleMod.GHAST_HOLDER.get(), HappyGhastRenderer::new);
+        event.registerEntityRenderer(SkyTraderMod.TRADER_HOLDER.get(), WanderingTraderRenderer::new);
+        event.registerEntityRenderer(SkyTraderMod.GHAST_HOLDER.get(), HappyGhastRenderer::new);
     }
 }

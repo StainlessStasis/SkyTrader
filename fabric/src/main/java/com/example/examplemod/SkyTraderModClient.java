@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.HappyGhastRenderer;
 import net.minecraft.client.renderer.entity.WanderingTraderRenderer;
 
-public class ExampleModClient implements ClientModInitializer {
+public class SkyTraderModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         EntityRenderers.register(ModEntities.SKY_TRADER, WanderingTraderRenderer::new);
