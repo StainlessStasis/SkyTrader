@@ -83,7 +83,7 @@ public class SkyTrader extends WanderingTrader {
                         Vec3 lookAngle = skyTrader.getLookAngle();
                         Vec3 lookAheadVec = skyTrader.position().add(lookAngle.normalize().scale(2));
                         BlockPos lookAheadPos = BlockPos.containing(lookAheadVec.x, skyTrader.getY(), lookAheadVec.z);
-                        
+
                         if (level.getBlockState(lookAheadPos).isAir() && level.getBlockState(lookAheadPos.below()).isAir()) {
                             boolean isLethalDrop = true;
                             for (int i = 2; i <= 6; i++) {
