@@ -2,6 +2,7 @@
   "item.skytrader.ride_ticket": "Ride Ticket",
   "skytrader.no_ride_ticket": "You need a Ride Ticket to board!",
   "skytrader.no_more_room": "This ride is already full.",
+  "skytrader.ride_already_started": "This ride has already started.",
   "skytrader.boarding_countdown": "Departing in %s seconds...",
   "entity.skytrader.sky_trader": "Sky Trader",
   "entity.skytrader.sky_trader_ghast": "Sky Trader Ghast"

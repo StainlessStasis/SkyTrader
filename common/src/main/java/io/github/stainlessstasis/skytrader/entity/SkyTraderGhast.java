@@ -43,8 +43,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final double LANDING_ARRIVED_THRESHOLD = 1d;
     protected static final float DESCEND_SPEED = 0.2f;
     protected static final int DISMOUNT_GRACE_TICKS = 300;
-    private static final int RETURN_FLIGHT_TICKS = 200;
-    private static final float RETURN_SPEED = 0.5f;
+    protected static final int RETURN_FLIGHT_TICKS = 200;
+    protected static final float RETURN_SPEED = 0.5f;
+    protected static final float MAX_VERTICAL_SPEED = 1f;
+    protected static final int[] TERRAIN_LOOKAHEAD_DISTANCES = {8, 16, 24, 32};
 
     protected @Nullable EntityReference<LivingEntity> owner;
     protected final Set<UUID> paidPlayers = new HashSet<>();
@@ -58,22 +60,26 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     public enum RideState implements StringRepresentable {
-        IDLE("idle", false),
-        BOARDING("boarding", false),
-        EN_ROUTE("en_route", true),
-        ARRIVING("arriving", true),
-        ARRIVED("arrived", false),
-        RETURNING("returning", true);
+        IDLE("idle", false, true, false),
+        BOARDING("boarding", false, true, false),
+        EN_ROUTE("en_route", true, false, false),
+        ARRIVING("arriving", true, false, false),
+        ARRIVED("arrived", false, false, true),
+        RETURNING("returning", true, false, true);
+
+        public static final Codec<RideState> CODEC = StringRepresentable.fromEnum(RideState::values);
 
         private final String name;
         private final boolean hasMovement;
+        private final boolean isStartOfRide;
+        private final boolean isEndOfRide;
 
-        RideState(String name, boolean hasMovement) {
+        RideState(String name, boolean hasMovement, boolean isStartOfRide, boolean isEndOfRide) {
             this.name = name;
             this.hasMovement = hasMovement;
+            this.isStartOfRide = isStartOfRide;
+            this.isEndOfRide = isEndOfRide;
         }
-
-        public static final Codec<RideState> CODEC = StringRepresentable.fromEnum(RideState::values);
 
         @Override
         public @NonNull String getSerializedName() {
@@ -82,6 +88,14 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         public boolean hasMovement() {
             return this.hasMovement;
+        }
+
+        public boolean isStartOfRide() {
+            return this.isStartOfRide;
+        }
+
+        public boolean isEndOfRide() {
+            return this.isEndOfRide;
         }
     }
 
@@ -99,9 +113,16 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             }
         }
 
+        if (!this.rideState.isStartOfRide()) {
+            if (!hasPaid(player) || this.rideState.isEndOfRide()) {
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_started").withColor(TextColor.RED));
+                return InteractionResult.FAIL;
+            }
+        }
+
         if (this.isWearingBodyArmor() && !player.isSecondaryUseActive()) {
             if (!canAddPassenger(player)) {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID+".no_more_room").withColor(TextColor.RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".no_more_room").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
 
@@ -109,17 +130,15 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 this.doPlayerRide(player);
 
                 if (this.rideState == RideState.IDLE) {
-                    this.rideState = RideState.BOARDING;
-                    resetStateTicks();
+                    setRideState(RideState.BOARDING);
                 }
 
                 return InteractionResult.SUCCESS;
             } else {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID+".no_ride_ticket").withColor(TextColor.RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".no_ride_ticket").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
         }
-
 
         return InteractionResult.FAIL;
     }
@@ -137,10 +156,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.stateTicks++;
 
         if (this.rideState == RideState.BOARDING) {
-            if (this.stateTicks%20 == 0) {
+            if (this.stateTicks % 20 == 0) {
                 sendBoardingCountdown();
             }
-
             if (this.stateTicks >= BOARDING_DELAY_TICKS) {
                 beginDeparture();
             }
@@ -165,6 +183,20 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
     }
 
+    protected void setRideState(RideState newState) {
+        this.rideState = newState;
+        resetStateTicks();
+        applyGoalsForState(newState);
+    }
+
+    protected void applyGoalsForState(RideState newState) {
+        if (newState.hasMovement()) {
+            this.goalSelector.removeAllGoals(goal -> true);
+        } else if (this.goalSelector.getAvailableGoals().isEmpty()) {
+            this.registerGoals();
+        }
+    }
+
     protected void beginDeparture() {
         LivingEntity owner = getOwner();
         if (owner == null || owner.isRemoved() || !(owner instanceof SkyTrader trader)) {
@@ -173,30 +205,25 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         this.destination = findNearestVillage();
         if (this.destination == null) {
-            // no village found - reset back to boarding and try again
-            this.rideState = RideState.BOARDING;
-            resetStateTicks();
+            setRideState(RideState.BOARDING); // no village found - reset back to boarding and try again
             return;
         }
 
         trader.startRiding(this);
-        this.rideState = RideState.EN_ROUTE;
-        resetStateTicks();
+        setRideState(RideState.EN_ROUTE);
     }
 
     protected void beginReturn() {
         this.paidPlayers.clear();
-        this.rideState = RideState.RETURNING;
-        resetStateTicks();
         double angle = this.random.nextDouble() * Math.PI * 2;
         this.returnDirection = new Vec3(Math.cos(angle), 0, Math.sin(angle));
+        setRideState(RideState.RETURNING);
     }
 
     protected @Nullable BlockPos findNearestVillage() {
         if (!(this.level() instanceof ServerLevel serverLevel)) {
             return null;
         }
-
         PoiManager poiManager = serverLevel.getPoiManager();
         return poiManager.find(
                 poiType -> poiType.is(PoiTypes.MEETING),
@@ -221,6 +248,34 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
     }
 
+    protected int terrainHeightAt(BlockPos pos) {
+        return this.level().getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ());
+    }
+
+    protected int sampleMaxTerrainHeight(Vec3 direction, int... lookaheadDistances) {
+        int max = terrainHeightAt(this.blockPosition());
+        for (int distance : lookaheadDistances) {
+            BlockPos sample = this.blockPosition().offset(
+                    (int) Math.round(direction.x * distance), 0, (int) Math.round(direction.z * distance));
+            max = Math.max(max, terrainHeightAt(sample));
+        }
+        return max;
+    }
+
+    protected float computeVerticalInput(int targetTerrainHeight, int hoverHeight, float maxVerticalSpeed) {
+        double targetY = targetTerrainHeight + hoverHeight;
+        double dy = targetY - this.getY();
+        return (float) Mth.clamp(dy * 0.1, -maxVerticalSpeed, maxVerticalSpeed);
+    }
+
+    protected void steerYawToward(double dx, double dz) {
+        float targetYaw = (float) (Mth.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0F;
+        float diff = Mth.wrapDegrees(targetYaw - this.getYRot());
+        float newYaw = this.getYRot() + diff * TURN_SPEED;
+        this.setYRot(newYaw);
+        this.yRotO = this.yBodyRot = this.yHeadRot = newYaw;
+    }
+
     protected Vec3 computeRouteInput() {
         if (this.destination == null) {
             return Vec3.ZERO;
@@ -231,37 +286,26 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         double horizontalDist = Math.sqrt(dx * dx + dz * dz);
 
         if (horizontalDist < EN_ROUTE_ARRIVE_DISTANCE) {
-            this.rideState = RideState.ARRIVING;
-            resetStateTicks();
+            setRideState(RideState.ARRIVING);
             return Vec3.ZERO;
         }
 
-        // steer yaw toward destination
-        float targetYaw = (float)(Mth.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0F;
-        float diff = Mth.wrapDegrees(targetYaw - this.getYRot());
-        float newYaw = this.getYRot() + diff * TURN_SPEED;
-        this.setYRot(newYaw);
-        this.yRotO = this.yBodyRot = this.yHeadRot = newYaw;
+        Vec3 direction = new Vec3(dx, 0, dz).normalize();
+        steerYawToward(dx, dz);
 
-        // maintain constant altitude above terrain at current position
-        int terrainY = this.level().getHeight(Heightmap.Types.MOTION_BLOCKING,
-                this.blockPosition().getX(), this.blockPosition().getZ());
-        double targetY = terrainY + HOVER_HEIGHT;
-        double dy = targetY - this.getY();
-        float up = (float) Mth.clamp(dy * 0.1, -1, 1);
+        int terrainY = sampleMaxTerrainHeight(direction, TERRAIN_LOOKAHEAD_DISTANCES);
+        float up = computeVerticalInput(terrainY, HOVER_HEIGHT, MAX_VERTICAL_SPEED);
 
         return new Vec3(0, up, EN_ROUTE_SPEED);
     }
 
     protected Vec3 computeArrivingInput() {
-        int terrainY = this.level().getHeight(Heightmap.Types.MOTION_BLOCKING,
-                this.blockPosition().getX(), this.blockPosition().getZ());
+        int terrainY = terrainHeightAt(this.blockPosition());
         double targetY = terrainY + LANDING_HOVER_HEIGHT;
         double dy = targetY - this.getY();
 
         if (Math.abs(dy) < LANDING_ARRIVED_THRESHOLD) {
-            this.rideState = RideState.ARRIVING;
-            resetStateTicks();
+            setRideState(RideState.ARRIVED);
             return Vec3.ZERO;
         }
 
@@ -274,15 +318,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return Vec3.ZERO;
         }
 
-        float targetYaw = (float)(Mth.atan2(returnDirection.z, returnDirection.x) * (180.0 / Math.PI)) - 90.0F;
-        this.setYRot(targetYaw);
-        this.yRotO = this.yBodyRot = this.yHeadRot = targetYaw;
+        steerYawToward(returnDirection.x, returnDirection.z);
 
-        int terrainY = this.level().getHeight(Heightmap.Types.MOTION_BLOCKING,
-                this.blockPosition().getX(), this.blockPosition().getZ());
-        double targetY = terrainY + HOVER_HEIGHT;
-        double dy = targetY - this.getY();
-        float up = (float) Mth.clamp(dy * 0.1, -1, 1);
+        int terrainY = sampleMaxTerrainHeight(returnDirection, TERRAIN_LOOKAHEAD_DISTANCES);
+        float up = computeVerticalInput(terrainY, HOVER_HEIGHT, MAX_VERTICAL_SPEED);
 
         return new Vec3(0, up, RETURN_SPEED);
     }
@@ -319,7 +358,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 playerIndex++;
             }
         }
-        return 1; // fallback, shouldnt happen
+        return 1;
     }
 
     protected void resetStateTicks() {
@@ -357,7 +396,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return this.paidPlayers.contains(player.getUUID());
     }
 
-    // mojang why must you make this private :(
     protected void doPlayerRide(Player player) {
         if (!this.level().isClientSide()) {
             player.startRiding(this);
@@ -429,5 +467,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.rideState = input.read("RideState", RideState.CODEC).orElse(RideState.IDLE);
         this.destination = input.read("Destination", BlockPos.CODEC).orElse(null);
         this.returnDirection = input.read("ReturnDirection", Vec3.CODEC).orElse(null);
+        applyGoalsForState(this.rideState); // restore correct goal state after load, e.g. mid-flight on reload
     }
 }
