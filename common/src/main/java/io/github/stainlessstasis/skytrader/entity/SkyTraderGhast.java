@@ -5,16 +5,16 @@ import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.StructureTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
-import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,20 +33,20 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
+    protected static final int VILLAGE_SEARCH_RADIUS = 200;
     protected static final int BOARDING_DELAY_TICKS = 100;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
-    protected static final int VILLAGE_SEARCH_RADIUS = 2048;
     protected static final int HOVER_HEIGHT = 20;
-    protected static final float EN_ROUTE_SPEED = 0.3f;
+    protected static final float EN_ROUTE_SPEED = 0.4f;
     protected static final double EN_ROUTE_ARRIVE_DISTANCE = 6d;
     protected static final float TURN_SPEED = 0.12f;
     protected static final int LANDING_HOVER_HEIGHT = 1;
     protected static final double LANDING_ARRIVED_THRESHOLD = 2d;
     protected static final float DESCEND_SPEED = 0.3f;
-    protected static final float DESCEND_HORIZONTAL_SPEED = 0.1f;
+    protected static final float DESCEND_HORIZONTAL_SPEED = 0.2f;
     protected static final int DISMOUNT_GRACE_TICKS = 300;
-    protected static final int RETURN_FLIGHT_TICKS = 200;
-    protected static final float RETURN_SPEED = 0.3f;
+    protected static final int RETURN_FLIGHT_TICKS = 600;
+    protected static final float RETURN_SPEED = 0.4f;
     protected static final float MAX_VERTICAL_SPEED = 0.5f;
     protected static final int[] TERRAIN_LOOKAHEAD_DISTANCES = {8, 16, 24, 32};
     protected static final int MAX_DEPARTURE_ATTEMPTS = 3;
@@ -214,16 +214,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return;
         }
 
-        LivingEntity ownerEntity = getOwner();
-        if (ownerEntity == null || ownerEntity.isRemoved() || !(ownerEntity instanceof SkyTrader trader)) {
-            return;
-        }
-
         this.destination = findNearestVillage();
         if (this.destination == null) {
             this.departureAttempts++;
             if (this.departureAttempts >= MAX_DEPARTURE_ATTEMPTS) {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".no_village_giving_up");
+                forceDismountPlayers();
                 beginReturn();
             } else {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".no_village_retry");
@@ -233,37 +229,76 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         this.departureAttempts = 0;
-        trader.startRiding(this);
+        setOwnerRiding();
         setRideState(RideState.EN_ROUTE);
     }
 
     protected void beginReturn() {
+        setOwnerRiding();
         this.paidPlayers.clear();
         double angle = this.random.nextDouble() * Math.PI * 2;
         this.returnDirection = new Vec3(Math.cos(angle), 0, Math.sin(angle));
         setRideState(RideState.RETURNING);
     }
 
+    protected void setOwnerRiding() {
+        LivingEntity ownerEntity = getOwner();
+        if (ownerEntity == null || ownerEntity.isRemoved() || !(ownerEntity instanceof SkyTrader trader)) {
+            return;
+        }
+        if (trader.isPassenger()) {
+            return;
+        }
+        trader.startRiding(this);
+    }
+
     protected @Nullable BlockPos findNearestVillage() {
         if (!(this.level() instanceof ServerLevel serverLevel)) {
             return null;
         }
-        PoiManager poiManager = serverLevel.getPoiManager();
 
-        var meeting = poiManager.find(
-                poiType -> poiType.is(PoiTypes.MEETING),
-                pos -> true,
+        var structureRegistry = serverLevel.registryAccess().lookupOrThrow(Registries.STRUCTURE);
+        var villageTag = structureRegistry.get(StructureTags.VILLAGE);
+        if (villageTag.isEmpty()) {
+            return null;
+        }
+
+        var closestVillage = serverLevel.getChunkSource().getGenerator().findNearestMapStructure(
+                serverLevel,
+                villageTag.get(),
                 this.blockPosition(),
-                VILLAGE_SEARCH_RADIUS,
-                PoiManager.Occupancy.ANY
+                VILLAGE_SEARCH_RADIUS / 16,
+                false
         );
-        return meeting.orElseGet(() -> poiManager.find(
-                poiType -> poiType.is(PoiTypes.HOME),
-                pos -> true,
-                this.blockPosition(),
-                VILLAGE_SEARCH_RADIUS,
-                PoiManager.Occupancy.ANY
-        ).orElse(null));
+
+        if (closestVillage == null) {
+            return null;
+        }
+
+        BlockPos structureCenter = closestVillage.getFirst();
+
+        double distanceSq = this.blockPosition().distToCenterSqr(structureCenter.getX(), this.getY(), structureCenter.getZ());
+        if (distanceSq > (VILLAGE_SEARCH_RADIUS * VILLAGE_SEARCH_RADIUS)) {
+            return null;
+        }
+
+        int surfaceY = serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, structureCenter.getX(), structureCenter.getZ());
+        if (surfaceY <= serverLevel.getMinY()) {
+            var randomState = serverLevel.getChunkSource().randomState();
+            surfaceY = serverLevel.getChunkSource().getGenerator().getBaseHeight(
+                    structureCenter.getX(),
+                    structureCenter.getZ(),
+                    Heightmap.Types.WORLD_SURFACE,
+                    serverLevel,
+                    randomState
+            );
+        }
+
+        if (surfaceY <= serverLevel.getMinY()) {
+            surfaceY = serverLevel.getSeaLevel();
+        }
+
+        return new BlockPos(structureCenter.getX(), surfaceY, structureCenter.getZ());
     }
 
     @Override
@@ -377,7 +412,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     protected void forceDismountPlayers() {
         for (Entity passenger : List.copyOf(this.getPassengers())) {
-            if (passenger instanceof Player) {
+            if (!(passenger instanceof SkyTrader)) {
                 passenger.stopRiding();
             }
         }
