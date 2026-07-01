@@ -1,10 +1,12 @@
 package io.github.stainlessstasis.skytrader.entity;
 
+import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -48,7 +50,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 this.doPlayerRide(player);
                 return InteractionResult.SUCCESS;
             } else {
-                player.sendOverlayMessage(Component.literal("test"));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID+".no_ride_ticket").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
         }
