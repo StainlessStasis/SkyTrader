@@ -1,10 +1,10 @@
-// 26.2	2026-06-30T21:16:44.704852	Registries
+// 26.2	2026-06-30T23:34:38.8670764	Registries
 e132f080495413cced2f13c46b59cb7028f1cae4 data/examplemod/trade_set/sky_trader/common.json
 4f380a8cb57776e87d39b2f77fbdce32cebf415e data/examplemod/trade_set/sky_trader/harness.json
 2ae46a72b6cf2c6b4171fb626d1b74ef63795b1a data/examplemod/trade_set/sky_trader/rare.json
 5c5579712068160a36090e95dac1453b7db21658 data/examplemod/trade_set/sky_trader/ride.json
 ff21736198080e5a12b06ebf0b1ffd0a0357b3df data/examplemod/trade_set/sky_trader/utility.json
-66f5b5f7c28016236c1984f94670a6a679a7bc27 data/examplemod/villager_trade/buy_emerald_for_ride.json
+8aabaf96645f08205ae942a742e903bfac54226a data/examplemod/villager_trade/buy_emerald_for_ride.json
 496e96c9d953aa0fd9793b87f2121c3960238d43 data/examplemod/villager_trade/sell_blaze_rod.json
 85c9e897cd184cab38cfd1abc0d23a13374821ff data/examplemod/villager_trade/sell_ender_pearl.json
 79a5954c7b8db69c72fe00138e95cf2e71d26e01 data/examplemod/villager_trade/sell_firework_rocket.json

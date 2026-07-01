@@ -1,6 +1,7 @@
 package com.example.examplemod.trader;
 
 import com.example.examplemod.ModConstants;
+import com.example.examplemod.item.ModItems;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistrySetBuilder;
@@ -60,8 +61,8 @@ public class SkyTraderTrades {
     public static void bootstrapTrades(BootstrapContext<VillagerTrade> context) {
         // ride payment
         context.register(BUY_EMERALD_FOR_RIDE, new VillagerTrade(
-                new TradeCost(Items.EMERALD, 1),
-                new ItemStackTemplate(Items.SADDLE), // TODO: placeholder
+                new TradeCost(Items.EMERALD, 12),
+                new ItemStackTemplate(ModItems.RIDE_TICKET.get()),
                 99, 1, 0, Optional.empty(), List.of()));
 
         // always offered
