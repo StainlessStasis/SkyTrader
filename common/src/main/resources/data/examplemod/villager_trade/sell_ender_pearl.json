@@ -1,6 +1,7 @@
 {
   "gives": {
-    "id": "minecraft:white_harness"
+    "count": 2,
+    "id": "minecraft:ender_pearl"
   },
   "max_uses": 8.0,
   "reputation_discount": 0.05,
@@ -8,5 +9,5 @@
     "count": 5.0,
     "id": "minecraft:emerald"
   },
-  "xp": 5.0
+  "xp": 20.0
 }

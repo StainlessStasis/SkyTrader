@@ -1,0 +1,9 @@
+{
+  "amount": 2.0,
+  "trades": [
+    "examplemod:sell_saddle",
+    "examplemod:sell_lead",
+    "examplemod:sell_firework_rocket",
+    "examplemod:sell_name_tag"
+  ]
+}
