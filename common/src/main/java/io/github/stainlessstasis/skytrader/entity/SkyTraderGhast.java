@@ -39,7 +39,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final int BOARDING_DELAY_TICKS = 20;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
     protected static final int HOVER_HEIGHT = 20;
-    protected static final float EN_ROUTE_SPEED = 2f;
+    protected static final float EN_ROUTE_SPEED = 0.4f;
     protected static final double EN_ROUTE_ARRIVE_DISTANCE = 6d;
     protected static final float TURN_SPEED = 0.25f;
     protected static final int LANDING_HOVER_HEIGHT = 1;
@@ -52,6 +52,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final float MAX_VERTICAL_SPEED = 0.5f;
     protected static final int[] TERRAIN_LOOKAHEAD_DISTANCES = {8, 16, 24, 32};
     protected static final int MAX_DEPARTURE_ATTEMPTS = 3;
+
+    protected static final int TERRAIN_SAMPLE_INTERVAL = 5;
+    protected int cachedTerrainHeight = 0;
+    protected int terrainSampleCooldown = 0;
 
     protected @Nullable EntityReference<LivingEntity> owner;
     protected final Set<UUID> paidPlayers = new HashSet<>();
@@ -319,16 +323,26 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected int terrainHeightAt(BlockPos pos) {
+        if (!this.level().hasChunkAt(pos)) {
+            return this.cachedTerrainHeight;
+        }
         return this.level().getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX(), pos.getZ());
     }
 
     protected int sampleMaxTerrainHeight(Vec3 direction, int... lookaheadDistances) {
+        if (this.terrainSampleCooldown > 0) {
+            this.terrainSampleCooldown--;
+            return this.cachedTerrainHeight;
+        }
+        this.terrainSampleCooldown = TERRAIN_SAMPLE_INTERVAL;
+
         int max = terrainHeightAt(this.blockPosition());
         for (int distance : lookaheadDistances) {
             BlockPos sample = this.blockPosition().offset(
                     (int) Math.round(direction.x * distance), 0, (int) Math.round(direction.z * distance));
             max = Math.max(max, terrainHeightAt(sample));
         }
+        this.cachedTerrainHeight = max;
         return max;
     }
 
