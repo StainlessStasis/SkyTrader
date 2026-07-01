@@ -17,7 +17,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(ModConstants.MOD_ID)
-public class SkyTraderMod {
+public class SkyTraderNeoMod {
     private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, ModConstants.MOD_ID);
 
     public static final DeferredHolder<EntityType<?>, EntityType<SkyTrader>> TRADER_HOLDER =
@@ -32,7 +32,7 @@ public class SkyTraderMod {
                     () -> ModEntities.GHAST_BUILDER.build(ModEntities.GHAST_KEY)
             );
 
-    public SkyTraderMod(IEventBus eventBus) {
+    public SkyTraderNeoMod(IEventBus eventBus) {
         ENTITIES.register(eventBus);
 
         eventBus.addListener(RegisterEvent.class, event -> {

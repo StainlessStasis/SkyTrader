@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.example.examplemod.entity.ModEntities;
 import com.example.examplemod.entity.SkyTrader;
 import com.example.examplemod.entity.SkyTraderGhast;
+import com.example.examplemod.mixin.ServerLevelAccessorMixin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.SavedDataStorage;
 import org.jspecify.annotations.Nullable;
@@ -43,6 +45,15 @@ public class SkyTraderSpawner implements CustomSpawner {
         this.savedDataStorage = savedDataStorage;
         this.tickDelay = DEFAULT_TICK_DELAY;
         this.traderData = null;
+    }
+
+    public static void forceSpawn(ServerLevel level) {
+        ((ServerLevelAccessorMixin)level).getCustomSpawners().forEach(customSpawner -> {
+            if (customSpawner instanceof SkyTraderSpawner spawner) {
+                spawner.spawn(level);
+                return;
+            }
+        });
     }
 
     @Override
