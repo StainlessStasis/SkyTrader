@@ -3,6 +3,8 @@ package com.example.examplemod;
 import com.example.examplemod.entity.ModEntities;
 import com.example.examplemod.entity.SkyTrader;
 import com.example.examplemod.entity.SkyTraderGhast;
+import com.example.examplemod.item.ModItems;
+import com.example.examplemod.platform.NeoForgeRegistryHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
@@ -41,6 +43,9 @@ public class SkyTraderMod {
         });
 
         eventBus.addListener(this::registerAttributes);
+
+        NeoForgeRegistryHelper.ITEMS.register(eventBus);
+        ModItems.init();
     }
 
     private void registerAttributes(EntityAttributeCreationEvent event) {

@@ -3,6 +3,7 @@ package com.example.examplemod.trader;
 import com.example.examplemod.ModConstants;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
@@ -18,6 +19,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class SkyTraderTrades {
+    public static final RegistrySetBuilder REGISTRY_BUILDER = new RegistrySetBuilder()
+            .add(Registries.VILLAGER_TRADE, SkyTraderTrades::bootstrapTrades)
+            .add(Registries.TRADE_SET, SkyTraderTrades::bootstrapTradeSets);
+
     public static final ResourceKey<VillagerTrade> SELL_GHAST_HARNESS = resourceKey("sell_ghast_harness");
     public static final ResourceKey<VillagerTrade> BUY_EMERALD_FOR_RIDE = resourceKey("buy_emerald_for_ride");
 

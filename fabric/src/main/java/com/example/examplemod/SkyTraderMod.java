@@ -1,6 +1,7 @@
 package com.example.examplemod;
 
 import com.example.examplemod.entity.ModEntities;
+import com.example.examplemod.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
@@ -25,5 +26,7 @@ public class SkyTraderMod implements ModInitializer {
                 ModEntities.GHAST_BUILDER.build(ModEntities.GHAST_KEY)
         );
         FabricDefaultAttributeRegistry.register(ModEntities.SKY_TRADER_GHAST, HappyGhast.createAttributes());
+
+        ModItems.init();
     }
 }

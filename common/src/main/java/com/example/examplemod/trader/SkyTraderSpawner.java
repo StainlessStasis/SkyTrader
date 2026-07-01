@@ -116,6 +116,7 @@ public class SkyTraderSpawner implements CustomSpawner {
         if (spawnPosition != null) {
             SkyTraderGhast ghast = ModEntities.SKY_TRADER_GHAST.spawn(level, spawnPosition, EntitySpawnReason.EVENT);
             if (ghast != null) {
+                ghast.setOwner(trader);
                 ghast.setLeashedTo(trader, true);
                 ghast.equipItemIfPossible(level, new ItemStack(Items.HARNESS.white()));
             }
