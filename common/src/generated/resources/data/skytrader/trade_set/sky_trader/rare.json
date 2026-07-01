@@ -1,0 +1,11 @@
+{
+  "amount": {
+    "type": "minecraft:uniform",
+    "max": 1.0,
+    "min": 0.0
+  },
+  "trades": [
+    "skytrader:sell_ender_pearl",
+    "skytrader:sell_nautilus_shell"
+  ]
+}

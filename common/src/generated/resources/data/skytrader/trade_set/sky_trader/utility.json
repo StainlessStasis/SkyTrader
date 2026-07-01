@@ -1,0 +1,9 @@
+{
+  "amount": 2.0,
+  "trades": [
+    "skytrader:sell_saddle",
+    "skytrader:sell_lead",
+    "skytrader:sell_firework_rocket",
+    "skytrader:sell_name_tag"
+  ]
+}

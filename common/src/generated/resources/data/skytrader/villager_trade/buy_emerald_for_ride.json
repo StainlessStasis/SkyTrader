@@ -1,0 +1,10 @@
+{
+  "gives": {
+    "id": "skytrader:ride_ticket"
+  },
+  "max_uses": 99.0,
+  "wants": {
+    "count": 12.0,
+    "id": "minecraft:emerald"
+  }
+}
