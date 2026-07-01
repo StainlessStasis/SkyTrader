@@ -54,6 +54,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final double FINAL_APPROACH_DISTANCE = 6d;
     protected static final int LANDING_HOVER_HEIGHT = 1;
     protected static final double LANDING_ARRIVED_THRESHOLD = 2d;
+    protected static final double LANDING_ARRIVED_RADIUS = 12d;
+    protected static final double NEAR_GROUND_THRESHOLD = 3d;
     protected static final float DESCEND_SPEED = 0.3f;
     protected static final float DESCEND_HORIZONTAL_SPEED = 0.2f;
     protected static final int ARRIVING_TIMEOUT_TICKS = 200;
@@ -163,7 +165,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
                 return InteractionResult.SUCCESS;
             } else {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".no_ride_ticket").withColor(TextColor.RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".no_ticket").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
         }
@@ -495,9 +497,14 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         int terrainY = terrainHeightAt(this.blockPosition());
         double targetY = terrainY + LANDING_HOVER_HEIGHT;
         double dy = targetY - this.getY();
+        boolean nearGround = Math.abs(dy) < LANDING_ARRIVED_THRESHOLD;
 
-        if (Math.abs(dy) < LANDING_ARRIVED_THRESHOLD && horizontalDist < FINAL_APPROACH_DISTANCE) {
+        boolean closeEnough = horizontalDist < FINAL_APPROACH_DISTANCE
+                || (nearGround && horizontalDist < LANDING_ARRIVED_RADIUS);
+
+        if (nearGround && closeEnough) {
             setRideState(RideState.ARRIVED);
+            sendMessageToPassengers(ModConstants.MOD_ID + ".arrived", TextColor.WHITE);
             return Vec3.ZERO;
         }
 
@@ -642,7 +649,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         super.removePassenger(passenger);
         if (passenger instanceof LivingEntity living) {
             living.addEffect(new MobEffectInstance(
-                    MobEffects.SLOW_FALLING, 30, 0, true, true, true
+                    MobEffects.SLOW_FALLING, 60, 0, true, true, true
             ));
         }
     }
