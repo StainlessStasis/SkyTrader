@@ -34,6 +34,9 @@ public class SkyTraderSpawner implements CustomSpawner {
     private static final int SPAWN_CHANCE_INCREASE = 25;
     private static final int SPAWN_ONE_IN_X_CHANCE = 10;
     private static final int NUMBER_OF_SPAWN_ATTEMPTS = 10;
+    private static final int GHAST_HORIZONTAL_CLEARANCE = 2;
+    private static final int GHAST_VERTICAL_CLEARANCE = 4;
+    private static final int GHAST_UPWARD_SEARCH_LIMIT = 32;
     private final RandomSource random = RandomSource.create();
     private final SavedDataStorage savedDataStorage;
     private int tickDelay;
@@ -121,7 +124,15 @@ public class SkyTraderSpawner implements CustomSpawner {
     }
 
     private void tryToSpawnGhastFor(ServerLevel level, SkyTrader trader, int radius) {
-        BlockPos spawnPosition = this.findSpawnPositionNear(level, trader.blockPosition(), radius);
+        BlockPos referencePos = trader.blockPosition();
+        BlockPos spawnPosition = null;
+        for (int i = 0; i < NUMBER_OF_SPAWN_ATTEMPTS; i++) {
+            int x = referencePos.getX() + this.random.nextInt(radius * 2) - radius;
+            int z = referencePos.getZ() + this.random.nextInt(radius * 2) - radius;
+            spawnPosition = findClearGhastPosition(level, x, z);
+            if (spawnPosition != null) break;
+        }
+
         if (spawnPosition != null) {
             SkyTraderGhast ghast = ModEntities.SKY_TRADER_GHAST.spawn(level, spawnPosition, EntitySpawnReason.EVENT);
             if (ghast != null) {
@@ -130,6 +141,30 @@ public class SkyTraderSpawner implements CustomSpawner {
                 ghast.equipItemIfPossible(level, new ItemStack(Items.HARNESS.white()));
             }
         }
+    }
+
+
+    private @Nullable BlockPos findClearGhastPosition(LevelReader level, int x, int z) {
+        int startY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
+        int maxY = Math.min(startY + GHAST_UPWARD_SEARCH_LIMIT, level.getMaxY());
+        for (int y = startY; y <= maxY; y++) {
+            BlockPos candidate = new BlockPos(x, y, z);
+            if (hasEnoughSpaceForGhast(level, candidate)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    private boolean hasEnoughSpaceForGhast(BlockGetter level, BlockPos center) {
+        for (BlockPos pos : BlockPos.betweenClosed(
+                center.offset(-GHAST_HORIZONTAL_CLEARANCE, 0, -GHAST_HORIZONTAL_CLEARANCE),
+                center.offset(GHAST_HORIZONTAL_CLEARANCE, GHAST_VERTICAL_CLEARANCE, GHAST_HORIZONTAL_CLEARANCE))) {
+            if (!level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private @Nullable BlockPos findSpawnPositionNear(LevelReader level, BlockPos referencePosition, int radius) {

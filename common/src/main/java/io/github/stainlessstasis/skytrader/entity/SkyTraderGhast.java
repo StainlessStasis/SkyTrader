@@ -34,18 +34,18 @@ import java.util.UUID;
 public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
     protected static final int BOARDING_DELAY_TICKS = 100;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
-    protected static final int VILLAGE_SEARCH_RADIUS = 1024;
+    protected static final int VILLAGE_SEARCH_RADIUS = 2048;
     protected static final int HOVER_HEIGHT = 20;
     protected static final float EN_ROUTE_SPEED = 0.5f;
     protected static final double EN_ROUTE_ARRIVE_DISTANCE = 6d;
-    protected static final float TURN_SPEED = 0.08f;
-    protected static final int LANDING_HOVER_HEIGHT = 3;
-    protected static final double LANDING_ARRIVED_THRESHOLD = 1d;
+    protected static final float TURN_SPEED = 0.04f;
+    protected static final int LANDING_HOVER_HEIGHT = 1;
+    protected static final double LANDING_ARRIVED_THRESHOLD = 2d;
     protected static final float DESCEND_SPEED = 0.2f;
     protected static final int DISMOUNT_GRACE_TICKS = 300;
     protected static final int RETURN_FLIGHT_TICKS = 200;
     protected static final float RETURN_SPEED = 0.5f;
-    protected static final float MAX_VERTICAL_SPEED = 1f;
+    protected static final float MAX_VERTICAL_SPEED = 0.4f;
     protected static final int[] TERRAIN_LOOKAHEAD_DISTANCES = {8, 16, 24, 32};
 
     protected @Nullable EntityReference<LivingEntity> owner;
@@ -179,6 +179,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         if (this.rideState == RideState.RETURNING && this.stateTicks >= RETURN_FLIGHT_TICKS) {
+            if (this.getOwner() instanceof SkyTrader trader) trader.discard();
             this.discard();
         }
     }
