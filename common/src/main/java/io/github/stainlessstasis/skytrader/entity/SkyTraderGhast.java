@@ -250,13 +250,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         if (getOwner() instanceof SkyTrader trader && !trader.isRemoved()) {
             BlockPos landingSpot = this.destination != null ? this.destination : this.blockPosition();
-            if (trader.isPassenger() && trader.getVehicle() == this) {
-                trader.stopRiding();
-            }
-            this.setLeashedTo(trader, true);
-            trader.setDespawnDelay(48000);
-            trader.setWanderTarget(landingSpot);
-            trader.setHomeTo(landingSpot, 16);
+            trader.jumpOffSpawnDescent(landingSpot);
         }
     }
 
@@ -515,7 +509,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             int jumpTerrainY = terrainHeightAt(this.blockPosition());
             double heightAboveTarget = this.getY() - (jumpTerrainY + LANDING_HOVER_HEIGHT);
             if (heightAboveTarget <= SPAWN_JUMP_OFF_HEIGHT) {
-                trader.stopRiding();
+                BlockPos landingSpot = this.destination != null ? this.destination : this.blockPosition();
+                trader.jumpOffSpawnDescent(landingSpot);
             }
         }
 

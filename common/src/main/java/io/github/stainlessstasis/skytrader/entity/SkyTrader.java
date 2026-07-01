@@ -67,6 +67,16 @@ public class SkyTrader extends WanderingTrader {
         }
     }
 
+    protected void jumpOffSpawnDescent(BlockPos landingSpot) {
+        stopRiding();
+        if (getGhast() instanceof SkyTraderGhast ghast) {
+            ghast.setLeashedTo(this, true);
+        }
+        setDespawnDelay(48000);
+        setWanderTarget(landingSpot);
+        setHomeTo(landingSpot, 16);
+    }
+
     @Override
     protected void updateTrades(@NonNull ServerLevel level) {
         MerchantOffers offers = this.getOffers();
