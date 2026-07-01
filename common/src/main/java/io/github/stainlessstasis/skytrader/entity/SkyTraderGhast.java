@@ -9,6 +9,8 @@ import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -26,6 +28,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     @Override
     public @NonNull InteractionResult mobInteract(@NonNull Player player, @NonNull InteractionHand hand) {
+        System.out.println("OWNER: "+getOwner());
         if (this.isBaby()) {
             return super.mobInteract(player, hand);
         }
@@ -102,5 +105,17 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     @Override
     public @Nullable EntityReference<LivingEntity> getOwnerReference() {
         return owner;
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        EntityReference.store(owner, output, "Owner");
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.owner = EntityReference.read(input, "Owner");
     }
 }

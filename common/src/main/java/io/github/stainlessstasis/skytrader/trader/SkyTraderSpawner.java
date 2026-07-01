@@ -27,12 +27,12 @@ import net.minecraft.world.level.storage.SavedDataStorage;
 import org.jspecify.annotations.Nullable;
 
 public class SkyTraderSpawner implements CustomSpawner {
-    private static final int DEFAULT_TICK_DELAY = 60;
-    public static final int DEFAULT_SPAWN_DELAY = 61;
-    public static final int MIN_SPAWN_CHANCE = 75;
+    private static final int DEFAULT_TICK_DELAY = 1200;
+    public static final int DEFAULT_SPAWN_DELAY = 24000;
+    public static final int MIN_SPAWN_CHANCE = 25;
     private static final int MAX_SPAWN_CHANCE = 75;
     private static final int SPAWN_CHANCE_INCREASE = 25;
-    private static final int SPAWN_ONE_IN_X_CHANCE = 1;
+    private static final int SPAWN_ONE_IN_X_CHANCE = 10;
     private static final int NUMBER_OF_SPAWN_ATTEMPTS = 10;
     private final RandomSource random = RandomSource.create();
     private final SavedDataStorage savedDataStorage;
@@ -48,7 +48,7 @@ public class SkyTraderSpawner implements CustomSpawner {
     public static void forceSpawn(ServerLevel level) {
         ((ServerLevelAccessorMixin)level).getCustomSpawners().forEach(customSpawner -> {
             if (customSpawner instanceof SkyTraderSpawner spawner) {
-                spawner.spawn(level);
+                spawner.spawn(level, true);
                 return;
             }
         });
@@ -68,7 +68,7 @@ public class SkyTraderSpawner implements CustomSpawner {
                     int newSpawnChance = Mth.clamp(chanceToSpawn + SPAWN_CHANCE_INCREASE, MIN_SPAWN_CHANCE, MAX_SPAWN_CHANCE);
                     data.setSpawnChance(newSpawnChance);
                     if (this.random.nextInt(100) <= chanceToSpawn) {
-                        if (this.spawn(level)) {
+                        if (this.spawn(level, false)) {
                             data.setSpawnChance(MIN_SPAWN_CHANCE);
                         }
                     }
@@ -85,13 +85,13 @@ public class SkyTraderSpawner implements CustomSpawner {
         return this.traderData;
     }
 
-    private boolean spawn(ServerLevel level) {
+    private boolean spawn(ServerLevel level, boolean force) {
         Player player = level.getRandomPlayer();
         if (player == null) {
             return true;
         }
 
-        if (this.random.nextInt(SPAWN_ONE_IN_X_CHANCE) != 0) {
+        if (!force && this.random.nextInt(SPAWN_ONE_IN_X_CHANCE) != 0) {
             return false;
         }
 
