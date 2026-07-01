@@ -1,0 +1,11 @@
+{
+  "gives": {
+    "id": "minecraft:white_harness"
+  },
+  "max_uses": 3.0,
+  "wants": {
+    "count": 5.0,
+    "id": "minecraft:emerald"
+  },
+  "xp": 0.0
+}

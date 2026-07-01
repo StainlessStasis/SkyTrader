@@ -9,6 +9,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 public class Datagen {
     @SubscribeEvent
     static void gatherData(GatherDataEvent.Client event) {
-        event.createProvider(output -> new SkyTraderEntityTagProvider(output, event.getLookupProvider(), ModConstants.MOD_ID));
+        event.createProvider(output -> new ModEntityTagProvider(output, event.getLookupProvider(), ModConstants.MOD_ID));
+        event.createProvider(output -> new ModTradeProvider(output, event.getLookupProvider()));
     }
 }

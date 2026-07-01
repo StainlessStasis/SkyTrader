@@ -1,0 +1,7 @@
+{
+  "amount": 3.0,
+  "trades": [
+    "examplemod:sell_ghast_harness",
+    "examplemod:buy_emerald_for_ride"
+  ]
+}

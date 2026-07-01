@@ -118,8 +118,6 @@ public class SkyTraderSpawner implements CustomSpawner {
             if (ghast != null) {
                 ghast.setLeashedTo(trader, true);
                 ghast.equipItemIfPossible(level, new ItemStack(Items.HARNESS.white()));
-                boolean hasTag = ghast.getType().builtInRegistryHolder().is(EntityTypeTags.CAN_EQUIP_HARNESS);
-                System.out.println(hasTag);
             }
         }
     }
