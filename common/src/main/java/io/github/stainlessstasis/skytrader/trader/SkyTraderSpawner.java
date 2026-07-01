@@ -11,9 +11,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.SpawnPlacementType;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +23,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.SavedDataStorage;
 import org.jspecify.annotations.Nullable;
 
@@ -37,6 +38,9 @@ public class SkyTraderSpawner implements CustomSpawner {
     private static final int GHAST_HORIZONTAL_CLEARANCE = 2;
     private static final int GHAST_VERTICAL_CLEARANCE = 4;
     private static final int GHAST_UPWARD_SEARCH_LIMIT = 32;
+    private static final int SPAWN_ALTITUDE = 60;
+    private static final int SEARCH_RADIUS = 48;
+
     private final RandomSource random = RandomSource.create();
     private final SavedDataStorage savedDataStorage;
     private int tickDelay;
@@ -49,10 +53,9 @@ public class SkyTraderSpawner implements CustomSpawner {
     }
 
     public static void forceSpawn(ServerLevel level) {
-        ((ServerLevelAccessorMixin)level).getCustomSpawners().forEach(customSpawner -> {
+        ((ServerLevelAccessorMixin) level).getCustomSpawners().forEach(customSpawner -> {
             if (customSpawner instanceof SkyTraderSpawner spawner) {
                 spawner.spawn(level, true);
-                return;
             }
         });
     }
@@ -84,7 +87,6 @@ public class SkyTraderSpawner implements CustomSpawner {
         if (this.traderData == null) {
             this.traderData = this.savedDataStorage.computeIfAbsent(SkyTraderData.TYPE);
         }
-
         return this.traderData;
     }
 
@@ -99,54 +101,55 @@ public class SkyTraderSpawner implements CustomSpawner {
         }
 
         BlockPos playerPos = player.blockPosition();
-        int radius = 48;
         PoiManager poiManager = level.getPoiManager();
-        Optional<BlockPos> poiPos = poiManager.find(p -> p.is(PoiTypes.MEETING), p -> true, playerPos, radius, PoiManager.Occupancy.ANY);
-        BlockPos referencePos = poiPos.orElse(playerPos);
-        BlockPos spawnPosition = this.findSpawnPositionNear(level, referencePos, radius);
-        if (spawnPosition != null && this.hasEnoughSpace(level, spawnPosition)) {
-            if (level.getBiome(spawnPosition).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) {
-                return false;
-            }
+        Optional<BlockPos> poiPos = poiManager.find(p -> p.is(PoiTypes.MEETING), p -> true, playerPos, SEARCH_RADIUS, PoiManager.Occupancy.ANY);
+        BlockPos groundReference = poiPos.orElse(playerPos);
 
-            SkyTrader trader = ModEntities.SKY_TRADER.spawn(level, spawnPosition, EntitySpawnReason.EVENT);
-            if (trader != null) {
-                this.tryToSpawnGhastFor(level, trader, 8);
-
-                trader.setDespawnDelay(48000);
-                trader.setWanderTarget(referencePos);
-                trader.setHomeTo(referencePos, 16);
-                return true;
-            }
+        if (level.getBiome(groundReference).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) {
+            return false;
         }
 
-        return false;
+        BlockPos skySpawnPos = findClearSkySpawnPosition(level, groundReference, SEARCH_RADIUS);
+        if (skySpawnPos == null) {
+            return false;
+        }
+
+        SkyTrader trader = ModEntities.SKY_TRADER.spawn(level, skySpawnPos, EntitySpawnReason.EVENT);
+        if (trader == null) {
+            return false;
+        }
+        trader.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100));
+
+        SkyTraderGhast ghast = ModEntities.SKY_TRADER_GHAST.spawn(level, skySpawnPos, EntitySpawnReason.EVENT);
+        if (ghast == null) {
+            trader.discard();
+            return false;
+        }
+
+        ghast.setOwner(trader);
+        trader.setGhast(ghast);
+        ghast.equipItemIfPossible(level, new ItemStack(Items.HARNESS.white()));
+        ghast.setOwnerRiding();
+        ghast.beginSpawnDescent(groundReference);
+
+        return true;
     }
 
-    private void tryToSpawnGhastFor(ServerLevel level, SkyTrader trader, int radius) {
-        BlockPos referencePos = trader.blockPosition();
-        BlockPos spawnPosition = null;
+    private @Nullable BlockPos findClearSkySpawnPosition(LevelReader level, BlockPos groundReference, int radius) {
         for (int i = 0; i < NUMBER_OF_SPAWN_ATTEMPTS; i++) {
-            int x = referencePos.getX() + this.random.nextInt(radius * 2) - radius;
-            int z = referencePos.getZ() + this.random.nextInt(radius * 2) - radius;
-            spawnPosition = findClearGhastPosition(level, x, z);
-            if (spawnPosition != null) break;
-        }
-
-        if (spawnPosition != null) {
-            SkyTraderGhast ghast = ModEntities.SKY_TRADER_GHAST.spawn(level, spawnPosition, EntitySpawnReason.EVENT);
-            if (ghast != null) {
-                ghast.setOwner(trader);
-                ghast.setLeashedTo(trader, true);
-                ghast.equipItemIfPossible(level, new ItemStack(Items.HARNESS.white()));
-                trader.setGhast(ghast);
+            int x = groundReference.getX() + this.random.nextInt(radius * 2) - radius;
+            int z = groundReference.getZ() + this.random.nextInt(radius * 2) - radius;
+            int groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
+            int targetY = Math.min(groundY + SPAWN_ALTITUDE, level.getMaxY() - GHAST_VERTICAL_CLEARANCE - 1);
+            BlockPos candidate = findClearGhastPositionFrom(level, x, targetY, z);
+            if (candidate != null) {
+                return candidate;
             }
         }
+        return null;
     }
 
-
-    private @Nullable BlockPos findClearGhastPosition(LevelReader level, int x, int z) {
-        int startY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, x, z);
+    private @Nullable BlockPos findClearGhastPositionFrom(LevelReader level, int x, int startY, int z) {
         int maxY = Math.min(startY + GHAST_UPWARD_SEARCH_LIMIT, level.getMaxY());
         for (int y = startY; y <= maxY; y++) {
             BlockPos candidate = new BlockPos(x, y, z);
@@ -165,34 +168,6 @@ public class SkyTraderSpawner implements CustomSpawner {
                 return false;
             }
         }
-        return true;
-    }
-
-    private @Nullable BlockPos findSpawnPositionNear(LevelReader level, BlockPos referencePosition, int radius) {
-        BlockPos spawnPosition = null;
-        SpawnPlacementType wanderingTraderSpawnType = SpawnPlacements.getPlacementType(ModEntities.SKY_TRADER);
-
-        for (int i = 0; i < NUMBER_OF_SPAWN_ATTEMPTS; i++) {
-            int xPosition = referencePosition.getX() + this.random.nextInt(radius * 2) - radius;
-            int zPosition = referencePosition.getZ() + this.random.nextInt(radius * 2) - radius;
-            int yPosition = level.getHeight(SpawnPlacements.getHeightmapType(ModEntities.SKY_TRADER), xPosition, zPosition);
-            BlockPos spawnPos = new BlockPos(xPosition, yPosition, zPosition);
-            if (wanderingTraderSpawnType.isSpawnPositionOk(level, spawnPos, ModEntities.SKY_TRADER)) {
-                spawnPosition = spawnPos;
-                break;
-            }
-        }
-
-        return spawnPosition;
-    }
-
-    private boolean hasEnoughSpace(BlockGetter level, BlockPos spawnPos) {
-        for (BlockPos pos : BlockPos.betweenClosed(spawnPos, spawnPos.offset(1, 2, 1))) {
-            if (!level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()) {
-                return false;
-            }
-        }
-
         return true;
     }
 }
