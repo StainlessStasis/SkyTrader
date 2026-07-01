@@ -1,6 +1,9 @@
 package io.github.stainlessstasis.skytrader.entity;
 
 import io.github.stainlessstasis.skytrader.item.ModItems;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -28,7 +31,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     @Override
     public @NonNull InteractionResult mobInteract(@NonNull Player player, @NonNull InteractionHand hand) {
-        System.out.println("OWNER: "+getOwner());
         if (this.isBaby()) {
             return super.mobInteract(player, hand);
         }
@@ -111,11 +113,19 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     public void addAdditionalSaveData(@NonNull ValueOutput output) {
         super.addAdditionalSaveData(output);
         EntityReference.store(owner, output, "Owner");
+
+        ValueOutput.TypedOutputList<UUID> paidList = output.list("PaidPlayers", UUIDUtil.CODEC);
+        for (UUID uuid : this.paidPlayers) {
+            paidList.add(uuid);
+        }
     }
 
     @Override
     public void readAdditionalSaveData(@NonNull ValueInput input) {
         super.readAdditionalSaveData(input);
         this.owner = EntityReference.read(input, "Owner");
+
+        this.paidPlayers.clear();
+        input.listOrEmpty("PaidPlayers", UUIDUtil.CODEC).forEach(this.paidPlayers::add);
     }
 }
