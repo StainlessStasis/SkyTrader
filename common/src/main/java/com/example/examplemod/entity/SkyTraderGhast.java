@@ -1,6 +1,7 @@
 package com.example.examplemod.entity;
 
 import com.example.examplemod.item.ModItems;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -41,8 +42,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (hasPaid(player) || (hasTicket(player) && tryTakeTicket(player))) {
                 this.doPlayerRide(player);
                 return InteractionResult.SUCCESS;
+            } else {
+                player.sendOverlayMessage(Component.literal("test"));
+                return InteractionResult.FAIL;
             }
         }
+
 
         return InteractionResult.FAIL;
     }

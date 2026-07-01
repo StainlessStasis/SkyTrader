@@ -28,5 +28,6 @@ public class SkyTraderFabricMod implements ModInitializer {
         FabricDefaultAttributeRegistry.register(ModEntities.SKY_TRADER_GHAST, HappyGhast.createAttributes());
 
         ModItems.init();
+        FabricCommands.registerCommands();
     }
 }
