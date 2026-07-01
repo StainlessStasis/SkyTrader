@@ -5,7 +5,7 @@
   "skytrader.no_village_giving_up": "Failed to find village. No refunds!",
   "skytrader.ride_already_started": "This ride has already started.",
   "skytrader.boarding_countdown": "Departing in %s seconds...",
-  "skytrader.village_found": "Village found %s blocks away! Departing in %s...",
+  "skytrader.village_found": "Village found %s blocks away! Beginning takeoff...",
   "skytrader.cruising": "Cruising toward the village...",
   "skytrader.en_route_status": "%s blocks remaining, ETA %s seconds",
   "skytrader.beginning_descent": "Beginning descent...",

@@ -202,6 +202,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (!anyPlayersLeft) {
                 beginReturn();
             } else if (this.stateTicks >= DISMOUNT_GRACE_TICKS) {
+                sendMessageToPassengers(ModConstants.MOD_ID + ".ride_departing", TextColor.WHITE);
                 forceDismountPassengers();
                 beginReturn();
             }
@@ -236,8 +237,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         this.destination = findNearestVillage();
-        this.villageCenter = this.destination;
-        this.landingAttempts = 0;
         if (this.destination == null) {
             this.departureAttempts++;
             if (this.departureAttempts >= MAX_DEPARTURE_ATTEMPTS) {
@@ -255,11 +254,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.villageCenter = this.destination;
         this.landingAttempts = 0;
 
-        double distance = Math.sqrt(this.blockPosition().distToCenterSqr(
+       double distance = Math.sqrt(this.blockPosition().distToCenterSqr(
                 this.destination.getX(), this.getY(), this.destination.getZ()));
-        int etaSeconds = estimateTravelSeconds(distance);
-        sendMessageToPassengers(ModConstants.MOD_ID + ".village_found", TextColor.WHITE, Math.round(distance), etaSeconds);
-
+        sendMessageToPassengers(ModConstants.MOD_ID + ".village_found", TextColor.WHITE, (int)distance);
         setRideState(RideState.TAKEOFF);
         setOwnerRiding();
     }
@@ -270,7 +267,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.returnDirection = new Vec3(Math.cos(angle), 0, Math.sin(angle));
         setRideState(RideState.RETURNING);
         setOwnerRiding();
-        sendMessageToPassengers(ModConstants.MOD_ID + ".ride_departing", TextColor.WHITE);
     }
 
     protected void setOwnerRiding() {
@@ -430,7 +426,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         int terrainY = sampleMaxTerrainHeight(direction, TERRAIN_LOOKAHEAD_DISTANCES);
         float up = computeVerticalInput(terrainY, CRUISE_HOVER_HEIGHT, MAX_VERTICAL_SPEED);
 
-        if (this.stateTicks % 100 == 0) {
+        if (this.stateTicks % 20 == 0) {
             sendMessageToPassengers(ModConstants.MOD_ID + ".en_route_status", TextColor.WHITE, Math.round(horizontalDist), estimateTravelSeconds(horizontalDist));
         }
 
@@ -465,7 +461,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         int terrainY = sampleMaxTerrainHeight(direction, TERRAIN_LOOKAHEAD_DISTANCES);
         float up = computeVerticalInput(terrainY, targetHoverHeight, MAX_VERTICAL_SPEED);
 
-        if (this.stateTicks % 100 == 0) {
+        if (this.stateTicks % 20 == 0) {
             sendMessageToPassengers(ModConstants.MOD_ID + ".en_route_status", TextColor.WHITE, Math.round(horizontalDist), estimateTravelSeconds(horizontalDist));
         }
 
