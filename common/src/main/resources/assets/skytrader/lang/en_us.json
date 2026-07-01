@@ -1,6 +1,6 @@
 {
-  "item.skytrader.ride_ticket": "Ride Ticket",
-  "skytrader.no_ride_ticket": "You need a Ride Ticket to board!",
+  "item.skytrader.skyfare_ticket": "Skyfare Ticket",
+  "skytrader.no_ticket": "You need a Skyfare Ticket to board!",
   "skytrader.no_more_room": "This ride is already full.",
   "skytrader.no_village_retry": "Could not find village nearby, retrying...",
   "skytrader.no_village_giving_up": "Failed to find village. No refunds!",

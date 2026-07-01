@@ -39,7 +39,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final int BOARDING_DELAY_TICKS = 20;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
     protected static final int HOVER_HEIGHT = 20;
-    protected static final float EN_ROUTE_SPEED = 0.4f;
+    protected static final float EN_ROUTE_SPEED = 2f;
     protected static final double EN_ROUTE_ARRIVE_DISTANCE = 6d;
     protected static final float TURN_SPEED = 0.25f;
     protected static final int LANDING_HOVER_HEIGHT = 1;
@@ -143,7 +143,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
                 return InteractionResult.SUCCESS;
             } else {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".no_ride_ticket").withColor(TextColor.RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".no_ticket").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
         }
@@ -460,7 +460,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     public boolean hasTicket(@NonNull Player player) {
-        return player.getInventory().hasAnyOf(Set.of(ModItems.RIDE_TICKET.get()));
+        return player.getInventory().hasAnyOf(Set.of(ModItems.SKYFARE_TICKET.get()));
     }
 
     protected boolean tryTakeTicket(Player player) {
@@ -479,7 +479,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected ItemStack findTicket(Player player) {
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
-            if (stack.is(ModItems.RIDE_TICKET.get())) {
+            if (stack.is(ModItems.SKYFARE_TICKET.get())) {
                 return stack;
             }
         }

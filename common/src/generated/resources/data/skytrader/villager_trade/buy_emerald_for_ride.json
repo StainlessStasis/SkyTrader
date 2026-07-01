@@ -1,6 +1,6 @@
 {
   "gives": {
-    "id": "skytrader:ride_ticket"
+    "id": "skytrader:skyfare_ticket"
   },
   "max_uses": 99.0,
   "wants": {

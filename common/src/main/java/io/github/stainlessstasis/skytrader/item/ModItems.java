@@ -5,8 +5,12 @@ import net.minecraft.world.item.Item;
 import java.util.function.Supplier;
 
 public class ModItems {
-    public static final Supplier<RideTicketItem> RIDE_TICKET = Services.REGISTRY.registerItem("ride_ticket",
-            (key) -> new RideTicketItem(new Item.Properties().setId(key))
+    public static final Supplier<SkyfareTicketItem> SKYFARE_TICKET = Services.REGISTRY.registerItem("skyfare_ticket",
+            (key) -> new SkyfareTicketItem(
+                    new Item.Properties()
+                            .setId(key)
+                            .stacksTo(16)
+            )
     );
 
     public static void init() {}

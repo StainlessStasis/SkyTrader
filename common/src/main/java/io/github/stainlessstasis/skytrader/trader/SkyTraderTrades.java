@@ -62,7 +62,7 @@ public class SkyTraderTrades {
         // ride payment
         context.register(BUY_EMERALD_FOR_RIDE, new VillagerTrade(
                 new TradeCost(Items.EMERALD, 12),
-                new ItemStackTemplate(ModItems.RIDE_TICKET.get()),
+                new ItemStackTemplate(ModItems.SKYFARE_TICKET.get()),
                 99, 1, 0, Optional.empty(), List.of()));
 
         // always offered
