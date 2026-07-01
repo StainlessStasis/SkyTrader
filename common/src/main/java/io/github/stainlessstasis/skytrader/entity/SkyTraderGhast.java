@@ -19,6 +19,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
+import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -142,8 +143,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         if (!this.rideState.isStartOfRide()) {
-            if (!hasPaid(player) || this.rideState.isEndOfRide()) {
+            if (!hasPaid(player)) {
                 player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_started").withColor(TextColor.RED));
+                return InteractionResult.FAIL;
+            }
+            if (this.rideState.isEndOfRide()) {
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_ended").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
         }
@@ -648,7 +653,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         super.removePassenger(passenger);
         if (passenger instanceof LivingEntity living) {
             living.addEffect(new MobEffectInstance(
-                    MobEffects.SLOW_FALLING, 60, 0, true, true, true
+                    MobEffects.SLOW_FALLING, 100, 0, true, true, true
             ));
         }
     }
@@ -661,6 +666,39 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                         ModConstants.MOD_ID + ".boarding_countdown", secondsRemaining));
             }
         }
+    }
+
+    public void turnHostile(@Nullable LivingEntity target) {
+        if (!(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        if (isLeashed()) {
+            dropLeash();
+        }
+
+        forceDismountPassengers();
+        setRideState(RideState.IDLE);
+
+        Ghast ghast = EntityTypes.GHAST.create(serverLevel, EntitySpawnReason.CONVERSION);
+        if (ghast != null) {
+            Vec3 pos = new Vec3(getX(), getY(), getZ());
+            float xrot = getXRot();
+            float yrot = getYRot();
+            ghast.setOldPosAndRot(pos, yrot, xrot);
+            ghast.setPos(pos);
+            ghast.setXRot(xrot);
+            ghast.setYRot(yrot);
+            ghast.setDeltaMovement(getDeltaMovement());
+
+            if (target != null) {
+                ghast.setTarget(target);
+            }
+
+            serverLevel.addFreshEntity(ghast);
+        }
+
+        discard();
     }
 
     public void setOwner(LivingEntity owner) {

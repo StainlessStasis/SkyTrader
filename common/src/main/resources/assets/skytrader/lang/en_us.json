@@ -1,9 +1,10 @@
 {
   "skytrader.no_ticket": "You need a Skyfare Ticket to board!",
   "skytrader.no_more_room": "This ride is already full.",
+  "skytrader.ride_already_started": "This ride has already started.",
+  "skytrader.ride_already_ended": "This ride has already ended.",
   "skytrader.no_village_retry": "Could not find village nearby, retrying...",
   "skytrader.no_village_giving_up": "Failed to find village. No refunds!",
-  "skytrader.ride_already_started": "This ride has already started.",
   "skytrader.boarding_countdown": "Departing in %s seconds...",
   "skytrader.village_found": "Village found %s blocks away! Beginning takeoff...",
   "skytrader.cruising": "Cruising toward the village...",

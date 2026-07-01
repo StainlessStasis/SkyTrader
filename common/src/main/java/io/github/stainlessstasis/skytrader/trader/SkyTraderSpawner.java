@@ -139,6 +139,7 @@ public class SkyTraderSpawner implements CustomSpawner {
                 ghast.setOwner(trader);
                 ghast.setLeashedTo(trader, true);
                 ghast.equipItemIfPossible(level, new ItemStack(Items.HARNESS.white()));
+                trader.setGhast(ghast);
             }
         }
     }

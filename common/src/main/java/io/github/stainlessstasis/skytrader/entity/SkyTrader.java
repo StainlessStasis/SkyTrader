@@ -4,10 +4,12 @@ import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.monster.Vex;
@@ -19,22 +21,50 @@ import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
 
 public class SkyTrader extends WanderingTrader {
+    protected @Nullable EntityReference<LivingEntity> ghast;
+
     public SkyTrader(EntityType<? extends WanderingTrader> type, Level level) {
         super(type, level);
+    }
+
+    public void setGhast(SkyTraderGhast ghast) {
+        this.ghast = EntityReference.of(ghast);
+    }
+
+    public @Nullable SkyTraderGhast getGhast() {
+        var entity = EntityReference.getLivingEntity(getGhastReference(), this.level());
+        if (entity instanceof SkyTraderGhast ghast) return ghast;
+        return null;
+    }
+
+    public @Nullable EntityReference<LivingEntity> getGhastReference() {
+        return ghast;
+    }
+
+    @Override
+    public void die(@NonNull DamageSource damageSource) {
+        super.die(damageSource);
+
+        if (damageSource.getEntity() instanceof Player player) {
+            SkyTraderGhast ghast = getGhast();
+            if (ghast != null && !ghast.isRemoved()) {
+                ghast.turnHostile(player);
+            }
+        }
     }
 
     @Override
@@ -97,7 +127,6 @@ public class SkyTrader extends WanderingTrader {
                             }
                         }
 
-                        // fallback
                         return !skyTrader.onGround() && skyTrader.getDeltaMovement().y < -0.1 && skyTrader.fallDistance > 0.5;
                     }
             );
@@ -142,5 +171,17 @@ public class SkyTrader extends WanderingTrader {
         protected @Nullable BlockPos getWanderTarget() {
             return ((WanderingTraderInvoker)trader).invokeGetWanderTarget();
         }
+    }
+
+    @Override
+    protected void addAdditionalSaveData(@NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        EntityReference.store(ghast, output, "Ghast");
+    }
+
+    @Override
+    protected void readAdditionalSaveData(@NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.ghast = EntityReference.read(input, "Ghast");
     }
 }
