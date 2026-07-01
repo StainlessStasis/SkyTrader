@@ -62,6 +62,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final int ARRIVING_TIMEOUT_TICKS = 200;
     protected static final int MAX_LANDING_ATTEMPTS = 3;
     protected static final int LANDING_RETRY_RADIUS = 16;
+    protected static final double SPAWN_JUMP_OFF_HEIGHT = 20d;
 
     protected static final int DISMOUNT_GRACE_TICKS = 300;
     protected static final int RETURN_FLIGHT_TICKS = 600;
@@ -247,9 +248,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.spawnDescent = false;
         setRideState(RideState.IDLE);
 
-        if (getOwner() instanceof SkyTrader trader && trader.isPassenger() && trader.getVehicle() == this) {
+        if (getOwner() instanceof SkyTrader trader && !trader.isRemoved()) {
             BlockPos landingSpot = this.destination != null ? this.destination : this.blockPosition();
-            trader.stopRiding();
+            if (trader.isPassenger() && trader.getVehicle() == this) {
+                trader.stopRiding();
+            }
             this.setLeashedTo(trader, true);
             trader.setDespawnDelay(48000);
             trader.setWanderTarget(landingSpot);
@@ -282,7 +285,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.villageCenter = this.destination;
         this.landingAttempts = 0;
 
-       double distance = Math.sqrt(this.blockPosition().distToCenterSqr(
+        double distance = Math.sqrt(this.blockPosition().distToCenterSqr(
                 this.destination.getX(), this.getY(), this.destination.getZ()));
         sendMessageToPassengers(ModConstants.MOD_ID + ".village_found", TextColor.WHITE, (int)distance);
         setRideState(RideState.TAKEOFF);
@@ -505,6 +508,15 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 sendMessageToPassengers(ModConstants.MOD_ID + ".arrived", TextColor.WHITE);
             }
             return Vec3.ZERO;
+        }
+
+        if (this.spawnDescent && getOwner() instanceof SkyTrader trader
+                && trader.isPassenger() && trader.getVehicle() == this) {
+            int jumpTerrainY = terrainHeightAt(this.blockPosition());
+            double heightAboveTarget = this.getY() - (jumpTerrainY + LANDING_HOVER_HEIGHT);
+            if (heightAboveTarget <= SPAWN_JUMP_OFF_HEIGHT) {
+                trader.stopRiding();
+            }
         }
 
         if (this.stateTicks >= ARRIVING_TIMEOUT_TICKS) {
