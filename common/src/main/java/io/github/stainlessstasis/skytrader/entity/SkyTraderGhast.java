@@ -1,18 +1,25 @@
 package io.github.stainlessstasis.skytrader.entity;
 
+import com.mojang.serialization.Codec;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.item.ModItems;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -26,11 +33,17 @@ import java.util.UUID;
 public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
     protected static final int BOARDING_DELAY_TICKS = 100;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
+    protected static final int VILLAGE_SEARCH_RADIUS = 1024;
+    private static final int HOVER_HEIGHT = 20;
+    private static final double EN_ROUTE_ARRIVE_DISTANCE = 6d;
+    private static final float TURN_SPEED = 0.08f;
+
 
     protected @Nullable EntityReference<LivingEntity> owner;
     protected final Set<UUID> paidPlayers = new HashSet<>();
     protected RideState rideState = RideState.IDLE;
     protected int stateTicks = 0;
+    protected BlockPos destination;
 
     public SkyTraderGhast(EntityType<? extends HappyGhast> type, Level level) {
         super(type, level);
@@ -39,7 +52,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     public enum RideState implements StringRepresentable {
         IDLE("idle"),
         BOARDING("boarding"),
-        DEPARTING("departing"),
         EN_ROUTE("en_route"),
         ARRIVING("arriving"),
         ARRIVED("arrived");
@@ -49,6 +61,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         RideState(String name) {
             this.name = name;
         }
+
+        public static final Codec<RideState> CODEC = StringRepresentable.fromEnum(RideState::values);
 
         @Override
         public @NonNull String getSerializedName() {
@@ -68,11 +82,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (interactionResult.consumesAction()) {
                 return interactionResult;
             }
-        }
-
-        // hurry up yall no late boarding
-        if (this.rideState != RideState.IDLE && this.rideState != RideState.BOARDING) {
-            return InteractionResult.FAIL;
         }
 
         if (this.isWearingBodyArmor() && !player.isSecondaryUseActive()) {
@@ -113,9 +122,17 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.stateTicks++;
 
         if (this.rideState == RideState.BOARDING) {
+            if (this.stateTicks%20 == 0) {
+                sendBoardingCountdown();
+            }
+
             if (this.stateTicks >= BOARDING_DELAY_TICKS) {
                 beginDeparture();
             }
+        }
+
+        if (this.rideState == RideState.EN_ROUTE) {
+            travel(Vec3.ZERO);
         }
     }
 
@@ -125,20 +142,77 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return;
         }
 
-        System.out.println("BEGIN DEPARTURE");
+        this.destination = findNearestVillage();
+        if (this.destination == null) {
+            // no village found - reset back to boarding and try again
+            this.rideState = RideState.BOARDING;
+            resetStateTicks();
+            return;
+        }
 
         trader.startRiding(this);
-        this.rideState = RideState.DEPARTING;
+        this.rideState = RideState.EN_ROUTE;
         resetStateTicks();
+    }
+
+    protected @Nullable BlockPos findNearestVillage() {
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return null;
+        }
+
+        PoiManager poiManager = serverLevel.getPoiManager();
+        return poiManager.find(
+                poiType -> poiType.is(PoiTypes.MEETING),
+                pos -> true,
+                this.blockPosition(),
+                VILLAGE_SEARCH_RADIUS,
+                PoiManager.Occupancy.ANY
+        ).orElse(null);
+    }
+
+    @Override
+    public void travel(@NonNull Vec3 input) {
+        if (this.level().isClientSide() || this.rideState != RideState.EN_ROUTE) {
+            super.travel(input);
+            return;
+        }
+        super.travel(computeRouteInput());
+    }
+
+    private Vec3 computeRouteInput() {
+        if (this.destination == null) {
+            return Vec3.ZERO;
+        }
+
+        double dx = this.destination.getX() + 0.5 - this.getX();
+        double dz = this.destination.getZ() + 0.5 - this.getZ();
+        double horizontalDist = Math.sqrt(dx * dx + dz * dz);
+
+        if (horizontalDist < EN_ROUTE_ARRIVE_DISTANCE) {
+            this.rideState = RideState.ARRIVING;
+            resetStateTicks();
+            return Vec3.ZERO;
+        }
+
+        // steer yaw toward destination
+        float targetYaw = (float)(Mth.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0F;
+        float diff = Mth.wrapDegrees(targetYaw - this.getYRot());
+        float newYaw = this.getYRot() + diff * TURN_SPEED;
+        this.setYRot(newYaw);
+        this.yRotO = this.yBodyRot = this.yHeadRot = newYaw;
+
+        // maintain constant altitude above terrain at current position
+        int terrainY = this.level().getHeight(Heightmap.Types.MOTION_BLOCKING,
+                this.blockPosition().getX(), this.blockPosition().getZ());
+        double targetY = terrainY + HOVER_HEIGHT;
+        double dy = targetY - this.getY();
+        float up = (float) Mth.clamp(dy * 0.1, -1, 1);
+
+        return new Vec3(0, up, 1);
     }
 
     @Override
     public @Nullable LivingEntity getControllingPassenger() {
-        for (Entity passenger : this.getPassengers()) {
-            if (passenger instanceof SkyTrader trader) {
-                return trader;
-            }
-        }
         return null;
     }
 
@@ -215,6 +289,16 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return playerRiders < MAX_NON_SKY_TRADER_PASSENGERS;
     }
 
+    protected void sendBoardingCountdown() {
+        int secondsRemaining = (BOARDING_DELAY_TICKS - this.stateTicks) / 20;
+        for (Entity passenger : this.getPassengers()) {
+            if (passenger instanceof Player player) {
+                player.sendOverlayMessage(Component.translatable(
+                        ModConstants.MOD_ID + ".boarding_countdown", secondsRemaining));
+            }
+        }
+    }
+
     public void setOwner(LivingEntity owner) {
         this.owner = EntityReference.of(owner);
     }
@@ -240,6 +324,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         output.putInt("StateTicks", stateTicks);
+        output.store("RideState", RideState.CODEC, this.rideState);
+        if (this.destination != null) {
+            output.store("Destination", BlockPos.CODEC, this.destination);
+        }
     }
 
     @Override
@@ -251,5 +339,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         input.listOrEmpty("PaidPlayers", UUIDUtil.CODEC).forEach(this.paidPlayers::add);
 
         stateTicks = input.getIntOr("StateTicks", 0);
+        this.rideState = input.read("RideState", RideState.CODEC).orElse(RideState.IDLE);
+        this.destination = input.read("Destination", BlockPos.CODEC).orElse(null);
     }
 }
