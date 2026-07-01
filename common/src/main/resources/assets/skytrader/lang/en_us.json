@@ -2,6 +2,8 @@
   "item.skytrader.ride_ticket": "Ride Ticket",
   "skytrader.no_ride_ticket": "You need a Ride Ticket to board!",
   "skytrader.no_more_room": "This ride is already full.",
+  "skytrader.no_village_retry": "Could not find village nearby, retrying...",
+  "skytrader.no_village_giving_up": "Failed to find village. No refunds!",
   "skytrader.ride_already_started": "This ride has already started.",
   "skytrader.boarding_countdown": "Departing in %s seconds...",
   "entity.skytrader.sky_trader": "Sky Trader",
