@@ -14,6 +14,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.player.Player;
@@ -504,8 +506,18 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return playerRiders < MAX_NON_SKY_TRADER_PASSENGERS;
     }
 
+    @Override
+    protected void removePassenger(@NonNull Entity passenger) {
+        super.removePassenger(passenger);
+        if (passenger instanceof LivingEntity living) {
+            living.addEffect(new MobEffectInstance(
+                    MobEffects.SLOW_FALLING, 30, 0, true, true, true
+            ));
+        }
+    }
+
     protected void sendBoardingCountdown() {
-        int secondsRemaining = 1 + (BOARDING_DELAY_TICKS - this.stateTicks) / 20;
+        int secondsRemaining = (BOARDING_DELAY_TICKS - this.stateTicks) / 20;
         for (Entity passenger : this.getPassengers()) {
             if (passenger instanceof Player player) {
                 player.sendOverlayMessage(Component.translatable(
