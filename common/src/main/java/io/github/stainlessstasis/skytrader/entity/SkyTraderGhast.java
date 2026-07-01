@@ -112,9 +112,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         ItemStack itemStack = player.getItemInHand(hand);
-        if (itemStack.is(Items.LEAD)) {
-            return InteractionResult.FAIL;
-        }
         if (!itemStack.isEmpty()) {
             InteractionResult interactionResult = itemStack.interactLivingEntity(player, this, hand);
             if (interactionResult.consumesAction()) {
@@ -538,6 +535,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     @Override
     public @Nullable EntityReference<LivingEntity> getOwnerReference() {
         return owner;
+    }
+
+    @Override
+    public boolean canBeLeashed() {
+        return false;
     }
 
     @Override
