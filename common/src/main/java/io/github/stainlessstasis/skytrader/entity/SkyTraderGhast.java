@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
-    protected static final int VILLAGE_SEARCH_RADIUS = 200;
+    protected static final int VILLAGE_SEARCH_RADIUS = 1536;
     protected static final int BOARDING_DELAY_TICKS = 100;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
     protected static final int HOVER_HEIGHT = 20;
@@ -182,7 +182,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (!anyPlayersLeft) {
                 beginReturn();
             } else if (this.stateTicks >= DISMOUNT_GRACE_TICKS) {
-                forceDismountPlayers();
+                forceDismountPassengers();
                 beginReturn();
             }
         }
@@ -219,8 +219,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             this.departureAttempts++;
             if (this.departureAttempts >= MAX_DEPARTURE_ATTEMPTS) {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".no_village_giving_up");
-                forceDismountPlayers();
                 beginReturn();
+                forceDismountPassengers(); // for some reason if this is before beginReturn() the trader wont ride the ghast
             } else {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".no_village_retry");
                 setRideState(RideState.BOARDING);
@@ -229,16 +229,16 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         this.departureAttempts = 0;
-        setOwnerRiding();
         setRideState(RideState.EN_ROUTE);
+        setOwnerRiding();
     }
 
     protected void beginReturn() {
-        setOwnerRiding();
         this.paidPlayers.clear();
         double angle = this.random.nextDouble() * Math.PI * 2;
         this.returnDirection = new Vec3(Math.cos(angle), 0, Math.sin(angle));
         setRideState(RideState.RETURNING);
+        setOwnerRiding();
     }
 
     protected void setOwnerRiding() {
@@ -249,7 +249,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         if (trader.isPassenger()) {
             return;
         }
-        trader.startRiding(this);
+
+        trader.startRiding(this, true, true);
     }
 
     protected @Nullable BlockPos findNearestVillage() {
@@ -410,7 +411,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return new Vec3(0, up, RETURN_SPEED);
     }
 
-    protected void forceDismountPlayers() {
+    protected void forceDismountPassengers() {
         for (Entity passenger : List.copyOf(this.getPassengers())) {
             if (!(passenger instanceof SkyTrader)) {
                 passenger.stopRiding();
@@ -504,7 +505,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected void sendBoardingCountdown() {
-        int secondsRemaining = (BOARDING_DELAY_TICKS - this.stateTicks) / 20;
+        int secondsRemaining = 1 + (BOARDING_DELAY_TICKS - this.stateTicks) / 20;
         for (Entity passenger : this.getPassengers()) {
             if (passenger instanceof Player player) {
                 player.sendOverlayMessage(Component.translatable(
