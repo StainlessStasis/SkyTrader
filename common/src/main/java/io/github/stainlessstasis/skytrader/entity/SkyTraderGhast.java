@@ -17,12 +17,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -36,12 +36,12 @@ import java.util.UUID;
 
 public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
     protected static final int VILLAGE_SEARCH_RADIUS = 1536;
-    protected static final int BOARDING_DELAY_TICKS = 100;
+    protected static final int BOARDING_DELAY_TICKS = 20;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
     protected static final int HOVER_HEIGHT = 20;
     protected static final float EN_ROUTE_SPEED = 0.4f;
     protected static final double EN_ROUTE_ARRIVE_DISTANCE = 6d;
-    protected static final float TURN_SPEED = 0.12f;
+    protected static final float TURN_SPEED = 0.25f;
     protected static final int LANDING_HOVER_HEIGHT = 1;
     protected static final double LANDING_ARRIVED_THRESHOLD = 2d;
     protected static final float DESCEND_SPEED = 0.3f;
@@ -63,6 +63,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     public SkyTraderGhast(EntityType<? extends HappyGhast> type, Level level) {
         super(type, level);
+        this.lookControl = new SkyTraderGhastLookControl();
     }
 
     public enum RideState implements StringRepresentable {
@@ -201,6 +202,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected void applyGoalsForState(RideState newState) {
         if (newState.hasMovement()) {
             this.goalSelector.removeAllGoals(goal -> true);
+            this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0);
         } else if (this.goalSelector.getAvailableGoals().isEmpty()) {
             this.registerGoals();
         }
@@ -546,12 +548,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     public void addAdditionalSaveData(@NonNull ValueOutput output) {
         super.addAdditionalSaveData(output);
         EntityReference.store(owner, output, "Owner");
-
         ValueOutput.TypedOutputList<UUID> paidList = output.list("PaidPlayers", UUIDUtil.CODEC);
         for (UUID uuid : this.paidPlayers) {
             paidList.add(uuid);
         }
-
         output.putInt("StateTicks", stateTicks);
         output.putInt("DepartureAttempts", departureAttempts);
         output.store("RideState", RideState.CODEC, this.rideState);
@@ -567,15 +567,28 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     public void readAdditionalSaveData(@NonNull ValueInput input) {
         super.readAdditionalSaveData(input);
         this.owner = EntityReference.read(input, "Owner");
-
         this.paidPlayers.clear();
         input.listOrEmpty("PaidPlayers", UUIDUtil.CODEC).forEach(this.paidPlayers::add);
-
         stateTicks = input.getIntOr("StateTicks", 0);
         departureAttempts = input.getIntOr("DepartureAttempts", 0);
         this.rideState = input.read("RideState", RideState.CODEC).orElse(RideState.IDLE);
         this.destination = input.read("Destination", BlockPos.CODEC).orElse(null);
         this.returnDirection = input.read("ReturnDirection", Vec3.CODEC).orElse(null);
         applyGoalsForState(this.rideState);
+    }
+
+    protected class SkyTraderGhastLookControl extends LookControl {
+        SkyTraderGhastLookControl() {
+            super(SkyTraderGhast.this);
+        }
+
+        @Override
+        public void tick() {
+            if (SkyTraderGhast.this.rideState.hasMovement()) {
+                // steerYawToward() in travel() already sets rotation stuff
+                return;
+            }
+            super.tick();
+        }
     }
 }
