@@ -12,6 +12,10 @@ neoForge {
     }
 }
 
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+}
+
 dependencies {
     // Fabric and NeoForge both bundle Fabric Mixin, so it is safe to use it in common
     // If you need to update, check what version they are using to see what is compatible
@@ -36,7 +40,10 @@ configurations {
 
 artifacts {
     commonJava sourceSets.main.java.sourceDirectories.singleFile
-    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+//    commonResources sourceSets.main.resources.sourceDirectories.singleFile
+    sourceSets.main.resources.srcDirs.each { dir ->
+        commonResources dir
+    }
 }
 
 // Implement mcgradleconventions loader attribute
