@@ -1,12 +1,11 @@
 {
   "gives": {
-    "count": 4,
-    "id": "minecraft:firework_rocket"
+    "count": 8,
+    "id": "minecraft:snowball"
   },
   "max_uses": 12.0,
   "reputation_discount": 0.05,
   "wants": {
-    "count": 6.0,
     "id": "minecraft:emerald"
   }
 }

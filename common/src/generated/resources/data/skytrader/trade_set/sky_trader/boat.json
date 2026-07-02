@@ -1,0 +1,19 @@
+{
+  "amount": {
+    "type": "minecraft:uniform",
+    "max": 1.0,
+    "min": 0.0
+  },
+  "trades": [
+    "skytrader:sell_oak_boat",
+    "skytrader:sell_spruce_boat",
+    "skytrader:sell_birch_boat",
+    "skytrader:sell_jungle_boat",
+    "skytrader:sell_acacia_boat",
+    "skytrader:sell_dark_oak_boat",
+    "skytrader:sell_mangrove_boat",
+    "skytrader:sell_cherry_boat",
+    "skytrader:sell_pale_oak_boat",
+    "skytrader:sell_bamboo_raft"
+  ]
+}

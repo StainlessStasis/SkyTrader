@@ -1,13 +1,12 @@
 {
   "amount": {
     "type": "minecraft:uniform",
-    "max": 4.0,
+    "max": 3.0,
     "min": 2.0
   },
   "trades": [
     "skytrader:sell_ghast_tear",
     "skytrader:sell_fire_charge",
-    "skytrader:sell_blaze_rod",
     "skytrader:sell_magma_cream",
     "skytrader:sell_slime_ball"
   ]

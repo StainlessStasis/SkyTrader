@@ -6,6 +6,8 @@
   },
   "trades": [
     "skytrader:sell_ender_pearl",
-    "skytrader:sell_nautilus_shell"
+    "skytrader:sell_nautilus_shell",
+    "skytrader:sell_heart_of_the_sea",
+    "skytrader:sell_enchanted_golden_apple"
   ]
 }

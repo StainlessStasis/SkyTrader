@@ -3,7 +3,7 @@
   "trades": [
     "skytrader:sell_saddle",
     "skytrader:sell_lead",
-    "skytrader:sell_firework_rocket",
-    "skytrader:sell_name_tag"
+    "skytrader:sell_name_tag",
+    "skytrader:sell_hay_block"
   ]
 }

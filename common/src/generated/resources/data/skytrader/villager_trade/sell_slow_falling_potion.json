@@ -1,0 +1,17 @@
+{
+  "given_item_modifiers": [
+    {
+      "function": "minecraft:set_potion",
+      "id": "minecraft:slow_falling"
+    }
+  ],
+  "gives": {
+    "id": "minecraft:potion"
+  },
+  "max_uses": 16.0,
+  "reputation_discount": 0.05,
+  "wants": {
+    "count": 7.0,
+    "id": "minecraft:emerald"
+  }
+}

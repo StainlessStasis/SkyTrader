@@ -1,12 +1,12 @@
 {
   "gives": {
-    "id": "skytrader:skyfare_ticket"
+    "id": "minecraft:birch_boat"
   },
-  "max_uses": 16.0,
+  "max_uses": 8.0,
   "reputation_discount": 0.05,
   "wants": {
-    "count": 12.0,
+    "count": 5.0,
     "id": "minecraft:emerald"
   },
-  "xp": 10.0
+  "xp": 5.0
 }
