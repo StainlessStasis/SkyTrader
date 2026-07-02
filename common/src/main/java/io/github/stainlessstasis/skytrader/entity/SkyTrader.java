@@ -1,16 +1,15 @@
 package io.github.stainlessstasis.skytrader.entity;
 
 import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
+import io.github.stainlessstasis.skytrader.trader.SkyTraderSpawner;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityReference;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.monster.Zoglin;
@@ -26,6 +25,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -33,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.EnumSet;
-import java.util.Objects;
 
 public class SkyTrader extends WanderingTrader {
     protected @Nullable EntityReference<LivingEntity> ghast;
@@ -93,6 +92,16 @@ public class SkyTrader extends WanderingTrader {
             discard();
             ghast.discard();
         }
+    }
+
+    @Override
+    public @Nullable SpawnGroupData finalizeSpawn(
+            @NonNull ServerLevelAccessor level, @NonNull DifficultyInstance difficulty, @NonNull EntitySpawnReason spawnReason, @Nullable SpawnGroupData groupData)
+    {
+        if (spawnReason == EntitySpawnReason.COMMAND) {
+            setDespawnTicks(SkyTraderSpawner.DESPAWN_TICKS);
+        }
+        return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
     }
 
     @Override
