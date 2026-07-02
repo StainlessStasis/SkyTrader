@@ -1,16 +1,15 @@
 package io.github.stainlessstasis.skytrader.entity;
 
 import com.mojang.serialization.Codec;
-import io.github.stainlessstasis.ModGameRules;
 import io.github.stainlessstasis.skytrader.ModConstants;
+import io.github.stainlessstasis.skytrader.ModGameRules;
+import io.github.stainlessstasis.skytrader.VillageLocator;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.StructureTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -31,13 +30,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
-    protected static final int VILLAGE_SEARCH_RADIUS = 1536;
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
     protected static final float MAX_VERTICAL_SPEED = 0.5f;
     protected static final float TURN_SPEED = 0.25f;
@@ -87,6 +83,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected int landingAttempts = 0;
     protected @Nullable BlockPos villageCenter;
     protected boolean spawnDescent = false;
+    protected @Nullable CompletableFuture<BlockPos> pendingVillageSearch = null;
 
     public SkyTraderGhast(EntityType<? extends HappyGhast> type, Level level) {
         super(type, level);
@@ -96,6 +93,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     public enum RideState implements StringRepresentable {
         IDLE("idle", false, true, false),
         BOARDING("boarding", false, true, false),
+        SEARCHING("searching", false, false, false),
         TAKEOFF("takeoff", true, false, false),
         CRUISE("cruise", true, false, false),
         GLIDING("gliding", true, false, false),
@@ -278,7 +276,41 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return;
         }
 
-        this.destination = findNearestVillage();
+        if (this.pendingVillageSearch != null) {
+            return;
+        }
+
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        setRideState(RideState.SEARCHING);
+
+        BlockPos searchOrigin = this.blockPosition();
+        this.pendingVillageSearch = VillageLocator.findNearestVillageStructureAsync(
+                serverLevel, searchOrigin, VillageLocator.SEARCH_RADIUS);
+
+        this.pendingVillageSearch.whenCompleteAsync((structureCenter, throwable) ->
+                serverLevel.getServer().execute(() -> {
+                    this.pendingVillageSearch = null;
+                    if (this.isRemoved()) {
+                        return;
+                    }
+                    if (throwable != null) {
+                        ModConstants.LOG.error(Arrays.toString(throwable.getStackTrace()));
+                        handleVillageSearchResult(null, serverLevel);
+                        return;
+                    }
+                    handleVillageSearchResult(structureCenter, serverLevel);
+                })
+        );
+    }
+
+    protected void handleVillageSearchResult(@Nullable BlockPos structureCenter, ServerLevel serverLevel) {
+        this.destination = structureCenter != null
+                ? VillageLocator.resolveSurfacePosition(serverLevel, structureCenter)
+                : null;
+
         if (this.destination == null) {
             this.departureAttempts++;
             if (this.departureAttempts >= MAX_DEPARTURE_ATTEMPTS) {
@@ -323,50 +355,6 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         trader.startRiding(this, true, true);
     }
 
-    protected @Nullable BlockPos findNearestVillage() {
-        if (!(this.level() instanceof ServerLevel serverLevel)) {
-            return null;
-        }
-
-        var structureRegistry = serverLevel.registryAccess().lookupOrThrow(Registries.STRUCTURE);
-        var villageTag = structureRegistry.get(StructureTags.VILLAGE);
-        if (villageTag.isEmpty()) {
-            return null;
-        }
-
-        var closestVillage = serverLevel.getChunkSource().getGenerator().findNearestMapStructure(
-                serverLevel,
-                villageTag.get(),
-                this.blockPosition(),
-                VILLAGE_SEARCH_RADIUS / 16,
-                false
-        );
-
-        if (closestVillage == null) {
-            return null;
-        }
-
-        BlockPos structureCenter = closestVillage.getFirst();
-
-        int surfaceY = serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, structureCenter.getX(), structureCenter.getZ());
-        if (surfaceY <= serverLevel.getMinY()) {
-            var randomState = serverLevel.getChunkSource().randomState();
-            surfaceY = serverLevel.getChunkSource().getGenerator().getBaseHeight(
-                    structureCenter.getX(),
-                    structureCenter.getZ(),
-                    Heightmap.Types.WORLD_SURFACE,
-                    serverLevel,
-                    randomState
-            );
-        }
-
-        if (surfaceY <= serverLevel.getMinY()) {
-            surfaceY = serverLevel.getSeaLevel();
-        }
-
-        return new BlockPos(structureCenter.getX(), surfaceY, structureCenter.getZ());
-    }
-
     @Override
     public void travel(@NonNull Vec3 input) {
         if (this.level().isClientSide()) {
@@ -378,7 +366,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             case CRUISE -> super.travel(computeCruiseInput());
             case GLIDING -> super.travel(computeGlidingInput());
             case ARRIVING -> super.travel(computeArrivingInput());
-            case ARRIVED -> {}
+            case ARRIVED, SEARCHING -> {}
             case RETURNING -> super.travel(computeReturnInput());
             default -> super.travel(input);
         }
@@ -824,6 +812,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.departureAttempts = input.getIntOr("DepartureAttempts", 0);
         this.totalBoardingTime = input.getIntOr("TotalBoardingTime", 0);
         this.rideState = input.read("RideState", RideState.CODEC).orElse(RideState.IDLE);
+        if (this.rideState == RideState.SEARCHING) {
+            this.rideState = RideState.BOARDING;
+        }
         this.destination = input.read("Destination", BlockPos.CODEC).orElse(null);
         this.villageCenter = input.read("VillageCenter", BlockPos.CODEC).orElse(null);
         this.returnDirection = input.read("ReturnDirection", Vec3.CODEC).orElse(null);

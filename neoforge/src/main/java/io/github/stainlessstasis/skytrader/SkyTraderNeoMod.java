@@ -1,6 +1,5 @@
 package io.github.stainlessstasis.skytrader;
 
-import io.github.stainlessstasis.ModGameRules;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;

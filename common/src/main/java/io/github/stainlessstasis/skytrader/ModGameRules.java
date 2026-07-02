@@ -1,4 +1,4 @@
-package io.github.stainlessstasis;
+package io.github.stainlessstasis.skytrader;
 
 import io.github.stainlessstasis.skytrader.platform.Services;
 import net.minecraft.world.level.gamerules.*;

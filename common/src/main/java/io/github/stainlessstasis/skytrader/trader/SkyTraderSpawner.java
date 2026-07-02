@@ -2,7 +2,7 @@ package io.github.stainlessstasis.skytrader.trader;
 
 import java.util.Optional;
 
-import io.github.stainlessstasis.ModGameRules;
+import io.github.stainlessstasis.skytrader.ModGameRules;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
