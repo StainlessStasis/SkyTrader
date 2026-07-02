@@ -1,5 +1,6 @@
 {
   "skytrader.no_ticket": "You need a Skyfare Ticket to board!",
+  "skytrader.still_arriving": "This ride is still landing. Wait for it to arrive.",
   "skytrader.no_more_room": "This ride is already full.",
   "skytrader.ride_already_started": "This ride has already started.",
   "skytrader.ride_already_ended": "This ride has already ended.",
