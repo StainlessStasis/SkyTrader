@@ -214,22 +214,22 @@ public class SkyTraderTrades {
 
     private static List<ResourceKey<VillagerTrade>> registerHarnessTrades(BootstrapContext<VillagerTrade> context) {
         return List.of(
-                registerHarness(context, "sell_white_harness", Items.HARNESS.white()),
-                registerHarness(context, "sell_orange_harness", Items.HARNESS.orange()),
-                registerHarness(context, "sell_magenta_harness", Items.HARNESS.magenta()),
-                registerHarness(context, "sell_light_blue_harness", Items.HARNESS.lightBlue()),
-                registerHarness(context, "sell_yellow_harness", Items.HARNESS.yellow()),
-                registerHarness(context, "sell_lime_harness", Items.HARNESS.lime()),
-                registerHarness(context, "sell_pink_harness", Items.HARNESS.pink()),
-                registerHarness(context, "sell_gray_harness", Items.HARNESS.gray()),
-                registerHarness(context, "sell_light_gray_harness", Items.HARNESS.lightGray()),
-                registerHarness(context, "sell_cyan_harness", Items.HARNESS.cyan()),
-                registerHarness(context, "sell_purple_harness", Items.HARNESS.purple()),
-                registerHarness(context, "sell_blue_harness", Items.HARNESS.blue()),
-                registerHarness(context, "sell_brown_harness", Items.HARNESS.brown()),
-                registerHarness(context, "sell_green_harness", Items.HARNESS.green()),
-                registerHarness(context, "sell_red_harness", Items.HARNESS.red()),
-                registerHarness(context, "sell_black_harness", Items.HARNESS.black())
+                registerHarness(context, "sell_white_harness", Items.WHITE_HARNESS),
+                registerHarness(context, "sell_orange_harness", Items.ORANGE_HARNESS),
+                registerHarness(context, "sell_magenta_harness", Items.MAGENTA_HARNESS),
+                registerHarness(context, "sell_light_blue_harness", Items.LIGHT_BLUE_HARNESS),
+                registerHarness(context, "sell_yellow_harness", Items.YELLOW_HARNESS),
+                registerHarness(context, "sell_lime_harness", Items.LIME_HARNESS),
+                registerHarness(context, "sell_pink_harness", Items.PINK_HARNESS),
+                registerHarness(context, "sell_gray_harness", Items.GRAY_HARNESS),
+                registerHarness(context, "sell_light_gray_harness", Items.LIGHT_GRAY_HARNESS),
+                registerHarness(context, "sell_cyan_harness", Items.CYAN_HARNESS),
+                registerHarness(context, "sell_purple_harness", Items.PURPLE_HARNESS),
+                registerHarness(context, "sell_blue_harness", Items.BLUE_HARNESS),
+                registerHarness(context, "sell_brown_harness", Items.BROWN_HARNESS),
+                registerHarness(context, "sell_green_harness", Items.GREEN_HARNESS),
+                registerHarness(context, "sell_red_harness", Items.RED_HARNESS),
+                registerHarness(context, "sell_black_harness", Items.BLACK_HARNESS)
         );
     }
 

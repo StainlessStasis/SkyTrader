@@ -14,6 +14,6 @@ public class ModEntityTagProvider extends EntityTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NonNull Provider registries) {
-        ModEntityTags.generate((tag, type) -> this.tag(tag).add(type.builtInRegistryHolder().key()));
+        ModEntityTags.generate((tag, type) -> this.tag(tag).add(type.builtInRegistryHolder().value()));
     }
 }
