@@ -98,7 +98,7 @@ public class SkyTraderTrades {
                         Items.HARNESS.brown(), Items.HARNESS.green(), Items.HARNESS.red(), Items.HARNESS.black())
                 .forEach(harness -> {
                     String colorName = BuiltInRegistries.ITEM.getKey(harness).getPath();
-                    TradeBuilder.sell("sell_" + colorName + "_harness", harness).price(5).maxUses(8).build(SKY_TRADER_HARNESS, context);
+                    TradeBuilder.sell("sell_" + colorName, harness).price(5).maxUses(8).build(SKY_TRADER_HARNESS, context);
                 });
     }
 
