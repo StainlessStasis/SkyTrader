@@ -723,7 +723,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         if (!(level() instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (!serverLevel.getGameRules().get(ModGameRules.SKY_TRADER_GHAST_REVENGE)) {
+        if (!serverLevel.getGameRules().get(ModGameRules.SKY_TRADER_GHAST_REVENGE.get())) {
             return;
         }
 

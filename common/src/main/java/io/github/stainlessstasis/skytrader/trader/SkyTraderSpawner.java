@@ -62,7 +62,7 @@ public class SkyTraderSpawner implements CustomSpawner {
 
     @Override
     public void tick(ServerLevel level, boolean spawnEnemies) {
-        if (level.getGameRules().get(ModGameRules.SPAWN_SKY_TRADERS)) {
+        if (level.getGameRules().get(ModGameRules.SPAWN_SKY_TRADERS.get())) {
             if (--this.tickDelay <= 0) {
                 this.tickDelay = DEFAULT_TICK_DELAY;
                 SkyTraderData data = this.getTraderData();
