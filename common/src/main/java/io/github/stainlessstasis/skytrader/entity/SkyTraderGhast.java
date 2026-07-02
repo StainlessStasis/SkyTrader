@@ -411,7 +411,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected float computeVerticalInput(int targetTerrainHeight, int hoverHeight, float maxVerticalSpeed) {
         double targetY = targetTerrainHeight + hoverHeight;
         double dy = targetY - this.getY();
-        return (float) Mth.clamp(dy * 0.1, -maxVerticalSpeed, maxVerticalSpeed);
+        float proportional = (float) Mth.clamp(dy * 0.1, -maxVerticalSpeed, maxVerticalSpeed);
+        if (dy > 1.0 && proportional < maxVerticalSpeed * 0.3f) {
+            return maxVerticalSpeed * 0.3f;
+        }
+        return proportional;
     }
 
     protected void steerYawToward(double dx, double dz) {
@@ -434,7 +438,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         steerYawToward(dx, dz);
 
         double heightAboveTerrain = this.getY() - terrainHeightAt(this.blockPosition());
-        if (heightAboveTerrain >= TAKEOFF_HEIGHT) {
+        if (heightAboveTerrain >= TAKEOFF_HEIGHT - 2) {
             setRideState(RideState.CRUISE);
             sendMessageToPassengers(ModConstants.MOD_ID + ".cruising", TextColor.WHITE);
             return Vec3.ZERO;

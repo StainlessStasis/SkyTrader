@@ -33,7 +33,7 @@ public class SkyTraderSpawner implements CustomSpawner {
     public static final int MIN_SPAWN_CHANCE = 25;
     private static final int MAX_SPAWN_CHANCE = 75;
     private static final int SPAWN_CHANCE_INCREASE = 25;
-    private static final int SPAWN_ONE_IN_X_CHANCE = 1;
+    private static final int SPAWN_ONE_IN_X_CHANCE = 8;
     private static final int NUMBER_OF_SPAWN_ATTEMPTS = 10;
     private static final int GHAST_HORIZONTAL_CLEARANCE = 2;
     private static final int GHAST_VERTICAL_CLEARANCE = 4;
