@@ -9,6 +9,10 @@
     "skytrader:sell_fire_charge",
     "skytrader:sell_magma_cream",
     "skytrader:sell_slime_ball",
-    "skytrader:sell_nether_wart"
+    "skytrader:sell_nether_wart",
+    "skytrader:sell_glowstone_dust",
+    "skytrader:sell_soul_sand",
+    "skytrader:sell_nether_bricks",
+    "skytrader:sell_crimson_fungus"
   ]
 }

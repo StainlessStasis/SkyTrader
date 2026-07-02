@@ -63,11 +63,18 @@ public class SkyTraderTrades {
     public static final ResourceKey<VillagerTrade> SELL_MAGMA_CREAM = resourceKey("sell_magma_cream");
     public static final ResourceKey<VillagerTrade> SELL_SLIME_BALL = resourceKey("sell_slime_ball");
     public static final ResourceKey<VillagerTrade> SELL_NETHER_WART = resourceKey("sell_nether_wart");
+    public static final ResourceKey<VillagerTrade> SELL_GLOWSTONE_DUST = resourceKey("sell_glowstone_dust");
+    public static final ResourceKey<VillagerTrade> SELL_SOUL_SAND = resourceKey("sell_soul_sand");
+    public static final ResourceKey<VillagerTrade> SELL_NETHER_BRICKS = resourceKey("sell_nether_bricks");
+    public static final ResourceKey<VillagerTrade> SELL_CRIMSON_FUNGUS = resourceKey("sell_crimson_fungus");
 
     // rare
     public static final ResourceKey<VillagerTrade> SELL_ENDER_PEARL = resourceKey("sell_ender_pearl");
     public static final ResourceKey<VillagerTrade> SELL_NAUTILUS_SHELL = resourceKey("sell_nautilus_shell");
     public static final ResourceKey<VillagerTrade> SELL_HEART_OF_THE_SEA = resourceKey("sell_heart_of_the_sea");
+    public static final ResourceKey<VillagerTrade> SELL_CHORUS_FRUIT = resourceKey("sell_chorus_fruit");
+    public static final ResourceKey<VillagerTrade> SELL_BLUE_ICE = resourceKey("sell_blue_ice");
+    public static final ResourceKey<VillagerTrade> SELL_HONEYCOMB = resourceKey("sell_honeycomb");
 
     public static final ResourceKey<TradeSet> SKY_TRADER_RIDE = tradeSetKey("sky_trader/ride");
     public static final ResourceKey<TradeSet> SKY_TRADER_HARNESS = tradeSetKey("sky_trader/harness");
@@ -137,7 +144,7 @@ public class SkyTraderTrades {
                 12, 5, 0.05f, Optional.empty(), List.of()));
         context.register(SELL_LEAD, new VillagerTrade(
                 new TradeCost(Items.EMERALD, 2), new ItemStackTemplate(Items.LEAD, 1),
-                12, 1, 0.05f, Optional.empty(), List.of()));
+                12, 3, 0.05f, Optional.empty(), List.of()));
         context.register(SELL_NAME_TAG, new VillagerTrade(
                 new TradeCost(Items.EMERALD, 34), new ItemStackTemplate(Items.NAME_TAG),
                 12, 5, 0.05f, Optional.empty(), List.of()));
@@ -164,6 +171,18 @@ public class SkyTraderTrades {
         context.register(SELL_NETHER_WART, new VillagerTrade(
                 new TradeCost(Items.EMERALD, 2), new ItemStackTemplate(Items.NETHER_WART, 3),
                 12, 5, 0.05f, Optional.empty(), List.of()));
+        context.register(SELL_GLOWSTONE_DUST, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 1), new ItemStackTemplate(Items.GLOWSTONE_DUST, 4),
+                12, 3, 0.05f, Optional.empty(), List.of()));
+        context.register(SELL_SOUL_SAND, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 1), new ItemStackTemplate(Items.SOUL_SAND, 4),
+                12, 3, 0.05f, Optional.empty(), List.of()));
+        context.register(SELL_NETHER_BRICKS, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 2), new ItemStackTemplate(Items.NETHER_BRICKS, 8),
+                12, 3, 0.05f, Optional.empty(), List.of()));
+        context.register(SELL_CRIMSON_FUNGUS, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 1), new ItemStackTemplate(Items.CRIMSON_FUNGUS, 2),
+                8, 3, 0.05f, Optional.empty(), List.of()));
 
         // rare
         context.register(SELL_ENDER_PEARL, new VillagerTrade(
@@ -175,6 +194,15 @@ public class SkyTraderTrades {
         context.register(SELL_HEART_OF_THE_SEA, new VillagerTrade(
                 new TradeCost(Items.EMERALD, UniformGenerator.between(9, 11)), new ItemStackTemplate(Items.HEART_OF_THE_SEA),
                 1, 30, 0.05f, Optional.empty(), List.of()));
+        context.register(SELL_CHORUS_FRUIT, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 2), new ItemStackTemplate(Items.CHORUS_FRUIT, 4),
+                12, 5, 0.05f, Optional.empty(), List.of()));
+        context.register(SELL_BLUE_ICE, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 3), new ItemStackTemplate(Items.BLUE_ICE, 4),
+                8, 5, 0.05f, Optional.empty(), List.of()));
+        context.register(SELL_HONEYCOMB, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 2), new ItemStackTemplate(Items.HONEYCOMB, 3),
+                12, 5, 0.05f, Optional.empty(), List.of()));
     }
 
     private static List<ResourceKey<VillagerTrade>> registerHarnessTrades(BootstrapContext<VillagerTrade> context) {
@@ -291,7 +319,11 @@ public class SkyTraderTrades {
                         trades.getOrThrow(SELL_FIRE_CHARGE),
                         trades.getOrThrow(SELL_MAGMA_CREAM),
                         trades.getOrThrow(SELL_SLIME_BALL),
-                        trades.getOrThrow(SELL_NETHER_WART)
+                        trades.getOrThrow(SELL_NETHER_WART),
+                        trades.getOrThrow(SELL_GLOWSTONE_DUST),
+                        trades.getOrThrow(SELL_SOUL_SAND),
+                        trades.getOrThrow(SELL_NETHER_BRICKS),
+                        trades.getOrThrow(SELL_CRIMSON_FUNGUS)
                 ),
                 UniformGenerator.between(2, 3),
                 false,
@@ -302,9 +334,12 @@ public class SkyTraderTrades {
                 HolderSet.direct(
                         trades.getOrThrow(SELL_ENDER_PEARL),
                         trades.getOrThrow(SELL_NAUTILUS_SHELL),
-                        trades.getOrThrow(SELL_HEART_OF_THE_SEA)
+                        trades.getOrThrow(SELL_HEART_OF_THE_SEA),
+                        trades.getOrThrow(SELL_CHORUS_FRUIT),
+                        trades.getOrThrow(SELL_BLUE_ICE),
+                        trades.getOrThrow(SELL_HONEYCOMB)
                 ),
-                UniformGenerator.between(0, 1),
+                UniformGenerator.between(1, 2),
                 false,
                 Optional.empty()
         ));

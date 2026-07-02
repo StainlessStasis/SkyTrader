@@ -1,12 +1,15 @@
 {
   "amount": {
     "type": "minecraft:uniform",
-    "max": 1.0,
-    "min": 0.0
+    "max": 2.0,
+    "min": 1.0
   },
   "trades": [
     "skytrader:sell_ender_pearl",
     "skytrader:sell_nautilus_shell",
-    "skytrader:sell_heart_of_the_sea"
+    "skytrader:sell_heart_of_the_sea",
+    "skytrader:sell_chorus_fruit",
+    "skytrader:sell_blue_ice",
+    "skytrader:sell_honeycomb"
   ]
 }

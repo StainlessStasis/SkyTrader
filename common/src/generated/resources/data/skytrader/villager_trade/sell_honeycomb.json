@@ -1,6 +1,7 @@
 {
   "gives": {
-    "id": "minecraft:lead"
+    "count": 3,
+    "id": "minecraft:honeycomb"
   },
   "max_uses": 12.0,
   "reputation_discount": 0.05,
@@ -8,5 +9,5 @@
     "count": 2.0,
     "id": "minecraft:emerald"
   },
-  "xp": 3.0
+  "xp": 5.0
 }

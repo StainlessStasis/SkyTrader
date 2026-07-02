@@ -1,6 +1,7 @@
 {
   "gives": {
-    "id": "minecraft:lead"
+    "count": 8,
+    "id": "minecraft:nether_bricks"
   },
   "max_uses": 12.0,
   "reputation_discount": 0.05,
