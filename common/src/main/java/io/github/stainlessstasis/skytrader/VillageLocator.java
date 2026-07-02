@@ -12,8 +12,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Locates the nearest village structure, offloading the expensive
- * structure search work to a background thread to avoid main thread lag spikes.
+ * Locates the nearest village structure, offloading the expensive structure search work to a background thread to avoid main thread lag spikes.
  * Runs during the SEARCHING phase of the {@link SkyTraderGhast}.
  */
 public class VillageLocator {
