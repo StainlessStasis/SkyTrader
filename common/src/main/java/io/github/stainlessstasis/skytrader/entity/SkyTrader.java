@@ -82,6 +82,7 @@ public class SkyTrader extends WanderingTrader {
         MerchantOffers offers = this.getOffers();
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_RIDE);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_HARNESS);
+        this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_BOAT);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_SKY_UTILITY);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_MOUNT_UTILITY);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_COMMON);

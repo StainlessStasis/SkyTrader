@@ -1,9 +1,5 @@
 {
-  "amount": {
-    "type": "minecraft:uniform",
-    "max": 1.0,
-    "min": 0.0
-  },
+  "amount": 1.0,
   "trades": [
     "skytrader:sell_oak_boat",
     "skytrader:sell_spruce_boat",

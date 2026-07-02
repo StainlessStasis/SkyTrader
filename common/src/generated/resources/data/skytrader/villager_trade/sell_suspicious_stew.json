@@ -22,5 +22,6 @@
   "wants": {
     "count": 4.0,
     "id": "minecraft:emerald"
-  }
+  },
+  "xp": 5.0
 }
