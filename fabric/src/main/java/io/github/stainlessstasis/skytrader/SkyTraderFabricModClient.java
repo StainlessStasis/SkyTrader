@@ -1,5 +1,6 @@
 package io.github.stainlessstasis.skytrader;
 
+import io.github.stainlessstasis.skytrader.client.SkyTraderRenderer;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -9,7 +10,7 @@ import net.minecraft.client.renderer.entity.WanderingTraderRenderer;
 public class SkyTraderFabricModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        EntityRenderers.register(ModEntities.SKY_TRADER, WanderingTraderRenderer::new);
+        EntityRenderers.register(ModEntities.SKY_TRADER, SkyTraderRenderer::new);
         EntityRenderers.register(ModEntities.SKY_TRADER_GHAST, HappyGhastRenderer::new);
     }
 }
