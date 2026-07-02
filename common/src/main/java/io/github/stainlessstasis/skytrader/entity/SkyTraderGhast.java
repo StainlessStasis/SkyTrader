@@ -153,12 +153,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         if (!this.rideState.isStartOfRide()) {
-            if (!hasPaid(player)) {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_started").withColor(TextColor.RED));
-                return InteractionResult.FAIL;
-            }
             if (this.rideState.isEndOfRide()) {
                 player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_ended").withColor(TextColor.RED));
+                return InteractionResult.FAIL;
+            }
+            if (!hasPaid(player)) {
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_started").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
         }
