@@ -42,7 +42,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final float MAX_VERTICAL_SPEED = 0.5f;
     protected static final float TURN_SPEED = 0.25f;
 
-    protected static final int BOARDING_DELAY_TICKS = 300;
+    protected static final int BOARDING_TICKS = 300;
+    protected static final int BOARDING_EXTENSION_ON_NEW_PASSENGER = 100;
     protected static final int MAX_DEPARTURE_ATTEMPTS = 3;
 
     protected static final int TAKEOFF_HEIGHT = 30;
@@ -80,8 +81,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected RideState rideState = RideState.IDLE;
     protected int stateTicks = 0;
     protected int departureAttempts = 0;
+    protected int totalBoardingTime = BOARDING_TICKS;
     protected BlockPos destination;
-    private @Nullable Vec3 returnDirection;
+    protected @Nullable Vec3 returnDirection;
     protected int landingAttempts = 0;
     protected @Nullable BlockPos villageCenter;
     protected boolean spawnDescent = false;
@@ -147,6 +149,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             }
         }
 
+        if (this.level().isClientSide()) {
+            return this.isWearingBodyArmor() && !player.isSecondaryUseActive()
+                    ? InteractionResult.SUCCESS
+                    : InteractionResult.PASS;
+        }
+
         if (this.spawnDescent) {
             player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".still_arriving").withColor(TextColor.RED));
             return InteractionResult.FAIL;
@@ -175,6 +183,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 if (this.rideState == RideState.IDLE) {
                     this.departureAttempts = 0;
                     setRideState(RideState.BOARDING);
+                } else if (this.rideState == RideState.BOARDING) {
+                    this.totalBoardingTime += BOARDING_EXTENSION_ON_NEW_PASSENGER;
                 }
 
                 return InteractionResult.SUCCESS;
@@ -207,7 +217,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 if (this.stateTicks % 20 == 0) {
                     sendBoardingCountdown();
                 }
-                if (this.stateTicks >= BOARDING_DELAY_TICKS) {
+                if (this.stateTicks >= this.totalBoardingTime) {
                     beginDeparture();
                 }
             }
@@ -710,7 +720,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected void sendBoardingCountdown() {
-        int secondsRemaining = (BOARDING_DELAY_TICKS - this.stateTicks) / 20;
+        int secondsRemaining = (this.totalBoardingTime - this.stateTicks) / 20;
         for (Entity passenger : this.getPassengers()) {
             if (passenger instanceof Player player) {
                 player.sendOverlayMessage(Component.translatable(
@@ -785,6 +795,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         output.putInt("StateTicks", stateTicks);
         output.putInt("LandingAttempts", landingAttempts);
         output.putInt("DepartureAttempts", departureAttempts);
+        output.putInt("TotalBoardingTime", totalBoardingTime);
         output.store("RideState", RideState.CODEC, this.rideState);
         if (this.destination != null) {
             output.store("Destination", BlockPos.CODEC, this.destination);
@@ -807,6 +818,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.stateTicks = input.getIntOr("StateTicks", 0);
         this.landingAttempts = input.getIntOr("LandingAttempts", 0);
         this.departureAttempts = input.getIntOr("DepartureAttempts", 0);
+        this.totalBoardingTime = input.getIntOr("TotalBoardingTime", 0);
         this.rideState = input.read("RideState", RideState.CODEC).orElse(RideState.IDLE);
         this.destination = input.read("Destination", BlockPos.CODEC).orElse(null);
         this.villageCenter = input.read("VillageCenter", BlockPos.CODEC).orElse(null);
