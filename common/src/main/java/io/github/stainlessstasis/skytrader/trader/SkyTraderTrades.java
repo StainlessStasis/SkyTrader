@@ -23,7 +23,6 @@ import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
 import net.minecraft.world.level.storage.loot.functions.SetStewEffectFunction;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.List;
@@ -293,6 +292,9 @@ public class SkyTraderTrades {
                         trades.getOrThrow(SELL_FEATHER_FALLING_BOOK),
                         trades.getOrThrow(SELL_WIND_CHARGE),
                         trades.getOrThrow(SELL_FIREWORK_ROCKET),
+                        trades.getOrThrow(SELL_PHANTOM_MEMBRANE),
+                        trades.getOrThrow(SELL_SNOWBALL),
+                        trades.getOrThrow(SELL_SUSPICIOUS_STEW),
                         trades.getOrThrow(SELL_SCAFFOLDING)
                 ),
                 ConstantValue.exactly(2),

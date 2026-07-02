@@ -139,7 +139,7 @@ public class SkyTrader extends WanderingTrader {
                             }
                         }
 
-                        return !skyTrader.onGround() && skyTrader.getDeltaMovement().y < -0.1 && skyTrader.fallDistance > 0.5;
+                        return !skyTrader.onGround() && skyTrader.getDeltaMovement().y < -0.1 && skyTrader.fallDistance > 1.25;
                     }
             );
         }
