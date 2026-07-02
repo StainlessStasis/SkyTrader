@@ -9,14 +9,19 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(ModConstants.MOD_ID)
+@EventBusSubscriber
 public class SkyTraderNeoMod {
     private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, ModConstants.MOD_ID);
 
@@ -42,14 +47,20 @@ public class SkyTraderNeoMod {
             }
         });
 
-        eventBus.addListener(this::registerAttributes);
-
         NeoForgeRegistryHelper.ITEMS.register(eventBus);
         ModItems.init();
     }
 
-    private void registerAttributes(EntityAttributeCreationEvent event) {
+    @SubscribeEvent
+    static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.SKY_TRADER, Villager.createAttributes().build());
         event.put(ModEntities.SKY_TRADER_GHAST, HappyGhast.createAttributes().build());
+    }
+
+    @SubscribeEvent
+    static void registerCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(ModItems.SKYFARE_TICKET.get());
+        }
     }
 }
