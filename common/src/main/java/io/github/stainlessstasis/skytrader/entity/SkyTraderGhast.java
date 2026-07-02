@@ -224,6 +224,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             }
         }
 
+        if (this.rideState == RideState.SEARCHING && this.stateTicks % 10 == 0) {
+            sendMessageToPassengers(ModConstants.MOD_ID + ".searching", WHITE);
+        }
+
         if (this.rideState == RideState.ARRIVED) {
             boolean anyPlayersLeft = this.getPassengers().stream().anyMatch(e -> e instanceof Player);
             if (!anyPlayersLeft) {
