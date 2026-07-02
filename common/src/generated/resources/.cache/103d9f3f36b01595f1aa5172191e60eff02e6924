@@ -1,4 +1,4 @@
-// 26.2	2026-07-01T21:29:05.8823257	Registries
+// 26.1.2	2026-07-02T05:10:32.093198	Registries
 378e2819f206485ea06edc92d1ce72c36c92bb43 data/skytrader/trade_set/sky_trader/boat.json
 2fa286cc45c9f0e2033cb69e9936f603806ca843 data/skytrader/trade_set/sky_trader/common.json
 1f2039e9fa17ed236f3724646384ec57ff5d4d0c data/skytrader/trade_set/sky_trader/harness.json
@@ -20,7 +20,7 @@ fcf11406ab45cdcee0527bc9e443c73e26d00a09 data/skytrader/villager_trade/sell_chor
 e933b779ba9cec053985ca2d9e465d9631b24322 data/skytrader/villager_trade/sell_cyan_harness.json
 681dff612dff7b50ba33a88df6358d4d99a6bad8 data/skytrader/villager_trade/sell_dark_oak_boat.json
 8e9483277a5844bb3685efb73ad4ec8c66353537 data/skytrader/villager_trade/sell_ender_pearl.json
-514d76ff519286c07b7640fffdd9c6e8dfb6881d data/skytrader/villager_trade/sell_feather_falling_book.json
+1fd5bbaf70a9164b0f7264c21ee24c01e0419dd9 data/skytrader/villager_trade/sell_feather_falling_book.json
 f52a714d133a030f55c60a1e7f5d87394c2a6690 data/skytrader/villager_trade/sell_firework_rocket.json
 0a325e705cd371d417f8fef9c97c26e8cba29f8d data/skytrader/villager_trade/sell_fire_charge.json
 59926c42bb5375ba476361d2adc31ce13d95e1f2 data/skytrader/villager_trade/sell_ghast_tear.json
