@@ -11,5 +11,6 @@ public class Datagen {
     static void gatherData(GatherDataEvent.Client event) {
         event.createProvider(output -> new ModEntityTagProvider(output, event.getLookupProvider(), ModConstants.MOD_ID));
         event.createProvider(output -> new ModTradeProvider(output, event.getLookupProvider()));
+        event.createProvider(output -> new ModItemModelsProvider(output, ModConstants.MOD_ID));
     }
 }
