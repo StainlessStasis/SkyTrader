@@ -33,9 +33,11 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class SkyTrader extends WanderingTrader {
     protected @Nullable EntityReference<LivingEntity> ghast;
+    protected int despawnTicks = -1;
 
     public SkyTrader(EntityType<? extends WanderingTrader> type, Level level) {
         super(type, level);
@@ -56,6 +58,44 @@ public class SkyTrader extends WanderingTrader {
     }
 
     @Override
+    public void aiStep() {
+        super.aiStep();
+        if (!this.level().isClientSide()) {
+            tickDespawn();
+        }
+    }
+
+    public void setDespawnTicks(int ticks) {
+        this.despawnTicks = ticks;
+        this.setDespawnDelay(0); // make vanilla's own despawn logic never fire
+    }
+
+    /**
+     * WanderingTrader's maybeDespawn() is private, so i had to make this
+     */
+    protected void tickDespawn() {
+        if (despawnTicks > 0) {
+            despawnTicks--;
+            return;
+        }
+
+        if (isTrading()) {
+            return;
+        }
+
+        SkyTraderGhast ghast = getGhast();
+        if (ghast == null) {
+            discard();
+            return;
+        }
+
+        if (ghast.rideState == SkyTraderGhast.RideState.IDLE) {
+            discard();
+            ghast.discard();
+        }
+    }
+
+    @Override
     public void die(@NonNull DamageSource damageSource) {
         super.die(damageSource);
 
@@ -72,7 +112,6 @@ public class SkyTrader extends WanderingTrader {
         if (getGhast() instanceof SkyTraderGhast ghast) {
             ghast.setLeashedTo(this, true);
         }
-        setDespawnDelay(48000);
         setWanderTarget(landingSpot);
         setHomeTo(landingSpot, 16);
     }
@@ -189,11 +228,13 @@ public class SkyTrader extends WanderingTrader {
     protected void addAdditionalSaveData(@NonNull ValueOutput output) {
         super.addAdditionalSaveData(output);
         EntityReference.store(ghast, output, "Ghast");
+        output.putInt("DespawnTicks", despawnTicks);
     }
 
     @Override
     protected void readAdditionalSaveData(@NonNull ValueInput input) {
         super.readAdditionalSaveData(input);
         this.ghast = EntityReference.read(input, "Ghast");
+        this.despawnTicks = input.getIntOr("DespawnTicks", 0);
     }
 }
