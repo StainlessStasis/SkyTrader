@@ -1,0 +1,16 @@
+{
+  "gives": {
+    "id": "minecraft:purple_harness"
+  },
+  "max_uses": 8.0,
+  "reputation_discount": 0.05,
+  "wants": {
+    "count": {
+      "type": "minecraft:uniform",
+      "max": 5.0,
+      "min": 5.0
+    },
+    "id": "minecraft:emerald"
+  },
+  "xp": 7.0
+}
