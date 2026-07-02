@@ -46,7 +46,8 @@ public class SkyTraderTrades {
     public static final ResourceKey<VillagerTrade> SELL_FIREWORK_ROCKET = resourceKey("sell_firework_rocket");
     public static final ResourceKey<VillagerTrade> SELL_PHANTOM_MEMBRANE = resourceKey("sell_phantom_membrane");
     public static final ResourceKey<VillagerTrade> SELL_SNOWBALL = resourceKey("sell_snowball");
-    public static final ResourceKey<VillagerTrade> SELL_SUSPICIOUS_STEW = resourceKey("sell_suspicious_stew");
+    public static final ResourceKey<VillagerTrade> SELL_JUMP_STEW = resourceKey("sell_jump_stew");
+    public static final ResourceKey<VillagerTrade> SELL_SLOW_FALL_STEW = resourceKey("sell_slow_fall_stew");
     public static final ResourceKey<VillagerTrade> SELL_SCAFFOLDING = resourceKey("sell_scaffolding");
 
     // mount utility
@@ -126,11 +127,18 @@ public class SkyTraderTrades {
         context.register(SELL_SNOWBALL, new VillagerTrade(
                 new TradeCost(Items.EMERALD, 1), new ItemStackTemplate(Items.SNOWBALL, 8),
                 12, 5, 0.05f, Optional.empty(), List.of()));
-        context.register(SELL_SUSPICIOUS_STEW, new VillagerTrade(
+        context.register(SELL_JUMP_STEW, new VillagerTrade(
                 new TradeCost(Items.EMERALD, 4), new ItemStackTemplate(Items.SUSPICIOUS_STEW, 1),
                 12, 5, 0.05f, Optional.empty(),
                 List.of(SetStewEffectFunction.stewEffect()
                         .withEffect(MobEffects.JUMP_BOOST, UniformGenerator.between(5, 8))
+                        .build())
+        ));
+        context.register(SELL_SLOW_FALL_STEW, new VillagerTrade(
+                new TradeCost(Items.EMERALD, 4), new ItemStackTemplate(Items.SUSPICIOUS_STEW, 1),
+                12, 5, 0.05f, Optional.empty(),
+                List.of(SetStewEffectFunction.stewEffect()
+                        .withEffect(MobEffects.SLOW_FALLING, UniformGenerator.between(5, 8))
                         .build())
         ));
         context.register(SELL_SCAFFOLDING, new VillagerTrade(
@@ -294,10 +302,11 @@ public class SkyTraderTrades {
                         trades.getOrThrow(SELL_FIREWORK_ROCKET),
                         trades.getOrThrow(SELL_PHANTOM_MEMBRANE),
                         trades.getOrThrow(SELL_SNOWBALL),
-                        trades.getOrThrow(SELL_SUSPICIOUS_STEW),
+                        trades.getOrThrow(SELL_JUMP_STEW),
+                        trades.getOrThrow(SELL_SLOW_FALL_STEW),
                         trades.getOrThrow(SELL_SCAFFOLDING)
                 ),
-                ConstantValue.exactly(2),
+                ConstantValue.exactly(3),
                 false,
                 Optional.empty()
         ));
