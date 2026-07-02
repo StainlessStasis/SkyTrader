@@ -1,5 +1,6 @@
 package io.github.stainlessstasis.skytrader;
 
+import io.github.stainlessstasis.ModGameRules;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.fabricmc.api.ModInitializer;
@@ -30,8 +31,9 @@ public class SkyTraderFabricMod implements ModInitializer {
         );
         FabricDefaultAttributeRegistry.register(ModEntities.SKY_TRADER_GHAST, HappyGhast.createAttributes());
 
-        // items/commands
+        // misc
         ModItems.init();
+        ModGameRules.init();
         FabricCommands.registerCommands();
 
         // creative tab

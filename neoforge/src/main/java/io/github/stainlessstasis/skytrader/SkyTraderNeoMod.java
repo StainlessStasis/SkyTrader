@@ -1,5 +1,6 @@
 package io.github.stainlessstasis.skytrader;
 
+import io.github.stainlessstasis.ModGameRules;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
@@ -47,8 +48,9 @@ public class SkyTraderNeoMod {
             }
         });
 
-        NeoForgeRegistryHelper.ITEMS.register(eventBus);
+        NeoForgeRegistryHelper.register(eventBus);
         ModItems.init();
+        ModGameRules.init();
     }
 
     @SubscribeEvent

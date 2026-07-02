@@ -1,6 +1,7 @@
 package io.github.stainlessstasis.skytrader.entity;
 
 import com.mojang.serialization.Codec;
+import io.github.stainlessstasis.ModGameRules;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.core.BlockPos;
@@ -714,6 +715,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     public void turnHostile(@Nullable LivingEntity target) {
         if (!(level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!serverLevel.getGameRules().get(ModGameRules.SKY_TRADER_GHAST_REVENGE)) {
             return;
         }
 

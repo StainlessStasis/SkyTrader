@@ -2,6 +2,7 @@ package io.github.stainlessstasis.skytrader.trader;
 
 import java.util.Optional;
 
+import io.github.stainlessstasis.ModGameRules;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
@@ -22,7 +23,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.CustomSpawner;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.SavedDataStorage;
 import org.jspecify.annotations.Nullable;
@@ -62,7 +62,7 @@ public class SkyTraderSpawner implements CustomSpawner {
 
     @Override
     public void tick(ServerLevel level, boolean spawnEnemies) {
-        if (level.getGameRules().get(GameRules.SPAWN_WANDERING_TRADERS)) {
+        if (level.getGameRules().get(ModGameRules.SPAWN_SKY_TRADERS)) {
             if (--this.tickDelay <= 0) {
                 this.tickDelay = DEFAULT_TICK_DELAY;
                 SkyTraderData data = this.getTraderData();
