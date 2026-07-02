@@ -16,10 +16,10 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "io.github.stainlessstasis.examplemod.SkyTraderFabricMod"
+            "io.github.stainlessstasis.skytrader.SkyTraderFabricMod"
         ],
         "client": [
-            "io.github.stainlessstasis.examplemod.SkyTraderFabricModClient"
+            "io.github.stainlessstasis.skytrader.SkyTraderFabricModClient"
         ]
     },
     "mixins": [
