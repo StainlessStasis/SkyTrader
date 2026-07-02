@@ -1,15 +1,15 @@
 {
   "gives": {
-    "count": 2,
-    "id": "minecraft:hay_block"
+    "count": 3,
+    "id": "minecraft:feather"
   },
   "max_uses": 12.0,
   "reputation_discount": 0.05,
   "wants": {
     "count": {
       "type": "minecraft:uniform",
-      "max": 5.0,
-      "min": 3.0
+      "max": 1.0,
+      "min": 1.0
     },
     "id": "minecraft:emerald"
   },

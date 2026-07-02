@@ -30,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 public class SkyTraderSpawner implements CustomSpawner {
     private static final int DEFAULT_TICK_DELAY = 1200;
     public static final int DEFAULT_SPAWN_DELAY = 24000;
+    public static final int DESPAWN_TICKS = DEFAULT_SPAWN_DELAY*2;
     public static final int MIN_SPAWN_CHANCE = 25;
     private static final int MAX_SPAWN_CHANCE = 75;
     private static final int SPAWN_CHANCE_INCREASE = 25;
@@ -132,7 +133,7 @@ public class SkyTraderSpawner implements CustomSpawner {
         ghast.setOwnerRiding();
         ghast.beginSpawnDescent(groundReference);
 
-        trader.setDespawnTicks(48000);
+        trader.setDespawnTicks(DESPAWN_TICKS);
 
         return true;
     }

@@ -1,17 +1,16 @@
 {
   "gives": {
-    "count": 2,
-    "id": "minecraft:hay_block"
+    "id": "minecraft:water_bucket"
   },
   "max_uses": 12.0,
   "reputation_discount": 0.05,
   "wants": {
     "count": {
       "type": "minecraft:uniform",
-      "max": 5.0,
-      "min": 3.0
+      "max": 8.0,
+      "min": 8.0
     },
     "id": "minecraft:emerald"
   },
-  "xp": 3.0
+  "xp": 7.0
 }

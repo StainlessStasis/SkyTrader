@@ -1,21 +1,21 @@
 {
   "amount": 1.0,
   "trades": [
-    "skytrader:sell_white_harness",
-    "skytrader:sell_orange_harness",
-    "skytrader:sell_magenta_harness",
-    "skytrader:sell_light_blue_harness",
-    "skytrader:sell_yellow_harness",
-    "skytrader:sell_lime_harness",
-    "skytrader:sell_pink_harness",
-    "skytrader:sell_gray_harness",
-    "skytrader:sell_light_gray_harness",
-    "skytrader:sell_cyan_harness",
-    "skytrader:sell_purple_harness",
-    "skytrader:sell_blue_harness",
-    "skytrader:sell_brown_harness",
-    "skytrader:sell_green_harness",
-    "skytrader:sell_red_harness",
-    "skytrader:sell_black_harness"
+    "skytrader:sell_white_harness_harness",
+    "skytrader:sell_orange_harness_harness",
+    "skytrader:sell_magenta_harness_harness",
+    "skytrader:sell_light_blue_harness_harness",
+    "skytrader:sell_yellow_harness_harness",
+    "skytrader:sell_lime_harness_harness",
+    "skytrader:sell_pink_harness_harness",
+    "skytrader:sell_gray_harness_harness",
+    "skytrader:sell_light_gray_harness_harness",
+    "skytrader:sell_cyan_harness_harness",
+    "skytrader:sell_purple_harness_harness",
+    "skytrader:sell_blue_harness_harness",
+    "skytrader:sell_brown_harness_harness",
+    "skytrader:sell_green_harness_harness",
+    "skytrader:sell_red_harness_harness",
+    "skytrader:sell_black_harness_harness"
   ]
 }
