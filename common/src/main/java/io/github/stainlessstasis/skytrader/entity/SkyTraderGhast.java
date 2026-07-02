@@ -42,35 +42,36 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected static final float MAX_VERTICAL_SPEED = 0.5f;
     protected static final float TURN_SPEED = 0.25f;
 
-    protected static final int BOARDING_DELAY_TICKS = 200;
+    protected static final int BOARDING_DELAY_TICKS = 300;
     protected static final int MAX_DEPARTURE_ATTEMPTS = 3;
 
     protected static final int TAKEOFF_HEIGHT = 30;
     protected static final float TAKEOFF_VERTICAL_SPEED = 0.4f;
     protected static final float TAKEOFF_FORWARD_SPEED = 0.15f;
 
-    protected static final int CRUISE_HOVER_HEIGHT = 70;
+    protected static final int CRUISE_HOVER_HEIGHT = 75;
     protected static final float CRUISE_SPEED = 0.6f;
     protected static final int GLIDE_START_DISTANCE = 200;
 
-    protected static final double FINAL_APPROACH_DISTANCE = 6d;
+    protected static final double FINAL_APPROACH_DISTANCE = 4d;
     protected static final int LANDING_HOVER_HEIGHT = 1;
-    protected static final double LANDING_ARRIVED_THRESHOLD = 2d;
+    protected static final double LANDING_ARRIVED_THRESHOLD = 3d;
     protected static final double LANDING_ARRIVED_RADIUS = 12d;
     protected static final float DESCEND_SPEED = 0.3f;
-    protected static final float SPAWN_DESCENT_SPEED = 0.6f;
+    protected static final float SPAWN_DESCENT_SPEED = 0.5f;
     protected static final float DESCEND_HORIZONTAL_SPEED = 0.2f;
+
     protected static final int ARRIVING_TIMEOUT_TICKS = 200;
     protected static final int MAX_LANDING_ATTEMPTS = 3;
     protected static final int LANDING_RETRY_RADIUS = 16;
     protected static final double SPAWN_JUMP_OFF_HEIGHT = 20d;
 
-    protected static final int DISMOUNT_GRACE_TICKS = 300;
+    protected static final int DISMOUNT_GRACE_TICKS = 200;
     protected static final int RETURN_FLIGHT_TICKS = 600;
-    protected static final float RETURN_SPEED = 0.4f;
+    protected static final float RETURN_SPEED = 0.5f;
 
     protected static final int[] TERRAIN_LOOKAHEAD_DISTANCES = {8, 16, 24, 32};
-    protected static final int TERRAIN_SAMPLE_INTERVAL = 5;
+    protected static final int TERRAIN_SAMPLE_INTERVAL = 10;
     protected int cachedTerrainHeight = 0;
     protected int terrainSampleCooldown = 0;
 
