@@ -26,11 +26,11 @@ public class FabricRegistryHelper implements IRegistryHelper {
     }
 
     @Override
-    public Supplier<GameRule<Boolean>> registerBooleanGameRule(String name, net.minecraft.world.level.gamerules.GameRuleCategory category, boolean defaultValue) {
+    public Supplier<GameRule<Boolean>> registerBooleanGameRule(String name, GameRuleCategory category, boolean defaultValue) {
         GameRule<Boolean> rule = GameRuleBuilder
                 .forBoolean(defaultValue)
                 .category(category)
-                .buildAndRegister(Identifier.fromNamespaceAndPath(ModConstants.MOD_ID, name));
+                .buildAndRegister(ModConstants.id(name));
         return () -> rule;
     }
 }

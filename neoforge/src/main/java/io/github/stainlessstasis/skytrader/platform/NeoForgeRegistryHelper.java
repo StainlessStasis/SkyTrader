@@ -12,12 +12,13 @@ import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
-import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@EventBusSubscriber
 public class NeoForgeRegistryHelper implements IRegistryHelper {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ModConstants.MOD_ID);
     public static final DeferredRegister<GameRule<?>> GAME_RULES = DeferredRegister.create(Registries.GAME_RULE, ModConstants.MOD_ID);
@@ -39,10 +40,5 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
         @SuppressWarnings("unchecked")
         Supplier<GameRule<Boolean>> typed = (Supplier<GameRule<Boolean>>) (Supplier<?>) registered;
         return typed;
-    }
-
-    public static void register(IEventBus bus) {
-        ITEMS.register(bus);
-        GAME_RULES.register(bus);
     }
 }

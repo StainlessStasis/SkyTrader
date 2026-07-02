@@ -48,7 +48,7 @@ public class SkyTraderNeoMod {
             }
         });
 
-        NeoForgeRegistryHelper.register(eventBus);
+        NeoForgeRegistryHelper.ITEMS.register(eventBus);
         ModItems.init();
         ModGameRules.init();
     }
