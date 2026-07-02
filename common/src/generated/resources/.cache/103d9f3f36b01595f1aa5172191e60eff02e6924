@@ -1,4 +1,4 @@
-// 26.2	2026-07-01T20:53:56.9924602	Registries
+// 26.2	2026-07-01T21:16:57.0784278	Registries
 378e2819f206485ea06edc92d1ce72c36c92bb43 data/skytrader/trade_set/sky_trader/boat.json
 2fa286cc45c9f0e2033cb69e9936f603806ca843 data/skytrader/trade_set/sky_trader/common.json
 1f2039e9fa17ed236f3724646384ec57ff5d4d0c data/skytrader/trade_set/sky_trader/harness.json
@@ -39,7 +39,7 @@ d11b1bc5e5d774bef883f26e5cd933c20b57d4df data/skytrader/villager_trade/sell_lead
 14b8d39a0e3a9164e9319c9aa68de4d43c17f910 data/skytrader/villager_trade/sell_magenta_harness.json
 1bde1ef9e7963dbcb2e236937e1c83eea330875d data/skytrader/villager_trade/sell_magma_cream.json
 45a678ba850b1cc6de3e8b10a0d998cfa7929f50 data/skytrader/villager_trade/sell_mangrove_boat.json
-992d3e22a9be970e9a269bc2b68573f41e1de455 data/skytrader/villager_trade/sell_name_tag.json
+7f1466a3fb9ac8eca770d7f1f2520199499b229a data/skytrader/villager_trade/sell_name_tag.json
 8188f216b8a9605b763ce541463e2b38090659e1 data/skytrader/villager_trade/sell_nautilus_shell.json
 3cb1e552af938d2094898e7af59162fb27d7d269 data/skytrader/villager_trade/sell_nether_bricks.json
 9c037fc9fb065e0134d580b0bc3ebe9b43b9ec24 data/skytrader/villager_trade/sell_nether_wart.json

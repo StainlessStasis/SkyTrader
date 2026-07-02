@@ -146,7 +146,7 @@ public class SkyTraderTrades {
                 new TradeCost(Items.EMERALD, 2), new ItemStackTemplate(Items.LEAD, 1),
                 12, 3, 0.05f, Optional.empty(), List.of()));
         context.register(SELL_NAME_TAG, new VillagerTrade(
-                new TradeCost(Items.EMERALD, 34), new ItemStackTemplate(Items.NAME_TAG),
+                new TradeCost(Items.EMERALD, 4), new ItemStackTemplate(Items.NAME_TAG),
                 12, 5, 0.05f, Optional.empty(), List.of()));
         context.register(SELL_HAY_BLOCK, new VillagerTrade(
                 new TradeCost(Items.EMERALD, UniformGenerator.between(3, 5)), new ItemStackTemplate(Items.HAY_BLOCK, 2),
