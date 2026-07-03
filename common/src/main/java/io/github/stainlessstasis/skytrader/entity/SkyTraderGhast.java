@@ -170,11 +170,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         if (!this.rideState.isStartOfRide()) {
             if (this.rideState.isEndOfRide()) {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_ended").withColor(TextColor.RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".flight_already_ended").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
             if (!hasPaid(player)) {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_started").withColor(TextColor.RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".flight_already_started").withColor(TextColor.RED));
                 return InteractionResult.FAIL;
             }
         }
@@ -240,7 +240,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (!anyPlayersLeft) {
                 beginReturn();
             } else if (this.stateTicks >= DISMOUNT_GRACE_TICKS) {
-                sendMessageToPassengers(ModConstants.MOD_ID + ".ride_departing", TextColor.WHITE);
+                sendMessageToPassengers(ModConstants.MOD_ID + ".flight_departing", TextColor.WHITE);
                 forceDismountPassengers();
                 beginReturn();
             }

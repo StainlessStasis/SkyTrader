@@ -1,9 +1,9 @@
 {
   "skytrader.no_ticket": "You need a Skyfare Ticket to board!",
-  "skytrader.still_arriving": "This ride is still landing. Wait for it to arrive.",
-  "skytrader.no_more_room": "This ride is already full.",
-  "skytrader.ride_already_started": "This ride has already started.",
-  "skytrader.ride_already_ended": "This ride has already ended.",
+  "skytrader.still_arriving": "This flight is still landing. Wait for it to arrive.",
+  "skytrader.no_more_room": "This flight is already full.",
+  "skytrader.flight_already_started": "This flight has already started.",
+  "skytrader.flight_already_ended": "This flight has already ended.",
   "skytrader.boarding_countdown": "Departing in %s seconds...",
   "skytrader.searching": "Calculating route...",
   "skytrader.no_village_retry": "Could not find village nearby, retrying...",
@@ -16,7 +16,8 @@
   "skytrader.arrived": "Arrived! Please disembark.",
   "skytrader.landing_blocked_retry": "Landing spot blocked, trying nearby...",
   "skytrader.landing_blocked_giving_up": "Couldn't find a clear landing spot. Letting you off here.",
-  "skytrader.ride_departing": "The ride is flying off!",
+  "skytrader.flight_departing": "This flight has ended!",
+  "skytrader.kicked_off_flight": "Go learn your lesson.",
 
   "item.skytrader.skyfare_ticket": "Skyfare Ticket",
   "entity.skytrader.sky_trader": "Sky Trader",
