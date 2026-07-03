@@ -26,14 +26,14 @@ public class FreeBirdAdvancementGenerator implements AdvancementSubProvider {
                 Component.translatable("advancements."+ ModConstants.MOD_ID+".free_bird.title"),
                 Component.translatable("advancements."+ ModConstants.MOD_ID+".free_bird.description"),
                 null,
-                AdvancementType.CHALLENGE,
+                AdvancementType.GOAL,
                 true,
                 true,
                 true
         );
 
         builder.rewards(
-                AdvancementRewards.Builder.experience(100)
+                AdvancementRewards.Builder.experience(50)
         );
 
         builder.addCriterion(
