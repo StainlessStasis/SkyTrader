@@ -29,7 +29,7 @@ public class FreeBirdAdvancementGenerator implements AdvancementSubProvider {
                 AdvancementType.GOAL,
                 true,
                 true,
-                true
+                false
         );
 
         builder.rewards(
