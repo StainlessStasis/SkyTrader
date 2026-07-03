@@ -9,8 +9,7 @@
     "description": {
       "translate": "advancements.skytrader.free_bird.description"
     },
-    "frame": "challenge",
-    "hidden": true,
+    "frame": "goal",
     "icon": {
       "id": "minecraft:feather"
     },
@@ -24,7 +23,7 @@
     ]
   ],
   "rewards": {
-    "experience": 100
+    "experience": 50
   },
   "sends_telemetry_event": true
 }
