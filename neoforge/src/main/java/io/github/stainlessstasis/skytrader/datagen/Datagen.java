@@ -1,6 +1,8 @@
 package io.github.stainlessstasis.skytrader.datagen;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
+import io.github.stainlessstasis.skytrader.datagen.advancement.FreeBirdAdvancementGenerator;
+import io.github.stainlessstasis.skytrader.datagen.advancement.NoFlyListAdvancementGenerator;
 import io.github.stainlessstasis.skytrader.datagen.advancement.WelcomeAboardAdvancementGenerator;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -19,7 +21,9 @@ public class Datagen {
         event.createProvider(output -> new AdvancementProvider(
                 output, lookupProvider,
                 List.of(
-                        new WelcomeAboardAdvancementGenerator()
+                        new WelcomeAboardAdvancementGenerator(),
+                        new FreeBirdAdvancementGenerator(),
+                        new NoFlyListAdvancementGenerator()
                 ))
         );
     }

@@ -3,6 +3,7 @@ package io.github.stainlessstasis.skytrader.entity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stainlessstasis.skytrader.ModConstants;
+import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderSpawner;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;
@@ -10,6 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -198,6 +200,9 @@ public class SkyTrader extends WanderingTrader {
         if (ghast != null && player.isPassengerOfSameVehicle(ghast)) {
             player.stopRiding();
             player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".kicked_off_flight").withColor(ModConstants.RED));
+            if (player instanceof ServerPlayer serverPlayer) {
+                ModAdvancements.grant(serverPlayer, ModAdvancements.NO_FLY_LIST);
+            }
         }
     }
 

@@ -1,0 +1,30 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "kicked_off_sky_trader_ghast": {
+      "trigger": "skytrader:manual_trigger"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.no_fly_list.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "minecraft:barrier"
+    },
+    "title": {
+      "translate": "advancements.skytrader.no_fly_list.title"
+    }
+  },
+  "requirements": [
+    [
+      "kicked_off_sky_trader_ghast"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}
