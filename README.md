@@ -8,6 +8,8 @@ The Sky Trader is a new type of trader who will rarely appear riding alongside t
 - Advancements: There are a few advancements in the Adventure tab, and one hidden one
 - ???: Your actions have consequences.
 
+<img width="1916" height="1011" alt="image" src="https://github.com/user-attachments/assets/46122274-8fd9-49e6-9cff-ed7536adaa57" />
+
 # Config
 ### Spawn Rates & Flight Mechanics
 Find the `skytrader.json` file in your Minecraft instance's config folder (your loader's default location). The values in this file control the spawning of the Sky Trader, flight of the Sky Trader's ghast, and the village finder. Not recommended to change `terrainLookaheadDistances`, `terrainSampleInterval`, or `searchRadius`, unless you know what you're doing. Setting `terrainSampleInterval` to a higher value can help with lag if you have multiple flights on your server at once, but the ghast may collide with obstacles more. Setting it lower will make the ghast follow terrain more smoothly, but can cause lag.
