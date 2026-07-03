@@ -3,6 +3,7 @@ package io.github.stainlessstasis.skytrader.datagen.advancement;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import net.minecraft.advancements.*;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.advancements.AdvancementSubProvider;
@@ -37,7 +38,7 @@ public class FreeBirdAdvancementGenerator implements AdvancementSubProvider {
 
         builder.addCriterion(
                 "jump_off_sky_trader_ghast",
-                ModAdvancements.MANUAL_TRIGGER.get().createCriterion(new ImpossibleTrigger.TriggerInstance())
+                CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance())
         );
         builder.requirements(AdvancementRequirements.allOf(List.of("jump_off_sky_trader_ghast")));
         builder.save(saver, ModAdvancements.FREE_BIRD);

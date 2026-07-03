@@ -2,7 +2,7 @@
   "parent": "skytrader:welcome_aboard",
   "criteria": {
     "jump_off_sky_trader_ghast": {
-      "trigger": "skytrader:manual_trigger"
+      "trigger": "minecraft:impossible"
     }
   },
   "display": {

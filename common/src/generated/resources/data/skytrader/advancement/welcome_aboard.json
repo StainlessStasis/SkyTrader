@@ -2,7 +2,7 @@
   "parent": "minecraft:adventure/root",
   "criteria": {
     "board_sky_trader_ghast": {
-      "trigger": "skytrader:manual_trigger"
+      "trigger": "minecraft:impossible"
     }
   },
   "display": {
@@ -22,7 +22,7 @@
     ]
   ],
   "rewards": {
-    "experience": 25
+    "experience": 15
   },
   "sends_telemetry_event": true
 }
