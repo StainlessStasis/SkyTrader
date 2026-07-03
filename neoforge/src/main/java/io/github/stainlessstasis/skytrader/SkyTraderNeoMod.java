@@ -5,8 +5,6 @@ import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.platform.NeoForgeRegistryHelper;
-import net.minecraft.advancements.triggers.CriterionTrigger;
-import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;

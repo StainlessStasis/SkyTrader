@@ -1,6 +1,5 @@
 package io.github.stainlessstasis.skytrader.platform;
 
-import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.gamerules.GameRule;

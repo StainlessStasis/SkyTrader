@@ -2,7 +2,6 @@ package io.github.stainlessstasis.skytrader.platform;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
-import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
