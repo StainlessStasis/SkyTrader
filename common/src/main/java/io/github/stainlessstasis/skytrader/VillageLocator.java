@@ -10,12 +10,22 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Locates the nearest village structure, offloading the expensive structure search work to a background thread to avoid main thread lag spikes.
  * Runs during the SEARCHING phase of the {@link SkyTraderGhast}.
  */
 public class VillageLocator {
+    private static final ExecutorService SEARCH_EXECUTOR = Executors.newSingleThreadExecutor(
+            r -> {
+                Thread thread = new Thread(r, "skytrader_village_locator");
+                thread.setDaemon(true);
+                return thread;
+            }
+    );
+
     private VillageLocator() {}
 
     /**
@@ -28,7 +38,7 @@ public class VillageLocator {
             ServerLevel serverLevel, BlockPos origin, int searchRadius) {
         return CompletableFuture.supplyAsync(
                 () -> findNearestVillageStructureBlocking(serverLevel, origin, searchRadius),
-                Util.backgroundExecutor()
+                SEARCH_EXECUTOR
         );
     }
 

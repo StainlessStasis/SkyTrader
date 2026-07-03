@@ -185,6 +185,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected void tickServer() {
+        if (level().tickRateManager().isFrozen()) {
+            return;
+        }
+
         this.stateTicks++;
         var flight = SkyTraderConfig.get().flight;
 
@@ -342,6 +346,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     @Override
     public void travel(@NonNull Vec3 input) {
+        if (level().tickRateManager().isFrozen()) {
+            return;
+        }
         if (this.level().isClientSide()) {
             super.travel(input);
             return;
