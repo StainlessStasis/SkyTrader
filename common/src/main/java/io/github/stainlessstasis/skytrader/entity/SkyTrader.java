@@ -30,6 +30,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -144,6 +145,15 @@ public class SkyTrader extends WanderingTrader {
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_MOUNT_UTILITY);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_COMMON);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_RARE);
+    }
+
+    @Override
+    public void notifyTrade(@NonNull MerchantOffer offer) {
+        super.notifyTrade(offer);
+        System.out.println("NOTIFY TRADE");
+        if (isInFlight() && this.getTradingPlayer() instanceof ServerPlayer serverPlayer) {
+            ModAdvancements.grant(serverPlayer, ModAdvancements.SNACK_RUN);
+        }
     }
 
     protected boolean isInFlight() {

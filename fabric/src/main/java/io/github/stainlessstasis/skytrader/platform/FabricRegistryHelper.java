@@ -34,15 +34,4 @@ public class FabricRegistryHelper implements IRegistryHelper {
                 .buildAndRegister(ModConstants.id(name));
         return () -> rule;
     }
-
-    @Override
-    public Supplier<ImpossibleTrigger> registerAdvancementTrigger(String name) {
-        Identifier id = ModConstants.id(name);
-        ImpossibleTrigger trigger = Registry.register(
-                net.minecraft.core.registries.BuiltInRegistries.TRIGGER_TYPES,
-                id,
-                new ImpossibleTrigger()
-        );
-        return () -> trigger;
-    }
 }

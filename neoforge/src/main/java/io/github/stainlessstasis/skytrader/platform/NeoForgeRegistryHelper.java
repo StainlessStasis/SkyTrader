@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 public class NeoForgeRegistryHelper implements IRegistryHelper {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ModConstants.MOD_ID);
     public static final DeferredRegister<GameRule<?>> GAME_RULES = DeferredRegister.create(Registries.GAME_RULE, ModConstants.MOD_ID);
-    public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_TYPES = DeferredRegister.create(Registries.TRIGGER_TYPE, ModConstants.MOD_ID);
 
     @Override
     public <T extends Item> Supplier<T> registerItem(String name, Function<ResourceKey<Item>, T> factory) {
@@ -49,15 +48,9 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
         return typed;
     }
 
-    @Override
-    public Supplier<ImpossibleTrigger> registerAdvancementTrigger(String name) {
-        return TRIGGER_TYPES.register(name, ImpossibleTrigger::new);
-    }
-
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
         GAME_RULES.register(bus);
-        TRIGGER_TYPES.register(bus);
         ModItems.init();
         ModGameRules.init();
         ModAdvancements.init();

@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "buy_sky_trader_snack": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.snack_run.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:cookie"
+    },
+    "title": {
+      "translate": "advancements.skytrader.snack_run.title"
+    }
+  },
+  "requirements": [
+    [
+      "buy_sky_trader_snack"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}
