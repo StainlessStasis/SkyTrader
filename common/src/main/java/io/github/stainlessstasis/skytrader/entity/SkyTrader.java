@@ -149,7 +149,7 @@ public class SkyTrader extends WanderingTrader {
 
     protected boolean isInFlight() {
         SkyTraderGhast ghast = getGhast();
-        return ghast != null && ghast.rideState.hasMovement();
+        return ghast != null && ghast.rideState.hasMovement() && !ghast.spawnDescent;
     }
 
     @Override
