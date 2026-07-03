@@ -731,6 +731,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                     MobEffects.SLOW_FALLING, 100, 0, true, true, true
             ));
         }
+
+        if (rideState == RideState.CRUISE && passenger instanceof ServerPlayer player) {
+            ModAdvancements.grant(player, ModAdvancements.FREE_BIRD);
+        }
     }
 
     protected void sendBoardingCountdown() {

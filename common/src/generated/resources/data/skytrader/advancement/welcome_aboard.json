@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:story/root",
+  "parent": "minecraft:adventure/root",
   "criteria": {
     "board_sky_trader_ghast": {
       "trigger": "skytrader:manual_trigger"
@@ -9,7 +9,6 @@
     "description": {
       "translate": "advancements.skytrader.welcome_aboard.description"
     },
-    "frame": "goal",
     "icon": {
       "id": "skytrader:skyfare_ticket"
     },
@@ -23,7 +22,7 @@
     ]
   ],
   "rewards": {
-    "experience": 100
+    "experience": 25
   },
   "sends_telemetry_event": true
 }
