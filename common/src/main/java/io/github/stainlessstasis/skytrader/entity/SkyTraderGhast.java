@@ -147,6 +147,16 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             }
         }
 
+        if (player.isPassengerOfSameVehicle(this)) {
+            if (this.rideState.hasMovement() && getOwner() instanceof SkyTrader trader) {
+                if (trader.isTrading()) {
+                    return InteractionResult.PASS;
+                }
+                return trader.mobInteract(player, hand);
+            }
+            return InteractionResult.PASS;
+        }
+
         if (this.level().isClientSide()) {
             return this.isWearingBodyArmor() && !player.isSecondaryUseActive()
                     ? InteractionResult.SUCCESS

@@ -4,9 +4,14 @@ import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderSpawner;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -20,9 +25,12 @@ import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MerchantMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -33,10 +41,12 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.EnumSet;
+import java.util.OptionalInt;
 
 public class SkyTrader extends WanderingTrader {
     protected @Nullable EntityReference<LivingEntity> ghast;
     protected int despawnTicks = -1;
+    protected @Nullable MerchantOffers flightOffers;
 
     public SkyTrader(EntityType<? extends WanderingTrader> type, Level level) {
         super(type, level);
@@ -135,6 +145,38 @@ public class SkyTrader extends WanderingTrader {
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_MOUNT_UTILITY);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_COMMON);
         this.addOffersFromTradeSet(level, offers, SkyTraderTrades.SKY_TRADER_RARE);
+    }
+
+    protected boolean isInFlight() {
+        SkyTraderGhast ghast = getGhast();
+        return ghast != null && ghast.rideState.hasMovement();
+    }
+
+    @Override
+    public @NonNull MerchantOffers getOffers() {
+        if (isInFlight() && level() instanceof ServerLevel serverLevel) {
+            if (flightOffers == null) {
+                flightOffers = new MerchantOffers();
+                addOffersFromTradeSet(serverLevel, flightOffers, SkyTraderTrades.SKY_TRADER_SNACKS);
+            }
+            return flightOffers;
+        }
+
+        flightOffers = null;
+        return super.getOffers();
+    }
+
+    @Override
+    public boolean stillValid(@NonNull Player player) {
+        if (getTradingPlayer() != player || !isAlive()) {
+            return false;
+        }
+
+        if (!player.isPassengerOfSameVehicle(this)) {
+            return player.isWithinEntityInteractionRange(this, 4f);
+        }
+
+        return true;
     }
 
     @Override

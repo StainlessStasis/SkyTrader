@@ -37,6 +37,7 @@ public class SkyTraderTrades {
     public static final ResourceKey<TradeSet> SKY_TRADER_MOUNT_UTILITY = tradeSetKey("sky_trader/mount_utility");
     public static final ResourceKey<TradeSet> SKY_TRADER_COMMON = tradeSetKey("sky_trader/common");
     public static final ResourceKey<TradeSet> SKY_TRADER_RARE = tradeSetKey("sky_trader/rare");
+    public static final ResourceKey<TradeSet> SKY_TRADER_SNACKS = tradeSetKey("sky_trader/snacks");
 
     public static ResourceKey<TradeSet> tradeSetKey(String path) {
         return ResourceKey.create(Registries.TRADE_SET, ModConstants.id(path));
@@ -89,6 +90,16 @@ public class SkyTraderTrades {
         TradeBuilder.sell("sell_chorus_fruit", Items.CHORUS_FRUIT).count(4).price(2).build(SKY_TRADER_RARE, context);
         TradeBuilder.sell("sell_blue_ice", Items.BLUE_ICE).count(4).price(3).maxUses(8).build(SKY_TRADER_RARE, context);
         TradeBuilder.sell("sell_honeycomb", Items.HONEYCOMB).count(3).price(2).build(SKY_TRADER_RARE, context);
+
+        // mid-flight snacks
+        TradeBuilder.sell("sell_bread", Items.BREAD).price(1).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_cookie", Items.COOKIE).count(4).price(1).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_apple", Items.APPLE).count(2).price(1).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_melon_slice", Items.MELON_SLICE).count(3).price(1).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_honey_bottle", Items.HONEY_BOTTLE).price(2).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_milk_bucket", Items.MILK_BUCKET).price(5).maxUses(6).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_pumpkin_pie", Items.PUMPKIN_PIE).price(2).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_cooked_chicken", Items.COOKED_CHICKEN).price(3).build(SKY_TRADER_SNACKS, context);
     }
 
     private static void registerHarnesses(BootstrapContext<VillagerTrade> context) {
@@ -124,6 +135,7 @@ public class SkyTraderTrades {
             else if (tradeSetKey.equals(SKY_TRADER_MOUNT_UTILITY)) rolls = ConstantValue.exactly(2);
             else if (tradeSetKey.equals(SKY_TRADER_COMMON)) rolls = UniformGenerator.between(2, 3);
             else if (tradeSetKey.equals(SKY_TRADER_RARE)) rolls = UniformGenerator.between(1, 2);
+            else if (tradeSetKey.equals(SKY_TRADER_SNACKS)) rolls = UniformGenerator.between(3, 4);
 
             context.register(tradeSetKey, new TradeSet(HolderSet.direct(holders), rolls, false, Optional.empty()));
         });

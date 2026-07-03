@@ -1,0 +1,17 @@
+{
+  "amount": {
+    "type": "minecraft:uniform",
+    "max": 4.0,
+    "min": 3.0
+  },
+  "trades": [
+    "skytrader:sell_bread",
+    "skytrader:sell_cookie",
+    "skytrader:sell_apple",
+    "skytrader:sell_melon_slice",
+    "skytrader:sell_honey_bottle",
+    "skytrader:sell_milk_bucket",
+    "skytrader:sell_pumpkin_pie",
+    "skytrader:sell_cooked_chicken"
+  ]
+}
