@@ -4,12 +4,15 @@ import com.mojang.serialization.Codec;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.ModGameRules;
 import io.github.stainlessstasis.skytrader.VillageLocator;
+import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -704,8 +707,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected void doPlayerRide(Player player) {
-        if (!this.level().isClientSide()) {
+        if (player instanceof ServerPlayer serverPlayer) {
             player.startRiding(this);
+            ModAdvancements.grant(serverPlayer, ModAdvancements.WELCOME_ABOARD);
         }
     }
 
@@ -721,7 +725,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     @Override
     protected void removePassenger(@NonNull Entity passenger) {
         super.removePassenger(passenger);
-        if (passenger instanceof LivingEntity living) {
+        boolean isArrival = rideState == RideState.ARRIVING || rideState == RideState.ARRIVED;
+        if (isArrival && passenger instanceof LivingEntity living) {
             living.addEffect(new MobEffectInstance(
                     MobEffects.SLOW_FALLING, 100, 0, true, true, true
             ));

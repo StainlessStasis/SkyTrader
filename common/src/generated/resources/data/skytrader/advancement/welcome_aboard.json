@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:story/root",
+  "criteria": {
+    "board_sky_trader_ghast": {
+      "trigger": "skytrader:manual_trigger"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.welcome_aboard.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "skytrader:skyfare_ticket"
+    },
+    "title": {
+      "translate": "advancements.skytrader.welcome_aboard.title"
+    }
+  },
+  "requirements": [
+    [
+      "board_sky_trader_ghast"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}
