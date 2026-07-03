@@ -2,6 +2,7 @@ package io.github.stainlessstasis.skytrader.platform;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
+import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -32,5 +33,16 @@ public class FabricRegistryHelper implements IRegistryHelper {
                 .category(category)
                 .buildAndRegister(ModConstants.id(name));
         return () -> rule;
+    }
+
+    @Override
+    public Supplier<ImpossibleTrigger> registerAdvancementTrigger(String name) {
+        Identifier id = ModConstants.id(name);
+        ImpossibleTrigger trigger = Registry.register(
+                net.minecraft.core.registries.BuiltInRegistries.TRIGGER_TYPES,
+                id,
+                new ImpossibleTrigger()
+        );
+        return () -> trigger;
     }
 }
