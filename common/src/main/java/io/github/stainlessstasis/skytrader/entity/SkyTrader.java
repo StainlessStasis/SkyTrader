@@ -72,6 +72,17 @@ public class SkyTrader extends WanderingTrader {
         super.aiStep();
         if (!this.level().isClientSide()) {
             tickDespawn();
+            syncRotationToGhast();
+        }
+    }
+
+    protected void syncRotationToGhast() {
+        if (getVehicle() instanceof SkyTraderGhast ghast && ghast.rideState.hasMovement()) {
+            float yaw = ghast.getYRot();
+            this.setYRot(yaw);
+            this.setYHeadRot(yaw);
+            this.yBodyRot = yaw;
+            this.yRotO = yaw;
         }
     }
 
