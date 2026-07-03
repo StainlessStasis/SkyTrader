@@ -33,10 +33,10 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
-    private static final int WHITE = 16777215;
-    private static final int RED = 16733525;
+import static io.github.stainlessstasis.skytrader.ModConstants.RED;
+import static io.github.stainlessstasis.skytrader.ModConstants.WHITE;
 
+public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
     protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
     protected static final float MAX_VERTICAL_SPEED = 0.5f;
     protected static final float TURN_SPEED = 0.25f;
@@ -173,11 +173,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         if (!this.rideState.isStartOfRide()) {
             if (this.rideState.isEndOfRide()) {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_ended").withColor(RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".flight_already_ended").withColor(RED));
                 return InteractionResult.FAIL;
             }
             if (!hasPaid(player)) {
-                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".ride_already_started").withColor(RED));
+                player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".flight_already_started").withColor(RED));
                 return InteractionResult.FAIL;
             }
         }
@@ -243,7 +243,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (!anyPlayersLeft) {
                 beginReturn();
             } else if (this.stateTicks >= DISMOUNT_GRACE_TICKS) {
-                sendMessageToPassengers(ModConstants.MOD_ID + ".ride_departing", WHITE);
+                sendMessageToPassengers(ModConstants.MOD_ID + ".flight_departing", WHITE);
                 forceDismountPassengers();
                 beginReturn();
             }

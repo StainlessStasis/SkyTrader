@@ -1,17 +1,17 @@
 package io.github.stainlessstasis.skytrader.entity;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderSpawner;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -25,12 +25,9 @@ import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MerchantMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -40,13 +37,13 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
-import java.util.EnumSet;
-import java.util.OptionalInt;
+import java.util.*;
 
 public class SkyTrader extends WanderingTrader {
     protected @Nullable EntityReference<LivingEntity> ghast;
     protected int despawnTicks = -1;
     protected @Nullable MerchantOffers flightOffers;
+    protected final Map<UUID, Integer> hitCounts = new HashMap<>();
 
     public SkyTrader(EntityType<? extends WanderingTrader> type, Level level) {
         super(type, level);
@@ -180,6 +177,31 @@ public class SkyTrader extends WanderingTrader {
     }
 
     @Override
+    public boolean hurtServer(@NonNull ServerLevel level, DamageSource source, float damage) {
+        if (source.getEntity() instanceof Player player) {
+            registerHitFromRudePassenger(player);
+        }
+        return super.hurtServer(level, source, damage);
+    }
+
+    public int registerHitFromRudePassenger(Player player) {
+        int newCount = hitCounts.merge(player.getUUID(), 1, Integer::sum);
+        if (newCount >= 3) {
+            hitCounts.remove(player.getUUID());
+            kickPlayerFromFlight(player);
+        }
+        return newCount;
+    }
+
+    protected void kickPlayerFromFlight(Player player) {
+        SkyTraderGhast ghast = getGhast();
+        if (ghast != null && player.isPassengerOfSameVehicle(ghast)) {
+            player.stopRiding();
+            player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".kicked_off_flight").withColor(ModConstants.RED));
+        }
+    }
+
+    @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(0, new UseSlowFallingPotionGoal(this));
@@ -280,6 +302,9 @@ public class SkyTrader extends WanderingTrader {
         super.addAdditionalSaveData(output);
         EntityReference.store(ghast, output, "Ghast");
         output.putInt("DespawnTicks", despawnTicks);
+
+        ValueOutput.TypedOutputList<HitEntry> hitList = output.list("HitCounts", HitEntry.CODEC);
+        hitCounts.forEach((uuid, count) -> hitList.add(new HitEntry(uuid, count)));
     }
 
     @Override
@@ -287,5 +312,15 @@ public class SkyTrader extends WanderingTrader {
         super.readAdditionalSaveData(input);
         this.ghast = EntityReference.read(input, "Ghast");
         this.despawnTicks = input.getIntOr("DespawnTicks", 0);
+
+        hitCounts.clear();
+        input.listOrEmpty("HitCounts", HitEntry.CODEC).forEach(e -> hitCounts.put(e.uuid(), e.count()));
+    }
+
+    record HitEntry(UUID uuid, int count) {
+        static final Codec<HitEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                UUIDUtil.CODEC.fieldOf("UUID").forGetter(HitEntry::uuid),
+                Codec.INT.fieldOf("Count").forGetter(HitEntry::count)
+        ).apply(i, HitEntry::new));
     }
 }

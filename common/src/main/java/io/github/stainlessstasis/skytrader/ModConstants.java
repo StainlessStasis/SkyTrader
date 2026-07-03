@@ -8,6 +8,8 @@ public class ModConstants {
     public static final String MOD_ID = "skytrader";
     public static final String MOD_NAME = "SkyTrader";
     public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
+    public static final int WHITE = 16777215;
+    public static final int RED = 16733525;
 
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
