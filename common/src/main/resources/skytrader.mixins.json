@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "MinecraftServerMixin",
+    "ProjectileUtilMixin",
     "ServerLevelAccessorMixin",
     "WanderingTraderInvoker"
   ],
