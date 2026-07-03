@@ -20,8 +20,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
-import java.util.function.Supplier;
-
 @Mod(ModConstants.MOD_ID)
 @EventBusSubscriber
 public class SkyTraderNeoMod {
