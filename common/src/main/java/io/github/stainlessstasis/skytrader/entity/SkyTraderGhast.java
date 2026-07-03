@@ -6,13 +6,12 @@ import io.github.stainlessstasis.skytrader.ModGameRules;
 import io.github.stainlessstasis.skytrader.VillageLocator;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.item.ModItems;
+import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -40,41 +39,6 @@ import static io.github.stainlessstasis.skytrader.ModConstants.RED;
 import static io.github.stainlessstasis.skytrader.ModConstants.WHITE;
 
 public class SkyTraderGhast extends HappyGhast implements TraceableEntity, OwnableEntity {
-    protected static final int MAX_NON_SKY_TRADER_PASSENGERS = 3;
-    protected static final float MAX_VERTICAL_SPEED = 0.5f;
-    protected static final float TURN_SPEED = 0.25f;
-
-    protected static final int BOARDING_TICKS = 300;
-    protected static final int BOARDING_EXTENSION_ON_NEW_PASSENGER = 100;
-    protected static final int MAX_DEPARTURE_ATTEMPTS = 3;
-
-    protected static final int TAKEOFF_HEIGHT = 30;
-    protected static final float TAKEOFF_VERTICAL_SPEED = 0.4f;
-    protected static final float TAKEOFF_FORWARD_SPEED = 0.15f;
-
-    protected static final int CRUISE_HOVER_HEIGHT = 75;
-    protected static final float CRUISE_SPEED = 0.6f;
-    protected static final int GLIDE_START_DISTANCE = 200;
-
-    protected static final double FINAL_APPROACH_DISTANCE = 4d;
-    protected static final int LANDING_HOVER_HEIGHT = 1;
-    protected static final double LANDING_ARRIVED_THRESHOLD = 3d;
-    protected static final double LANDING_ARRIVED_RADIUS = 12d;
-    protected static final float DESCEND_SPEED = 0.3f;
-    protected static final float SPAWN_DESCENT_SPEED = 0.5f;
-    protected static final float DESCEND_HORIZONTAL_SPEED = 0.2f;
-
-    protected static final int ARRIVING_TIMEOUT_TICKS = 200;
-    protected static final int MAX_LANDING_ATTEMPTS = 3;
-    protected static final int LANDING_RETRY_RADIUS = 16;
-    protected static final double SPAWN_JUMP_OFF_HEIGHT = 20d;
-
-    protected static final int DISMOUNT_GRACE_TICKS = 200;
-    protected static final int RETURN_FLIGHT_TICKS = 600;
-    protected static final float RETURN_SPEED = 0.5f;
-
-    protected static final int[] TERRAIN_LOOKAHEAD_DISTANCES = {8, 16, 24, 32};
-    protected static final int TERRAIN_SAMPLE_INTERVAL = 10;
     protected int cachedTerrainHeight = 0;
     protected int terrainSampleCooldown = 0;
 
@@ -83,7 +47,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected RideState rideState = RideState.IDLE;
     protected int stateTicks = 0;
     protected int departureAttempts = 0;
-    protected int totalBoardingTime = BOARDING_TICKS;
+    protected int totalBoardingTime = SkyTraderConfig.get().flight.boardingTicks;
     protected BlockPos destination;
     protected @Nullable Vec3 returnDirection;
     protected int landingAttempts = 0;
@@ -198,7 +162,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                     this.departureAttempts = 0;
                     setRideState(RideState.BOARDING);
                 } else if (this.rideState == RideState.BOARDING) {
-                    this.totalBoardingTime += BOARDING_EXTENSION_ON_NEW_PASSENGER;
+                    this.totalBoardingTime += SkyTraderConfig.get().flight.boardingExtensionOnNewPassenger;
                 }
 
                 return InteractionResult.SUCCESS;
@@ -222,6 +186,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     protected void tickServer() {
         this.stateTicks++;
+        var flight = SkyTraderConfig.get().flight;
 
         if (this.rideState == RideState.BOARDING) {
             boolean anyPlayers = this.getPassengers().stream().anyMatch(e -> e instanceof Player);
@@ -245,14 +210,14 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             boolean anyPlayersLeft = this.getPassengers().stream().anyMatch(e -> e instanceof Player);
             if (!anyPlayersLeft) {
                 beginReturn();
-            } else if (this.stateTicks >= DISMOUNT_GRACE_TICKS) {
+            } else if (this.stateTicks >= flight.dismountGraceTicks) {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".flight_departing", WHITE);
                 forceDismountPassengers();
                 beginReturn();
             }
         }
 
-        if (this.rideState == RideState.RETURNING && this.stateTicks >= RETURN_FLIGHT_TICKS) {
+        if (this.rideState == RideState.RETURNING && this.stateTicks >= flight.returnFlightTicks) {
             if (this.getOwner() instanceof SkyTrader trader) trader.discard();
             this.discard();
         }
@@ -308,7 +273,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         BlockPos searchOrigin = this.blockPosition();
         this.pendingVillageSearch = VillageLocator.findNearestVillageStructureAsync(
-                serverLevel, searchOrigin, VillageLocator.SEARCH_RADIUS);
+                serverLevel, searchOrigin, SkyTraderConfig.get().search.searchRadius);
 
         this.pendingVillageSearch.whenCompleteAsync((structureCenter, throwable) ->
                 serverLevel.getServer().execute(() -> {
@@ -333,7 +298,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         if (this.destination == null) {
             this.departureAttempts++;
-            if (this.departureAttempts >= MAX_DEPARTURE_ATTEMPTS) {
+            if (this.departureAttempts >= SkyTraderConfig.get().flight.maxDepartureAttempts) {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".no_village_giving_up", RED);
                 beginReturn();
                 forceDismountPassengers();
@@ -404,7 +369,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             this.terrainSampleCooldown--;
             return this.cachedTerrainHeight;
         }
-        this.terrainSampleCooldown = TERRAIN_SAMPLE_INTERVAL;
+        this.terrainSampleCooldown = SkyTraderConfig.get().flight.terrainSampleInterval;
 
         int max = terrainHeightAt(this.blockPosition());
         for (int distance : lookaheadDistances) {
@@ -429,12 +394,14 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected void steerYawToward(double dx, double dz) {
         float targetYaw = (float) (Mth.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0F;
         float diff = Mth.wrapDegrees(targetYaw - this.getYRot());
-        float newYaw = this.getYRot() + diff * TURN_SPEED;
+        float newYaw = this.getYRot() + diff * SkyTraderConfig.get().flight.turnSpeed;
         this.setYRot(newYaw);
         this.yRotO = this.yBodyRot = this.yHeadRot = newYaw;
     }
 
     protected Vec3 computeTakeoffInput() {
+        var flight = SkyTraderConfig.get().flight;
+
         if (this.destination == null) {
             setRideState(RideState.CRUISE);
             sendMessageToPassengers(ModConstants.MOD_ID + ".cruising", WHITE);
@@ -446,20 +413,22 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         steerYawToward(dx, dz);
 
         double heightAboveTerrain = this.getY() - terrainHeightAt(this.blockPosition());
-        if (heightAboveTerrain >= TAKEOFF_HEIGHT - 2) {
+        if (heightAboveTerrain >= flight.takeoffHeight - 2) {
             setRideState(RideState.CRUISE);
             sendMessageToPassengers(ModConstants.MOD_ID + ".cruising", WHITE);
             return Vec3.ZERO;
         }
 
         Vec3 direction = new Vec3(dx, 0, dz).normalize();
-        int terrainY = sampleMaxTerrainHeight(direction, TERRAIN_LOOKAHEAD_DISTANCES);
-        float up = computeVerticalInput(terrainY, TAKEOFF_HEIGHT, TAKEOFF_VERTICAL_SPEED);
+        int terrainY = sampleMaxTerrainHeight(direction, flight.terrainLookaheadDistances);
+        float up = computeVerticalInput(terrainY, flight.takeoffHeight, flight.takeoffVerticalSpeed);
 
-        return new Vec3(0, up, TAKEOFF_FORWARD_SPEED);
+        return new Vec3(0, up, flight.takeoffForwardSpeed);
     }
 
     protected Vec3 computeCruiseInput() {
+        var flight = SkyTraderConfig.get().flight;
+
         if (this.destination == null) {
             return Vec3.ZERO;
         }
@@ -468,7 +437,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         double dz = this.destination.getZ() + 0.5 - this.getZ();
         double horizontalDist = Math.sqrt(dx * dx + dz * dz);
 
-        if (horizontalDist < GLIDE_START_DISTANCE) {
+        if (horizontalDist < flight.glideStartDistance) {
             setRideState(RideState.GLIDING);
             sendMessageToPassengers(ModConstants.MOD_ID + ".beginning_descent", WHITE);
             return Vec3.ZERO;
@@ -477,17 +446,19 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         Vec3 direction = new Vec3(dx, 0, dz).normalize();
         steerYawToward(dx, dz);
 
-        int terrainY = sampleMaxTerrainHeight(direction, TERRAIN_LOOKAHEAD_DISTANCES);
-        float up = computeVerticalInput(terrainY, CRUISE_HOVER_HEIGHT, MAX_VERTICAL_SPEED);
+        int terrainY = sampleMaxTerrainHeight(direction, flight.terrainLookaheadDistances);
+        float up = computeVerticalInput(terrainY, flight.cruiseHoverHeight, flight.maxVerticalSpeed);
 
         if (this.stateTicks > 20 && this.stateTicks % 20 == 0) {
             sendMessageToPassengers(ModConstants.MOD_ID + ".en_route_status", WHITE, Math.round(horizontalDist), estimateTravelSeconds(horizontalDist));
         }
 
-        return new Vec3(0, up, CRUISE_SPEED);
+        return new Vec3(0, up, flight.cruiseSpeed);
     }
 
     protected Vec3 computeGlidingInput() {
+        var flight = SkyTraderConfig.get().flight;
+
         if (this.destination == null) {
             setRideState(RideState.ARRIVING);
             sendMessageToPassengers(ModConstants.MOD_ID + ".arriving", WHITE);
@@ -498,7 +469,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         double dz = this.destination.getZ() + 0.5 - this.getZ();
         double horizontalDist = Math.sqrt(dx * dx + dz * dz);
 
-        if (horizontalDist < FINAL_APPROACH_DISTANCE) {
+        if (horizontalDist < flight.finalApproachDistance) {
             setRideState(RideState.ARRIVING);
             sendMessageToPassengers(ModConstants.MOD_ID + ".arriving", WHITE);
             return Vec3.ZERO;
@@ -508,21 +479,23 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         steerYawToward(dx, dz);
 
         double t = Mth.clamp(
-                (horizontalDist - FINAL_APPROACH_DISTANCE) / (GLIDE_START_DISTANCE - FINAL_APPROACH_DISTANCE),
+                (horizontalDist - flight.finalApproachDistance) / (flight.glideStartDistance - flight.finalApproachDistance),
                 0.0, 1.0);
-        int targetHoverHeight = (int) Mth.lerp(t, LANDING_HOVER_HEIGHT, CRUISE_HOVER_HEIGHT);
+        int targetHoverHeight = (int) Mth.lerp(t, flight.landingHoverHeight, flight.cruiseHoverHeight);
 
-        int terrainY = sampleMaxTerrainHeight(direction, TERRAIN_LOOKAHEAD_DISTANCES);
-        float up = computeVerticalInput(terrainY, targetHoverHeight, MAX_VERTICAL_SPEED);
+        int terrainY = sampleMaxTerrainHeight(direction, flight.terrainLookaheadDistances);
+        float up = computeVerticalInput(terrainY, targetHoverHeight, flight.maxVerticalSpeed);
 
         if (this.stateTicks > 20 && this.stateTicks % 20 == 0) {
             sendMessageToPassengers(ModConstants.MOD_ID + ".en_route_status", WHITE, Math.round(horizontalDist), estimateTravelSeconds(horizontalDist));
         }
 
-        return new Vec3(0, up, CRUISE_SPEED);
+        return new Vec3(0, up, flight.cruiseSpeed);
     }
 
     protected Vec3 computeArrivingInput() {
+        var flight = SkyTraderConfig.get().flight;
+
         if (this.destination == null) {
             if (this.spawnDescent) {
                 completeSpawnDescent();
@@ -536,16 +509,16 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         if (this.spawnDescent && getOwner() instanceof SkyTrader trader
                 && trader.isPassenger() && trader.getVehicle() == this) {
             int jumpTerrainY = terrainHeightAt(this.blockPosition());
-            double heightAboveTarget = this.getY() - (jumpTerrainY + LANDING_HOVER_HEIGHT);
-            if (heightAboveTarget <= SPAWN_JUMP_OFF_HEIGHT) {
+            double heightAboveTarget = this.getY() - (jumpTerrainY + flight.landingHoverHeight);
+            if (heightAboveTarget <= flight.spawnJumpOffHeight) {
                 BlockPos landingSpot = this.destination != null ? this.destination : this.blockPosition();
                 trader.jumpOffSpawnDescent(landingSpot);
             }
         }
 
-        if (this.stateTicks >= ARRIVING_TIMEOUT_TICKS) {
+        if (this.stateTicks >= flight.arrivingTimeoutTicks) {
             this.landingAttempts++;
-            if (this.landingAttempts >= MAX_LANDING_ATTEMPTS) {
+            if (this.landingAttempts >= flight.maxLandingAttempts) {
                 if (this.spawnDescent) {
                     completeSpawnDescent();
                 } else {
@@ -567,12 +540,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         double horizontalDist = Math.sqrt(dx * dx + dz * dz);
 
         int terrainY = terrainHeightAt(this.blockPosition());
-        double targetY = terrainY + LANDING_HOVER_HEIGHT;
+        double targetY = terrainY + flight.landingHoverHeight;
         double dy = targetY - this.getY();
-        boolean nearGround = Math.abs(dy) < LANDING_ARRIVED_THRESHOLD;
+        boolean nearGround = Math.abs(dy) < flight.landingArrivedThreshold;
 
-        boolean closeEnough = horizontalDist < FINAL_APPROACH_DISTANCE
-                || (nearGround && horizontalDist < LANDING_ARRIVED_RADIUS);
+        boolean closeEnough = horizontalDist < flight.finalApproachDistance
+                || (nearGround && horizontalDist < flight.landingArrivedRadius);
 
         if (nearGround && closeEnough) {
             if (this.spawnDescent) {
@@ -584,27 +557,30 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return Vec3.ZERO;
         }
 
-        float descentSpeed = this.spawnDescent ? SPAWN_DESCENT_SPEED : DESCEND_SPEED;
+        float descentSpeed = this.spawnDescent ? flight.spawnDescentSpeed : flight.descendSpeed;
         float up = (float) Mth.clamp(dy * 0.05, -descentSpeed, descentSpeed);
         float forward = 0f;
-        if (horizontalDist > FINAL_APPROACH_DISTANCE) {
+        if (horizontalDist > flight.finalApproachDistance) {
             steerYawToward(dx, dz);
-            forward = DESCEND_HORIZONTAL_SPEED;
+            forward = flight.descendHorizontalSpeed;
         }
 
         return new Vec3(0, up, forward);
     }
 
     protected BlockPos pickNearbyLandingSpot() {
+        int retryRadius = SkyTraderConfig.get().flight.landingRetryRadius;
         BlockPos anchor = this.villageCenter != null ? this.villageCenter : this.destination;
-        int offsetX = this.random.nextInt(LANDING_RETRY_RADIUS * 2) - LANDING_RETRY_RADIUS;
-        int offsetZ = this.random.nextInt(LANDING_RETRY_RADIUS * 2) - LANDING_RETRY_RADIUS;
+        int offsetX = this.random.nextInt(retryRadius * 2) - retryRadius;
+        int offsetZ = this.random.nextInt(retryRadius * 2) - retryRadius;
         BlockPos candidate = anchor.offset(offsetX, 0, offsetZ);
         int surfaceY = terrainHeightAt(candidate);
         return new BlockPos(candidate.getX(), surfaceY, candidate.getZ());
     }
 
     protected Vec3 computeReturnInput() {
+        var flight = SkyTraderConfig.get().flight;
+
         if (this.returnDirection == null) {
             return Vec3.ZERO;
         }
@@ -612,16 +588,16 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         steerYawToward(returnDirection.x, returnDirection.z);
 
         double heightAboveTerrain = this.getY() - terrainHeightAt(this.blockPosition());
-        if (heightAboveTerrain < TAKEOFF_HEIGHT) {
-            int terrainY = sampleMaxTerrainHeight(returnDirection, TERRAIN_LOOKAHEAD_DISTANCES);
-            float up = computeVerticalInput(terrainY, TAKEOFF_HEIGHT, TAKEOFF_VERTICAL_SPEED);
-            return new Vec3(0, up, TAKEOFF_FORWARD_SPEED);
+        if (heightAboveTerrain < flight.takeoffHeight) {
+            int terrainY = sampleMaxTerrainHeight(returnDirection, flight.terrainLookaheadDistances);
+            float up = computeVerticalInput(terrainY, flight.takeoffHeight, flight.takeoffVerticalSpeed);
+            return new Vec3(0, up, flight.takeoffForwardSpeed);
         }
 
-        int terrainY = sampleMaxTerrainHeight(returnDirection, TERRAIN_LOOKAHEAD_DISTANCES);
-        float up = computeVerticalInput(terrainY, CRUISE_HOVER_HEIGHT, MAX_VERTICAL_SPEED);
+        int terrainY = sampleMaxTerrainHeight(returnDirection, flight.terrainLookaheadDistances);
+        float up = computeVerticalInput(terrainY, flight.cruiseHoverHeight, flight.maxVerticalSpeed);
 
-        return new Vec3(0, up, RETURN_SPEED);
+        return new Vec3(0, up, flight.returnSpeed);
     }
 
     protected void forceDismountPassengers() {
@@ -641,7 +617,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected int estimateTravelSeconds(double blocksRemaining) {
-        return (int) (blocksRemaining / (CRUISE_SPEED * 20));
+        return (int) (blocksRemaining / (SkyTraderConfig.get().flight.cruiseSpeed * 20));
     }
 
     @Override
@@ -719,7 +695,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return true;
         }
         long playerRiders = this.getPassengers().stream().filter(e -> e instanceof Player).count();
-        return playerRiders < MAX_NON_SKY_TRADER_PASSENGERS;
+        return playerRiders < MAX_PASSANGERS-1;
     }
 
     @Override

@@ -5,6 +5,7 @@ import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.platform.NeoForgeRegistryHelper;
+import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.registries.Registries;
@@ -16,6 +17,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -40,6 +42,8 @@ public class SkyTraderNeoMod {
             );
 
     public SkyTraderNeoMod(IEventBus eventBus) {
+        SkyTraderConfig.init(FMLPaths.CONFIGDIR.get());
+
         ENTITIES.register(eventBus);
 
         eventBus.addListener(RegisterEvent.class, event -> {

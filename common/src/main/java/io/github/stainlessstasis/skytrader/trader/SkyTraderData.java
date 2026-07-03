@@ -10,8 +10,8 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 public class SkyTraderData extends SavedData {
     public static final Codec<SkyTraderData> CODEC = RecordCodecBuilder.create(
             i -> i.group(
-                            Codec.INT.optionalFieldOf("spawn_delay", SkyTraderSpawner.DEFAULT_SPAWN_DELAY).forGetter(data -> data.spawnDelay),
-                            Codec.INT.optionalFieldOf("spawn_chance", SkyTraderSpawner.MIN_SPAWN_CHANCE).forGetter(data -> data.spawnChance)
+                            Codec.INT.optionalFieldOf("spawn_delay", 1200).forGetter(data -> data.spawnDelay),
+                            Codec.INT.optionalFieldOf("spawn_chance", 25).forGetter(data -> data.spawnChance)
                     )
                     .apply(i, SkyTraderData::new)
     );
@@ -22,7 +22,7 @@ public class SkyTraderData extends SavedData {
     private int spawnChance;
 
     public SkyTraderData() {
-        this(SkyTraderSpawner.DEFAULT_SPAWN_DELAY, SkyTraderSpawner.MIN_SPAWN_CHANCE);
+        this(1200, 25);
     }
 
     public SkyTraderData(int spawnDelay, int spawnChance) {
