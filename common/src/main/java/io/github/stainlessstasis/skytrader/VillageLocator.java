@@ -5,31 +5,39 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.StructureTags;
-import net.minecraft.util.Util;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Locates the nearest village structure, offloading the expensive structure search to a background thread to avoid main thread lag spikes.
+ * Locates the nearest village structure.
  * Runs during the SEARCHING phase of the {@link SkyTraderGhast}.
  */
 public class VillageLocator {
+
     private VillageLocator() {}
 
     /**
-     * Starts an async search for the nearest village.
+     * Starts a search for the nearest village.
      * Returns null (via the future) if no village could be found.
-     * The returned BlockPos has an arbitrary Y.
-     * Callers must resolve the real surface height themselves via {@link #resolveSurfacePosition}, on the main thread.
+     * Callers must resolve the real surface height themselves via {@link #resolveSurfacePosition}.
      */
     public static CompletableFuture<@Nullable BlockPos> findNearestVillageStructureAsync(
             ServerLevel serverLevel, BlockPos origin, int searchRadius) {
-        return CompletableFuture.supplyAsync(
-                () -> findNearestVillageStructureBlocking(serverLevel, origin, searchRadius),
-                Util.backgroundExecutor()
-        );
+
+        CompletableFuture<@Nullable BlockPos> future = new CompletableFuture<>();
+
+        serverLevel.getServer().execute(() -> {
+            try {
+                BlockPos result = findNearestVillageStructureBlocking(serverLevel, origin, searchRadius);
+                future.complete(result);
+            } catch (Throwable t) {
+                future.completeExceptionally(t);
+            }
+        });
+
+        return future;
     }
 
     private static @Nullable BlockPos findNearestVillageStructureBlocking(
@@ -53,7 +61,6 @@ public class VillageLocator {
 
     /**
      * Resolves the real surface Y for a structure center.
-     * Must be called on the main server thread: touches chunk/heightmap data.
      */
     public static BlockPos resolveSurfacePosition(ServerLevel serverLevel, BlockPos structureCenter) {
         int surfaceY = serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, structureCenter.getX(), structureCenter.getZ());
