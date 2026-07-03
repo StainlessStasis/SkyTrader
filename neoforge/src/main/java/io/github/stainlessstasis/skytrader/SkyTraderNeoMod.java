@@ -5,6 +5,8 @@ import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.platform.NeoForgeRegistryHelper;
+import net.minecraft.advancements.triggers.CriterionTrigger;
+import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
@@ -19,6 +21,8 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
+
+import java.util.function.Supplier;
 
 @Mod(ModConstants.MOD_ID)
 @EventBusSubscriber
@@ -48,8 +52,6 @@ public class SkyTraderNeoMod {
         });
 
         NeoForgeRegistryHelper.register(eventBus);
-        ModItems.init();
-        ModGameRules.init();
     }
 
     @SubscribeEvent

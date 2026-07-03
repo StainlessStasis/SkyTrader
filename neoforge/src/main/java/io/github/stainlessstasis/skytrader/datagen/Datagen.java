@@ -1,15 +1,26 @@
 package io.github.stainlessstasis.skytrader.datagen;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
+import io.github.stainlessstasis.skytrader.datagen.advancement.WelcomeAboardAdvancementGenerator;
+import net.minecraft.data.advancements.AdvancementProvider;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+
+import java.util.List;
 
 @EventBusSubscriber
 public class Datagen {
     @SubscribeEvent
     static void gatherData(GatherDataEvent.Client event) {
-        event.createProvider(output -> new ModEntityTagProvider(output, event.getLookupProvider(), ModConstants.MOD_ID));
-        event.createProvider(output -> new ModTradeProvider(output, event.getLookupProvider()));
+        var lookupProvider = event.getLookupProvider();
+        event.createProvider(output -> new ModEntityTagProvider(output, lookupProvider, ModConstants.MOD_ID));
+        event.createProvider(output -> new ModTradeProvider(output, lookupProvider));
+        event.createProvider(output -> new AdvancementProvider(
+                output, lookupProvider,
+                List.of(
+                        new WelcomeAboardAdvancementGenerator()
+                ))
+        );
     }
 }

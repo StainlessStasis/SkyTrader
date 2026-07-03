@@ -3,6 +3,11 @@ package io.github.stainlessstasis.skytrader.platform;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.serialization.Codec;
 import io.github.stainlessstasis.skytrader.ModConstants;
+import io.github.stainlessstasis.skytrader.ModGameRules;
+import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
+import io.github.stainlessstasis.skytrader.item.ModItems;
+import net.minecraft.advancements.triggers.CriterionTrigger;
+import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -23,6 +28,7 @@ import java.util.function.Supplier;
 public class NeoForgeRegistryHelper implements IRegistryHelper {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ModConstants.MOD_ID);
     public static final DeferredRegister<GameRule<?>> GAME_RULES = DeferredRegister.create(Registries.GAME_RULE, ModConstants.MOD_ID);
+    public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_TYPES = DeferredRegister.create(Registries.TRIGGER_TYPE, ModConstants.MOD_ID);
 
     @Override
     public <T extends Item> Supplier<T> registerItem(String name, Function<ResourceKey<Item>, T> factory) {
@@ -43,8 +49,17 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
         return typed;
     }
 
+    @Override
+    public Supplier<ImpossibleTrigger> registerAdvancementTrigger(String name) {
+        return TRIGGER_TYPES.register(name, ImpossibleTrigger::new);
+    }
+
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
         GAME_RULES.register(bus);
+        TRIGGER_TYPES.register(bus);
+        ModItems.init();
+        ModGameRules.init();
+        ModAdvancements.init();
     }
 }

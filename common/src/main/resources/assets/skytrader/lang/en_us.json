@@ -21,5 +21,8 @@
 
   "item.skytrader.skyfare_ticket": "Skyfare Ticket",
   "entity.skytrader.sky_trader": "Sky Trader",
-  "entity.skytrader.sky_trader_ghast": "Sky Trader Ghast"
+  "entity.skytrader.sky_trader_ghast": "Sky Trader Ghast",
+
+  "advancements.skytrader.welcome_aboard.title": "Welcome Aboard!",
+  "advancements.skytrader.welcome_aboard.description": "Use a Skyfare Ticket to board a flight"
 }
