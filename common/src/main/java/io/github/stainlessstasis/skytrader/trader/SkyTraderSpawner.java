@@ -28,20 +28,6 @@ import net.minecraft.world.level.storage.SavedDataStorage;
 import org.jspecify.annotations.Nullable;
 
 public class SkyTraderSpawner implements CustomSpawner {
-    private static final int DEFAULT_TICK_DELAY = 1200;
-    public static final int DEFAULT_SPAWN_DELAY = 24000;
-    public static final int DESPAWN_TICKS = DEFAULT_SPAWN_DELAY*2;
-    public static final int MIN_SPAWN_CHANCE = 25;
-    private static final int MAX_SPAWN_CHANCE = 75;
-    private static final int SPAWN_CHANCE_INCREASE = 25;
-    private static final int SPAWN_ONE_IN_X_CHANCE = 8;
-    private static final int NUMBER_OF_SPAWN_ATTEMPTS = 10;
-    private static final int GHAST_HORIZONTAL_CLEARANCE = 2;
-    private static final int GHAST_VERTICAL_CLEARANCE = 4;
-    private static final int GHAST_UPWARD_SEARCH_LIMIT = 32;
-    private static final int SPAWN_ALTITUDE = 60;
-    private static final int SEARCH_RADIUS = 48;
-
     private final RandomSource random = RandomSource.create();
     private final SavedDataStorage savedDataStorage;
     private int tickDelay;
@@ -49,7 +35,7 @@ public class SkyTraderSpawner implements CustomSpawner {
 
     public SkyTraderSpawner(SavedDataStorage savedDataStorage) {
         this.savedDataStorage = savedDataStorage;
-        this.tickDelay = DEFAULT_TICK_DELAY;
+        this.tickDelay = SkyTraderConfig.get().spawning.tickDelay;
         this.traderData = null;
     }
 
@@ -63,20 +49,22 @@ public class SkyTraderSpawner implements CustomSpawner {
 
     @Override
     public void tick(ServerLevel level, boolean spawnEnemies) {
+        var config = SkyTraderConfig.get().spawning;
+
         if (level.getGameRules().get(ModGameRules.SPAWN_SKY_TRADERS.get())) {
             if (--this.tickDelay <= 0) {
-                this.tickDelay = DEFAULT_TICK_DELAY;
+                this.tickDelay = config.tickDelay;
                 SkyTraderData data = this.getTraderData();
-                int spawnDelay = data.spawnDelay() - DEFAULT_TICK_DELAY;
+                int spawnDelay = data.spawnDelay() - config.tickDelay;
                 data.setSpawnDelay(spawnDelay);
                 if (spawnDelay <= 0) {
-                    data.setSpawnDelay(DEFAULT_SPAWN_DELAY);
+                    data.setSpawnDelay(config.spawnDelayTicks);
                     int chanceToSpawn = data.spawnChance();
-                    int newSpawnChance = Mth.clamp(chanceToSpawn + SPAWN_CHANCE_INCREASE, MIN_SPAWN_CHANCE, MAX_SPAWN_CHANCE);
+                    int newSpawnChance = Mth.clamp(chanceToSpawn + config.spawnChanceIncrease, config.minSpawnChance, config.maxSpawnChance);
                     data.setSpawnChance(newSpawnChance);
                     if (this.random.nextInt(100) <= chanceToSpawn) {
                         if (this.spawn(level, false)) {
-                            data.setSpawnChance(MIN_SPAWN_CHANCE);
+                            data.setSpawnChance(config.minSpawnChance);
                         }
                     }
                 }
@@ -92,25 +80,27 @@ public class SkyTraderSpawner implements CustomSpawner {
     }
 
     private boolean spawn(ServerLevel level, boolean force) {
+        var spawning = SkyTraderConfig.get().spawning;
+
         Player player = level.getRandomPlayer();
         if (player == null) {
             return true;
         }
 
-        if (!force && this.random.nextInt(SPAWN_ONE_IN_X_CHANCE) != 0) {
+        if (!force && this.random.nextInt(spawning.spawnOneInXChance) != 0) {
             return false;
         }
 
         BlockPos playerPos = player.blockPosition();
         PoiManager poiManager = level.getPoiManager();
-        Optional<BlockPos> poiPos = poiManager.find(p -> p.is(PoiTypes.MEETING), p -> true, playerPos, SEARCH_RADIUS, PoiManager.Occupancy.ANY);
+        Optional<BlockPos> poiPos = poiManager.find(p -> p.is(PoiTypes.MEETING), p -> true, playerPos, spawning.searchRadius, PoiManager.Occupancy.ANY);
         BlockPos groundReference = poiPos.orElse(playerPos);
 
         if (level.getBiome(groundReference).is(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) {
             return false;
         }
 
-        BlockPos skySpawnPos = findClearSkySpawnPosition(level, groundReference, SEARCH_RADIUS);
+        BlockPos skySpawnPos = findClearSkySpawnPosition(level, groundReference, spawning.searchRadius);
         if (skySpawnPos == null) {
             return false;
         }
@@ -133,17 +123,18 @@ public class SkyTraderSpawner implements CustomSpawner {
         ghast.setOwnerRiding();
         ghast.beginSpawnDescent(groundReference);
 
-        trader.setDespawnTicks(DESPAWN_TICKS);
+        trader.setDespawnTicks(spawning.despawnTicks);
 
         return true;
     }
 
     private @Nullable BlockPos findClearSkySpawnPosition(LevelReader level, BlockPos groundReference, int radius) {
-        for (int i = 0; i < NUMBER_OF_SPAWN_ATTEMPTS; i++) {
+        var spawning = SkyTraderConfig.get().spawning;
+        for (int i = 0; i < spawning.numberOfSpawnAttempts; i++) {
             int x = groundReference.getX() + this.random.nextInt(radius * 2) - radius;
             int z = groundReference.getZ() + this.random.nextInt(radius * 2) - radius;
             int groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
-            int targetY = Math.min(groundY + SPAWN_ALTITUDE, level.getMaxY() - GHAST_VERTICAL_CLEARANCE - 1);
+            int targetY = Math.min(groundY + spawning.spawnAltitude, level.getMaxY() - spawning.ghastVerticalClearance - 1);
             BlockPos candidate = findClearGhastPositionFrom(level, x, targetY, z);
             if (candidate != null) {
                 return candidate;
@@ -153,7 +144,7 @@ public class SkyTraderSpawner implements CustomSpawner {
     }
 
     private @Nullable BlockPos findClearGhastPositionFrom(LevelReader level, int x, int startY, int z) {
-        int maxY = Math.min(startY + GHAST_UPWARD_SEARCH_LIMIT, level.getMaxY());
+        int maxY = Math.min(startY + SkyTraderConfig.get().spawning.ghastUpwardSearchLimit, level.getMaxY());
         for (int y = startY; y <= maxY; y++) {
             BlockPos candidate = new BlockPos(x, y, z);
             if (hasEnoughSpaceForGhast(level, candidate)) {
@@ -164,9 +155,11 @@ public class SkyTraderSpawner implements CustomSpawner {
     }
 
     private boolean hasEnoughSpaceForGhast(BlockGetter level, BlockPos center) {
+        int clearance = SkyTraderConfig.get().spawning.ghastHorizontalClearance;
+        int vertical = SkyTraderConfig.get().spawning.ghastVerticalClearance;
         for (BlockPos pos : BlockPos.betweenClosed(
-                center.offset(-GHAST_HORIZONTAL_CLEARANCE, 0, -GHAST_HORIZONTAL_CLEARANCE),
-                center.offset(GHAST_HORIZONTAL_CLEARANCE, GHAST_VERTICAL_CLEARANCE, GHAST_HORIZONTAL_CLEARANCE))) {
+                center.offset(-clearance, 0, -clearance),
+                center.offset(clearance, vertical, clearance))) {
             if (!level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()) {
                 return false;
             }

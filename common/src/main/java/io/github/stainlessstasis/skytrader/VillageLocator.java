@@ -16,8 +16,6 @@ import java.util.concurrent.CompletableFuture;
  * Runs during the SEARCHING phase of the {@link SkyTraderGhast}.
  */
 public class VillageLocator {
-    public static final int SEARCH_RADIUS = 2048;
-
     private VillageLocator() {}
 
     /**

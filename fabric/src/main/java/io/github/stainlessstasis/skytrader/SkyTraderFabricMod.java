@@ -3,9 +3,11 @@ package io.github.stainlessstasis.skytrader;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.item.ModItems;
+import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
@@ -16,6 +18,8 @@ public class SkyTraderFabricMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        SkyTraderConfig.init(FabricLoader.getInstance().getConfigDir());
+
         // entities
         ModEntities.SKY_TRADER = Registry.register(
                 BuiltInRegistries.ENTITY_TYPE,

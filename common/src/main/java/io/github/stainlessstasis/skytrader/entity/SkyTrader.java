@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
+import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderSpawner;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;
 import net.minecraft.core.BlockPos;
@@ -109,7 +110,7 @@ public class SkyTrader extends WanderingTrader {
             @NonNull ServerLevelAccessor level, @NonNull DifficultyInstance difficulty, @NonNull EntitySpawnReason spawnReason, @Nullable SpawnGroupData groupData)
     {
         if (spawnReason == EntitySpawnReason.COMMAND) {
-            setDespawnTicks(SkyTraderSpawner.DESPAWN_TICKS);
+            setDespawnTicks(SkyTraderConfig.get().spawning.despawnTicks);
         }
         return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
     }
@@ -150,7 +151,6 @@ public class SkyTrader extends WanderingTrader {
     @Override
     public void notifyTrade(@NonNull MerchantOffer offer) {
         super.notifyTrade(offer);
-        System.out.println("NOTIFY TRADE");
         if (isInFlight() && this.getTradingPlayer() instanceof ServerPlayer serverPlayer) {
             ModAdvancements.grant(serverPlayer, ModAdvancements.SNACK_RUN);
         }
