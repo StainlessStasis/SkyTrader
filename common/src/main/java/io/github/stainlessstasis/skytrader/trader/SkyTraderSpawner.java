@@ -40,7 +40,7 @@ public class SkyTraderSpawner implements CustomSpawner {
         this.traderData = null;
     }
 
-    public static void forceSpawn(@Nullable ServerPlayer player, ServerLevel level) {
+    public static void forceSpawn(@Nullable Player player, ServerLevel level) {
         ((ServerLevelAccessorMixin) level).getCustomSpawners().forEach(customSpawner -> {
             if (customSpawner instanceof SkyTraderSpawner spawner) {
                 spawner.spawn(level, player, true);

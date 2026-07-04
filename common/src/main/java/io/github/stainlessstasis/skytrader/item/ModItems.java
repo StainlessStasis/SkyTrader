@@ -12,6 +12,13 @@ public class ModItems {
                             .stacksTo(16)
             )
     );
+    public static final Supplier<SkyfareBeaconItem> SKYFARE_BEACON = Services.REGISTRY.registerItem("skyfare_beacon",
+            (key) -> new SkyfareBeaconItem(
+                    new Item.Properties()
+                            .setId(key)
+                            .stacksTo(4)
+            )
+    );
 
     public static void init() {}
 }
