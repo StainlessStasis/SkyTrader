@@ -9,6 +9,7 @@ import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import io.github.stainlessstasis.skytrader.mixin.ServerLevelAccessorMixin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -39,10 +40,10 @@ public class SkyTraderSpawner implements CustomSpawner {
         this.traderData = null;
     }
 
-    public static void forceSpawn(ServerLevel level) {
+    public static void forceSpawn(@Nullable ServerPlayer player, ServerLevel level) {
         ((ServerLevelAccessorMixin) level).getCustomSpawners().forEach(customSpawner -> {
             if (customSpawner instanceof SkyTraderSpawner spawner) {
-                spawner.spawn(level, true);
+                spawner.spawn(level, player, true);
             }
         });
     }
@@ -63,7 +64,7 @@ public class SkyTraderSpawner implements CustomSpawner {
                     int newSpawnChance = Mth.clamp(chanceToSpawn + config.spawnChanceIncrease, config.minSpawnChance, config.maxSpawnChance);
                     data.setSpawnChance(newSpawnChance);
                     if (this.random.nextInt(100) <= chanceToSpawn) {
-                        if (this.spawn(level, false)) {
+                        if (this.spawn(level, null, false)) {
                             data.setSpawnChance(config.minSpawnChance);
                         }
                     }
@@ -79,10 +80,10 @@ public class SkyTraderSpawner implements CustomSpawner {
         return this.traderData;
     }
 
-    private boolean spawn(ServerLevel level, boolean force) {
+    private boolean spawn(ServerLevel level, @Nullable Player player, boolean force) {
         var spawning = SkyTraderConfig.get().spawning;
 
-        Player player = level.getRandomPlayer();
+        if (player == null) player = level.getRandomPlayer();
         if (player == null) {
             return true;
         }
