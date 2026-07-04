@@ -9,38 +9,38 @@ import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WelcomeAboardAdvancementGenerator implements AdvancementSubProvider {
+public class RootAdvancementGenerator implements AdvancementSubProvider {
     @Override
     public void generate(HolderLookup.@NonNull Provider provider, @NonNull Consumer<AdvancementHolder> saver) {
         Advancement.Builder builder = Advancement.Builder.advancement();
-        builder.parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.ROOT.toString()));
 
         builder.display(
                 new ItemStackTemplate(ModItems.SKYFARE_TICKET.get()),
-                Component.translatable("advancements."+ ModConstants.MOD_ID+".welcome_aboard.title"),
-                Component.translatable("advancements."+ ModConstants.MOD_ID+".welcome_aboard.description"),
-                null,
+                Component.translatable("advancements."+ ModConstants.MOD_ID+".root.title"),
+                Component.translatable("advancements."+ ModConstants.MOD_ID+".root.description"),
+                Identifier.withDefaultNamespace("block/light_blue_concrete_powder"),
                 AdvancementType.TASK,
-                true,
-                true,
-                false
+                false,
+                false,
+                true
         );
 
         builder.rewards(
-                AdvancementRewards.Builder.experience(15)
+                AdvancementRewards.Builder.experience(0)
         );
 
         builder.addCriterion(
-                "board_sky_trader_ghast",
+                "interact_with_sky_trader",
                 CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance())
         );
-        builder.requirements(AdvancementRequirements.allOf(List.of("board_sky_trader_ghast")));
-        builder.save(saver, ModAdvancements.WELCOME_ABOARD);
+        builder.requirements(AdvancementRequirements.allOf(List.of("interact_with_sky_trader")));
+        builder.save(saver, ModAdvancements.ROOT);
     }
 }

@@ -6,7 +6,6 @@ import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
-import io.github.stainlessstasis.skytrader.trader.SkyTraderSpawner;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
@@ -15,6 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -197,6 +198,14 @@ public class SkyTrader extends WanderingTrader {
         }
 
         return true;
+    }
+
+    @Override
+    public @NonNull InteractionResult mobInteract(@NonNull Player player, @NonNull InteractionHand hand) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            ModAdvancements.grant(serverPlayer, ModAdvancements.ROOT);
+        }
+        return super.mobInteract(player, hand);
     }
 
     @Override
