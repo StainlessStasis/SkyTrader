@@ -12,7 +12,7 @@ public class FabricCommands {
                     .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                     .then(Commands.literal("forcespawn")
                             .executes(context -> {
-                                SkyTraderSpawner.forceSpawn(context.getSource().getLevel());
+                                SkyTraderSpawner.forceSpawn(context.getSource().getPlayer(), context.getSource().getLevel());
                                 return 1;
                             })
                     )
