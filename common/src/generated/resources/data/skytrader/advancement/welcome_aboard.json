@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:adventure/root",
+  "parent": "skytrader:root",
   "criteria": {
     "board_sky_trader_ghast": {
       "trigger": "minecraft:impossible"

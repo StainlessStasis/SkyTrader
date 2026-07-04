@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 public class ModAdvancements {
+    public static final Identifier ROOT = ModConstants.id("root");
     public static final Identifier WELCOME_ABOARD = ModConstants.id("welcome_aboard");
     public static final Identifier SNACK_RUN = ModConstants.id("snack_run");
     public static final Identifier FREE_BIRD = ModConstants.id("free_bird");

@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "interact_with_sky_trader": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:block/light_blue_concrete_powder",
+    "description": {
+      "translate": "advancements.skytrader.root.description"
+    },
+    "hidden": true,
+    "icon": {
+      "id": "skytrader:skyfare_ticket"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.skytrader.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "interact_with_sky_trader"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
