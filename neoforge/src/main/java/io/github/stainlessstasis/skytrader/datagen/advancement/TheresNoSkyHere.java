@@ -28,7 +28,7 @@ public class TheresNoSkyHere implements AdvancementSubProvider {
                 .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
                 .build();
         builder.display(
-                new ItemStackTemplate(ModItems.SKYFARE_TICKET.get(), 1, glint),
+                new ItemStackTemplate(ModItems.SKYFLARE.get(), 1, glint),
                 Component.translatable("advancements."+ ModConstants.MOD_ID+".theres_no_sky_here.title"),
                 Component.translatable("advancements."+ ModConstants.MOD_ID+".theres_no_sky_here.description"),
                 null,

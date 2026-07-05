@@ -15,7 +15,7 @@
       "components": {
         "minecraft:enchantment_glint_override": true
       },
-      "id": "skytrader:skyfare_ticket"
+      "id": "skytrader:skyflare"
     },
     "title": {
       "translate": "advancements.skytrader.theres_no_sky_here.title"
