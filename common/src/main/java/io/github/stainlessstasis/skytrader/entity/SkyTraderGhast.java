@@ -52,6 +52,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected RideState rideState = RideState.IDLE;
     protected int stateTicks = 0;
     protected int departureAttempts = 0;
+    protected boolean failedDeparture = false;
     protected int totalBoardingTime = SkyTraderConfig.get().flight.boardingTicks;
     protected BlockPos destination;
     protected @Nullable Vec3 returnDirection;
@@ -317,6 +318,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (this.departureAttempts >= SkyTraderConfig.get().flight.maxDepartureAttempts) {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".no_village_giving_up", RED);
                 beginReturn();
+                this.failedDeparture = true;
                 forceDismountPassengers();
             } else {
                 sendMessageToPassengers(ModConstants.MOD_ID + ".no_village_retry", RED);
@@ -629,6 +631,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         for (Entity passenger : List.copyOf(this.getPassengers())) {
             if (!(passenger instanceof SkyTrader)) {
                 passenger.stopRiding();
+                if (this.failedDeparture && passenger instanceof ServerPlayer player) {
+                    ModAdvancements.grant(player, ModAdvancements.NO_REFUNDS);
+                }
             }
         }
     }

@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "scammed_by_sky_trader": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.no_refunds.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "minecraft:emerald"
+    },
+    "title": {
+      "translate": "advancements.skytrader.no_refunds.title"
+    }
+  },
+  "requirements": [
+    [
+      "scammed_by_sky_trader"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}
