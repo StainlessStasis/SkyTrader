@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "fly_over_a_lot_of_ocean": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.transatlantic_travel.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:water_bucket"
+    },
+    "title": {
+      "translate": "advancements.skytrader.transatlantic_travel.title"
+    }
+  },
+  "requirements": [
+    [
+      "fly_over_a_lot_of_ocean"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}

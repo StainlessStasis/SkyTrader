@@ -1,5 +1,6 @@
-// 26.2	2026-07-05T03:54:11.790362	Advancements
+// 26.2	2026-07-05T04:16:16.3040176	Advancements
 90c2755ca6ee7ce5d7a1623c53dfddb5da8afa33 data/skytrader/advancement/a_bit_redundant.json
+89a50fa0fae1e9dd10204ccbaeb58019d0bb6038 data/skytrader/advancement/changing_climates.json
 1eb784f1200ac6b4b4c60ce81cad5c7f6df6019b data/skytrader/advancement/first_class_customer.json
 f68e8cf29de014052556eb579fca4bda66a0c156 data/skytrader/advancement/free_bird.json
 efe43da57bee68dce7e03f5338540c89b023418e data/skytrader/advancement/local_commuter.json
@@ -13,5 +14,6 @@ c9fbd2e3a5e4a1f116fbf0bfd8c350f802b495d0 data/skytrader/advancement/snack_run.js
 dc74b6362f510b7b5e4cf8e41a8abe0b6ffd279c data/skytrader/advancement/star_traveler.json
 7304265b792f9ea8ce6a74225fd67957330d786b data/skytrader/advancement/terrible_day_for_rain.json
 534ae5f89a451480c1f625def385e8c16e65de7b data/skytrader/advancement/theres_no_sky_here.json
+8dd2117c813dcd60b382d69b34584661519ad7ac data/skytrader/advancement/transatlantic_travel.json
 949e9f8e8ca51edefa679e676475ac2861e8198e data/skytrader/advancement/welcome_aboard.json
 714adc9fe5fcfdb5050f38029531350ab9319ef2 data/skytrader/advancement/you_called.json

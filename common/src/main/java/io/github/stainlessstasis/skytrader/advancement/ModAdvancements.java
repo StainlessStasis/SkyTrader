@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 
 public class ModAdvancements {
     public static final Identifier ROOT = ModConstants.id("root");
@@ -22,6 +21,8 @@ public class ModAdvancements {
     public static final Identifier LOCAL_COMMUTER = ModConstants.id("local_commuter");
     public static final Identifier TERRIBLE_DAY_FOR_RAIN = ModConstants.id("terrible_day_for_rain");
     public static final Identifier NO_REFUNDS = ModConstants.id("no_refunds");
+    public static final Identifier TRANSATLANTIC_TRAVEL = ModConstants.id("transatlantic_travel");
+    public static final Identifier CHANGING_CLIMATES = ModConstants.id("changing_climates");
 
     public static final Identifier SNACK_RUN = ModConstants.id("snack_run");
     public static final Identifier FIRST_CLASS_CUSTOMER = ModConstants.id("first_class_customer");
