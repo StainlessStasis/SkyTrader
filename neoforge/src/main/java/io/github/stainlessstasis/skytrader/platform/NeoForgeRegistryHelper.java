@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.serialization.Codec;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.ModGameRules;
+import io.github.stainlessstasis.skytrader.ModStats;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.core.registries.Registries;
@@ -16,8 +17,10 @@ import net.minecraft.world.level.gamerules.GameRuleCategory;
 import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -52,5 +55,12 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
         ModItems.init();
         ModGameRules.init();
         ModAdvancements.init();
+    }
+
+    @SubscribeEvent
+    static void onRegisterEvent(RegisterEvent event) {
+        if (event.getRegistryKey().equals(Registries.CUSTOM_STAT)) {
+            ModStats.init();
+        }
     }
 }
