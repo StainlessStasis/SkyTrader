@@ -390,7 +390,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return;
         }
 
-        if (this.rideState.hasMovement() && this.isOnStillTimeout()) {
+        if (this.rideState.hasMovement() && !this.rideState.isEndOfRide() && this.isOnStillTimeout()) {
             super.travel(Vec3.ZERO);
             return;
         }
@@ -826,6 +826,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     @Override
     public boolean canBeCollidedWith(@Nullable Entity other) {
         if (this.isBaby() || !this.isAlive()) {
+            return false;
+        }
+        if (this.rideState.isEndOfRide()) {
             return false;
         }
         if (other != null && this.getPassengers().contains(other)) {
