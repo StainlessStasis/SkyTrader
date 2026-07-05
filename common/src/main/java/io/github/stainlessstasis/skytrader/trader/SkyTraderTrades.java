@@ -31,6 +31,7 @@ public class SkyTraderTrades {
             .add(Registries.TRADE_SET, SkyTraderTrades::bootstrapTradeSets);
 
     public static final ResourceKey<TradeSet> SKY_TRADER_RIDE = tradeSetKey("sky_trader/ride");
+    public static final ResourceKey<TradeSet> SKY_TRADER_SKYFLARE = tradeSetKey("sky_trader/skyflare");
     public static final ResourceKey<TradeSet> SKY_TRADER_HARNESS = tradeSetKey("sky_trader/harness");
     public static final ResourceKey<TradeSet> SKY_TRADER_BOAT = tradeSetKey("sky_trader/boat");
     public static final ResourceKey<TradeSet> SKY_TRADER_SKY_UTILITY = tradeSetKey("sky_trader/sky_utility");
@@ -46,6 +47,7 @@ public class SkyTraderTrades {
     public static void bootstrapTrades(BootstrapContext<VillagerTrade> context) {
         // always present
         TradeBuilder.sell("sell_skyfare_ticket", ModItems.SKYFARE_TICKET.get()).price(12).maxUses(16).xp(10).build(SKY_TRADER_RIDE, context);
+        TradeBuilder.sell("sell_skyflare", ModItems.SKYFLARE.get()).price(10).maxUses(4).xp(10).build(SKY_TRADER_SKYFLARE, context);
         registerHarnesses(context);
         registerBoats(context);
 

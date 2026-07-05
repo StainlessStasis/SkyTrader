@@ -19,5 +19,9 @@ public class ModItemModelsProvider extends ModelProvider {
                 ModItems.SKYFARE_TICKET.get(),
                 ModelTemplates.FLAT_ITEM
         );
+        itemModels.generateFlatItem(
+                ModItems.SKYFLARE.get(),
+                ModelTemplates.FLAT_ITEM
+        );
     }
 }

@@ -45,7 +45,7 @@ public class SkyTraderFabricMod implements ModInitializer {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES)
                 .register(creativeTab -> {
                     creativeTab.accept(ModItems.SKYFARE_TICKET.get());
-                    creativeTab.accept(ModItems.SKYFARE_BEACON.get());
+                    creativeTab.accept(ModItems.SKYFLARE.get());
                 });
     }
 }

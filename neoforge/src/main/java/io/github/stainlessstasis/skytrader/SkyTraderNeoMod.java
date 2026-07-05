@@ -64,7 +64,7 @@ public class SkyTraderNeoMod {
     static void registerCreativeTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.SKYFARE_TICKET.get());
-            event.accept(ModItems.SKYFARE_BEACON.get());
+            event.accept(ModItems.SKYFLARE.get());
         }
     }
 }

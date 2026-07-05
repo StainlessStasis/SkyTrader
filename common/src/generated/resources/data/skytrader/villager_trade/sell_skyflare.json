@@ -1,0 +1,15 @@
+{
+  "gives": {
+    "id": "skytrader:skyflare"
+  },
+  "reputation_discount": 0.05,
+  "wants": {
+    "count": {
+      "type": "minecraft:uniform",
+      "max": 10.0,
+      "min": 10.0
+    },
+    "id": "minecraft:emerald"
+  },
+  "xp": 10.0
+}
