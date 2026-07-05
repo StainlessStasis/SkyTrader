@@ -425,7 +425,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         // Changing Climates
         biomeHolder.unwrapKey().ifPresent(key -> {
-            if (biomesThisFlight.add(key) && biomesThisFlight.size() >= 5) {
+            if (biomesThisFlight.add(key) && biomesThisFlight.size() >= 8) {
                 for (Entity passenger : getPassengers()) {
                     if (passenger instanceof ServerPlayer serverPlayer) {
                         ModAdvancements.grant(serverPlayer, ModAdvancements.CHANGING_CLIMATES);
