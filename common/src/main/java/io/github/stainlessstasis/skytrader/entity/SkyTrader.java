@@ -29,11 +29,13 @@ import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
@@ -166,6 +168,7 @@ public class SkyTrader extends WanderingTrader {
         super.notifyTrade(offer);
         if (isInFlight() && this.getTradingPlayer() instanceof ServerPlayer serverPlayer) {
             ModAdvancements.grant(serverPlayer, ModAdvancements.SNACK_RUN);
+            checkAllSnacksAdvancement(offer, serverPlayer);
         }
     }
 
@@ -233,6 +236,19 @@ public class SkyTrader extends WanderingTrader {
             player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".kicked_off_flight").withColor(ModConstants.RED));
             if (player instanceof ServerPlayer serverPlayer) {
                 ModAdvancements.grant(serverPlayer, ModAdvancements.NO_FLY_LIST);
+            }
+        }
+    }
+
+    protected void checkAllSnacksAdvancement(MerchantOffer offer, ServerPlayer player) {
+        SkyTraderGhast ghast = getGhast();
+        if (ghast != null) {
+            Set<Item> purchased = ghast.snacksPurchased
+                    .computeIfAbsent(player.getUUID(), _ -> new HashSet<>());
+            purchased.add(offer.getResult().getItem());
+
+            if (purchased.size() >= SkyTraderTrades.SNACK_ITEM_COUNT) {
+                ModAdvancements.grant(player, ModAdvancements.FIRST_CLASS_CUSTOMER);
             }
         }
     }

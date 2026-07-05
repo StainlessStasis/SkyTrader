@@ -25,6 +25,7 @@ import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.Level;
@@ -46,6 +47,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     protected @Nullable EntityReference<LivingEntity> owner;
     protected final Set<UUID> paidPlayers = new HashSet<>();
+    protected final Map<UUID, Set<Item>> snacksPurchased = new HashMap<>();
     protected RideState rideState = RideState.IDLE;
     protected int stateTicks = 0;
     protected int departureAttempts = 0;
