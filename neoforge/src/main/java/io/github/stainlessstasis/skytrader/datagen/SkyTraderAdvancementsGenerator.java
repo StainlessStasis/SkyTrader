@@ -105,46 +105,6 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
         noFlyListBuilder.save(saver, ModAdvancements.NO_FLY_LIST);
 
 
-        // THAT'S NOT A SEAT
-        Advancement.Builder notASeatBuilder = Advancement.Builder.advancement()
-                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
-                .display(
-                        new ItemStackTemplate(Items.SADDLE),
-                        Component.translatable("advancements." + ModConstants.MOD_ID + ".not_a_seat.title"),
-                        Component.translatable("advancements." + ModConstants.MOD_ID + ".not_a_seat.description"),
-                        null,
-                        AdvancementType.GOAL,
-                        true,
-                        true,
-                        false
-                )
-                .rewards(AdvancementRewards.Builder.experience(15))
-                .addCriterion("block_takeoff", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
-
-        notASeatBuilder.requirements(AdvancementRequirements.allOf(List.of("block_takeoff")));
-        notASeatBuilder.save(saver, ModAdvancements.NOT_A_SEAT);
-
-
-        // STAR TRAVELER
-        Advancement.Builder starTravelerBuilder = Advancement.Builder.advancement()
-                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
-                .display(
-                        new ItemStackTemplate(Items.NETHER_STAR),
-                        Component.translatable("advancements." + ModConstants.MOD_ID + ".star_traveler.title"),
-                        Component.translatable("advancements." + ModConstants.MOD_ID + ".star_traveler.description"),
-                        null,
-                        AdvancementType.CHALLENGE,
-                        true,
-                        true,
-                        false
-                )
-                .rewards(AdvancementRewards.Builder.experience(100))
-                .addCriterion("board_flight_really_high", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
-
-        starTravelerBuilder.requirements(AdvancementRequirements.allOf(List.of("board_flight_really_high")));
-        starTravelerBuilder.save(saver, ModAdvancements.STAR_TRAVELER);
-
-
         // SNACK RUN
         Advancement.Builder snackRunBuilder = Advancement.Builder.advancement()
                 .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
