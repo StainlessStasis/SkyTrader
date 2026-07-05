@@ -1,7 +1,6 @@
 package io.github.stainlessstasis.skytrader.datagen;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
-import io.github.stainlessstasis.skytrader.datagen.advancement.*;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,17 +17,7 @@ public class Datagen {
         event.createProvider(output -> new ModTradeProvider(output, lookupProvider));
         event.createProvider(output -> new AdvancementProvider(
                 output, lookupProvider,
-                List.of(
-                        new RootAdvancementGenerator(),
-                        new WelcomeAboardAdvancementGenerator(),
-                        new SnackRunAdvancementGenerator(),
-                        new FirstClassCustomer(),
-                        new FreeBirdAdvancementGenerator(),
-                        new NoFlyListAdvancementGenerator(),
-
-                        new YouCalled(),
-                        new TheresNoSkyHere()
-                ))
+                List.of(new SkyTraderAdvancementsGenerator()))
         );
     }
 }

@@ -1,5 +1,5 @@
 {
-  "parent": "skytrader:root",
+  "parent": "skytrader:welcome_aboard",
   "criteria": {
     "use_skyflare": {
       "trigger": "minecraft:impossible"

@@ -27,7 +27,7 @@ public class SkyflareItem extends FireworkRocketItem {
     }
 
     @Override
-    public @NonNull InteractionResult useOn(UseOnContext context) {
+    public @NonNull InteractionResult useOn(@NonNull UseOnContext context) {
         var result = super.useOn(context);
         if (result == InteractionResult.SUCCESS && context.getLevel() instanceof ServerLevel serverLevel) {
             summonSkyTrader(context.getPlayer(), serverLevel);
@@ -41,6 +41,9 @@ public class SkyflareItem extends FireworkRocketItem {
             ModAdvancements.grant(serverPlayer, ModAdvancements.YOU_CALLED);
             if (level.dimension() != Level.OVERWORLD) {
                 ModAdvancements.grant(serverPlayer, ModAdvancements.THERES_NO_SKY_HERE);
+            }
+            if (serverPlayer.isFallFlying()) {
+                ModAdvancements.grant(serverPlayer, ModAdvancements.A_BIT_REDUNDANT);
             }
         }
     }
