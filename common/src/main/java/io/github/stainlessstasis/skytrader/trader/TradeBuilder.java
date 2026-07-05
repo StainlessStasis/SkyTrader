@@ -5,6 +5,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.TradeCost;
@@ -23,6 +24,7 @@ public class TradeBuilder {
     private final String id;
     private final ResourceKey<VillagerTrade> key;
     private final Item sellItem;
+    private ItemStackTemplate overrideTemplate = null;
     private int sellCount = 1;
     private NumberProvider emeraldCost;
     private int maxUses = 12;
@@ -38,6 +40,12 @@ public class TradeBuilder {
 
     public static TradeBuilder sell(String id, Item item) {
         return new TradeBuilder(id, item);
+    }
+
+    public static TradeBuilder sellStackTemplate(String id, ItemStackTemplate template) {
+        TradeBuilder builder = new TradeBuilder(id, template.item().value());
+        builder.overrideTemplate = template;
+        return builder;
     }
 
     public TradeBuilder count(int count) {
@@ -87,9 +95,13 @@ public class TradeBuilder {
             xp = cost > 8 ? 15 : cost > 4 ? 7 : 3;
         }
 
+        ItemStackTemplate template = overrideTemplate != null
+                ? overrideTemplate
+                : new ItemStackTemplate(this.sellItem, this.sellCount);
+
         VillagerTrade trade = new VillagerTrade(
                 new TradeCost(Items.EMERALD, this.emeraldCost),
-                new ItemStackTemplate(this.sellItem, this.sellCount),
+                template,
                 this.maxUses, xp, this.reputationDiscount, Optional.empty(), this.functions
         );
 

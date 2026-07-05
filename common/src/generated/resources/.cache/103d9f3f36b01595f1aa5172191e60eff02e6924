@@ -1,4 +1,4 @@
-// 26.2	2026-07-04T20:01:16.9505935	Registries
+// 26.2	2026-07-04T20:18:25.6849391	Registries
 378e2819f206485ea06edc92d1ce72c36c92bb43 data/skytrader/trade_set/sky_trader/boat.json
 2fa286cc45c9f0e2033cb69e9936f603806ca843 data/skytrader/trade_set/sky_trader/common.json
 1f2039e9fa17ed236f3724646384ec57ff5d4d0c data/skytrader/trade_set/sky_trader/harness.json
@@ -63,7 +63,7 @@ e443664690356c4e22eae43cf45fc4198a2d1e6f data/skytrader/villager_trade/sell_phan
 74363b44b87e3d63b7b1c5ab3d81e6f0a4e00bda data/skytrader/villager_trade/sell_saddle.json
 61086ac965cdf3603f3fa23700b2ba9cd0337cf4 data/skytrader/villager_trade/sell_scaffolding.json
 3c2013b2edb0214381dfb1a6becdf0708efedf0f data/skytrader/villager_trade/sell_skyfare_ticket.json
-9961a420a4a02a4b92c1a9d6a81880e18756f852 data/skytrader/villager_trade/sell_skyflare.json
+5c3883018c101ca9811646cea4c15912e92f2eb9 data/skytrader/villager_trade/sell_skyflare.json
 65b45c79528e2dcb4fcdf7e519dd20a17f9ae8d1 data/skytrader/villager_trade/sell_slime_ball.json
 846c93071d8a9b359eed30f48b03c04e5d2616d1 data/skytrader/villager_trade/sell_slow_falling_potion.json
 c841f8d737c0e5398ff763cfcaf5b914f889c8cf data/skytrader/villager_trade/sell_slow_fall_stew.json

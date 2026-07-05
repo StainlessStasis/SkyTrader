@@ -2,17 +2,23 @@ package io.github.stainlessstasis.skytrader.trader;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.item.ModItems;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.FireworkExplosion;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.trading.TradeSet;
 import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.storage.loot.functions.SetPotionFunction;
@@ -47,7 +53,27 @@ public class SkyTraderTrades {
     public static void bootstrapTrades(BootstrapContext<VillagerTrade> context) {
         // always present
         TradeBuilder.sell("sell_skyfare_ticket", ModItems.SKYFARE_TICKET.get()).price(12).maxUses(16).xp(10).build(SKY_TRADER_RIDE, context);
-        TradeBuilder.sell("sell_skyflare", ModItems.SKYFLARE.get()).price(10).maxUses(4).xp(10).build(SKY_TRADER_SKYFLARE, context);
+
+        ItemStackTemplate template = new ItemStackTemplate(BuiltInRegistries.ITEM.wrapAsHolder(ModItems.SKYFLARE.get()),
+                1, DataComponentPatch.builder()
+                .set(DataComponents.FIREWORKS, new Fireworks(
+                        3,
+                        List.of(new FireworkExplosion(
+                                FireworkExplosion.Shape.BURST,
+                                IntList.of(0xFFFFFF, 0x3399FF),
+                                IntList.of(),
+                                false,
+                                false
+                        ))
+                ))
+                .build()
+        );
+        TradeBuilder.sellStackTemplate("sell_skyflare", template)
+                .price(10)
+                .maxUses(4)
+                .xp(10)
+                .build(SKY_TRADER_SKYFLARE, context);
+
         registerHarnesses(context);
         registerBoats(context);
 
