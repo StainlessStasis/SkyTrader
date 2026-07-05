@@ -373,6 +373,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         if (ownerEntity == null || ownerEntity.isRemoved() || !(ownerEntity instanceof SkyTrader trader)) {
             return;
         }
+
         if (trader.isPassenger()) {
             return;
         }
