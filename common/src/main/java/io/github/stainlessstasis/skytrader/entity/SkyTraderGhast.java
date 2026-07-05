@@ -81,7 +81,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     public enum RideState implements StringRepresentable {
         IDLE("idle", false, true, false),
         BOARDING("boarding", false, true, false),
-        SEARCHING("searching", false, false, false),
+        SEARCHING("searching", false, true, false),
         TAKEOFF("takeoff", true, false, false),
         CRUISE("cruise", true, false, false),
         GLIDING("gliding", true, false, false),
@@ -926,7 +926,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         forceDismountPassengers();
         setRideState(RideState.IDLE);
 
-        Ghast ghast = EntityType.GHAST.create(serverLevel, EntitySpawnReason.CONVERSION);
+        Ghast ghast = EntityTypes.GHAST.create(serverLevel, EntitySpawnReason.CONVERSION);
         if (ghast != null) {
             Vec3 pos = new Vec3(getX(), getY(), getZ());
             float xrot = getXRot();
