@@ -39,6 +39,7 @@ public class SkyTraderFabricMod implements ModInitializer {
         ModItems.init();
         ModGameRules.init();
         ModAdvancements.init();
+        ModStats.init();
         FabricCommands.registerCommands();
 
         // creative tab
