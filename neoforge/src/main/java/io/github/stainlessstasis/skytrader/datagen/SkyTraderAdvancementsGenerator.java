@@ -342,5 +342,45 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
 
         noRefundsBuilder.requirements(AdvancementRequirements.allOf(List.of("scammed_by_sky_trader")));
         noRefundsBuilder.save(saver, ModAdvancements.NO_REFUNDS);
+
+
+        // TRANSATLANTIC TRAVEL
+        Advancement.Builder transatlanticBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.WATER_BUCKET),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".transatlantic_travel.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".transatlantic_travel.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("fly_over_a_lot_of_ocean", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        transatlanticBuilder.requirements(AdvancementRequirements.allOf(List.of("fly_over_a_lot_of_ocean")));
+        transatlanticBuilder.save(saver, ModAdvancements.TRANSATLANTIC_TRAVEL);
+
+
+        // CHANGING CLIMATES
+        Advancement.Builder changingClimatesBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.TRANSATLANTIC_TRAVEL.toString()))
+                .display(
+                        new ItemStackTemplate(Items.FILLED_MAP),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".changing_climates.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".changing_climates.description"),
+                        null,
+                        AdvancementType.CHALLENGE,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(100))
+                .addCriterion("fly_over_a_lot_of_biomes", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        changingClimatesBuilder.requirements(AdvancementRequirements.allOf(List.of("fly_over_a_lot_of_biomes")));
+        changingClimatesBuilder.save(saver, ModAdvancements.CHANGING_CLIMATES);
     }
 }

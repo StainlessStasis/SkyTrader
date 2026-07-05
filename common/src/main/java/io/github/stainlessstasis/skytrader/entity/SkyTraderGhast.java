@@ -10,10 +10,13 @@ import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -27,6 +30,7 @@ import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
@@ -60,6 +64,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected @Nullable BlockPos villageCenter;
     protected boolean spawnDescent = false;
     protected @Nullable CompletableFuture<BlockPos> pendingVillageSearch = null;
+    protected final Set<ResourceKey<Biome>> biomesThisFlight = new HashSet<>();
+    protected double oceanBlocksTraveled = 0;
+    protected Vec3 lastBiomeSamplePos = null;
 
     public SkyTraderGhast(EntityType<? extends HappyGhast> type, Level level) {
         super(type, level);
@@ -197,8 +204,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.stateTicks++;
         var flight = SkyTraderConfig.get().flight;
 
-        if (this.rideState.hasMovement() && this.stateTicks%20 == 0) {
+        if (this.rideState.hasMovement() && this.tickCount % 20 == 0) {
             checkNoFlightDelaysAdvancement();
+            sampleBiome();
         }
 
         if (this.rideState == RideState.BOARDING) {
@@ -237,6 +245,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected void setRideState(RideState newState) {
+        if (newState == RideState.IDLE) {
+            this.biomesThisFlight.clear();
+            this.oceanBlocksTraveled = 0;
+            this.lastBiomeSamplePos = null;
+        }
         this.rideState = newState;
         resetStateTicks();
         applyGoalsForState(newState);
@@ -336,6 +349,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     protected void beginReturn() {
         this.paidPlayers.clear();
+        this.biomesThisFlight.clear();
+        this.oceanBlocksTraveled = 0;
+        this.lastBiomeSamplePos = null;
         double angle = this.random.nextDouble() * Math.PI * 2;
         this.returnDirection = new Vec3(Math.cos(angle), 0, Math.sin(angle));
         setRideState(RideState.RETURNING);
@@ -399,6 +415,44 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
         this.cachedTerrainHeight = max;
         return max;
+    }
+
+    protected void sampleBiome() {
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+
+        BlockPos pos = this.blockPosition();
+        var biomeHolder = serverLevel.getBiome(pos);
+
+        // Changing Climates
+        biomeHolder.unwrapKey().ifPresent(key -> {
+            if (biomesThisFlight.add(key) && biomesThisFlight.size() >= 5) {
+                for (Entity passenger : getPassengers()) {
+                    if (passenger instanceof ServerPlayer serverPlayer) {
+                        ModAdvancements.grant(serverPlayer, ModAdvancements.CHANGING_CLIMATES);
+                    }
+                }
+            }
+        });
+
+        // Transatlantic Travel
+        if (biomeHolder.is(BiomeTags.IS_OCEAN) || biomeHolder.is(BiomeTags.IS_DEEP_OCEAN)) {
+            if (lastBiomeSamplePos != null) {
+                double dx = pos.getX() - lastBiomeSamplePos.x;
+                double dz = pos.getZ() - lastBiomeSamplePos.z;
+                oceanBlocksTraveled += Math.sqrt((dx*dx) + (dz*dz));
+            }
+            if (oceanBlocksTraveled >= 500) {
+                for (Entity passenger : getPassengers()) {
+                    if (passenger instanceof ServerPlayer serverPlayer) {
+                        ModAdvancements.grant(serverPlayer, ModAdvancements.TRANSATLANTIC_TRAVEL);
+                    }
+                }
+            }
+        } else {
+            oceanBlocksTraveled = 0;
+        }
+
+        lastBiomeSamplePos = Vec3.atCenterOf(pos);
     }
 
     protected float computeVerticalInput(int targetTerrainHeight, int hoverHeight, float maxVerticalSpeed) {
@@ -894,6 +948,14 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             output.store("ReturnDirection", Vec3.CODEC, this.returnDirection);
         }
         output.putBoolean("SpawnDescent", this.spawnDescent);
+        ValueOutput.TypedOutputList<ResourceKey<Biome>> biomeList = output.list("BiomesThisFlight", ResourceKey.codec(Registries.BIOME));
+        for (ResourceKey<Biome> key : this.biomesThisFlight) {
+            biomeList.add(key);
+        }
+        output.putDouble("OceanBlocksTraveled", this.oceanBlocksTraveled);
+        if (this.lastBiomeSamplePos != null) {
+            output.store("LastBiomeSamplePos", Vec3.CODEC, this.lastBiomeSamplePos);
+        }
     }
 
     @Override
@@ -914,6 +976,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.villageCenter = input.read("VillageCenter", BlockPos.CODEC).orElse(null);
         this.returnDirection = input.read("ReturnDirection", Vec3.CODEC).orElse(null);
         this.spawnDescent = input.getBooleanOr("SpawnDescent", false);
+        this.biomesThisFlight.clear();
+        input.listOrEmpty("BiomesThisFlight", ResourceKey.codec(Registries.BIOME))
+                .forEach(this.biomesThisFlight::add);
+        this.oceanBlocksTraveled = input.getDoubleOr("OceanBlocksTraveled", 0);
+        this.lastBiomeSamplePos = input.read("LastBiomeSamplePos", Vec3.CODEC).orElse(null);
         applyGoalsForState(this.rideState);
     }
 

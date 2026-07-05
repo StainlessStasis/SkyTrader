@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:transatlantic_travel",
+  "criteria": {
+    "fly_over_a_lot_of_biomes": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.changing_climates.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "minecraft:filled_map"
+    },
+    "title": {
+      "translate": "advancements.skytrader.changing_climates.title"
+    }
+  },
+  "requirements": [
+    [
+      "fly_over_a_lot_of_biomes"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}
