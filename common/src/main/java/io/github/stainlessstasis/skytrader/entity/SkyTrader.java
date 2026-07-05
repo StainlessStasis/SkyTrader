@@ -232,6 +232,7 @@ public class SkyTrader extends WanderingTrader {
 
     public void fleeBecauseIDontWantToDie(SkyTraderGhast ghast) {
         ghast.setRideState(SkyTraderGhast.RideState.RETURNING);
+        ghast.setOwnerRiding();
 
         ghast.sendMessageToPassengers("skytrader.flee", ModConstants.RED);
         ghast.getPassengers().forEach(entity -> {
