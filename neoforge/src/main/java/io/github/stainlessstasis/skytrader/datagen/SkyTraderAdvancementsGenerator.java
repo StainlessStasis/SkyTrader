@@ -126,6 +126,26 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
         notASeatBuilder.save(saver, ModAdvancements.NOT_A_SEAT);
 
 
+        // STAR TRAVELER
+        Advancement.Builder starTravelerBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.NETHER_STAR),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".star_traveler.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".star_traveler.description"),
+                        null,
+                        AdvancementType.CHALLENGE,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(100))
+                .addCriterion("board_flight_really_high", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        starTravelerBuilder.requirements(AdvancementRequirements.allOf(List.of("board_flight_really_high")));
+        starTravelerBuilder.save(saver, ModAdvancements.STAR_TRAVELER);
+
+
         // SNACK RUN
         Advancement.Builder snackRunBuilder = Advancement.Builder.advancement()
                 .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
