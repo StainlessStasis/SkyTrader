@@ -20,8 +20,11 @@ public class SkyflareItem extends FireworkRocketItem {
     @Override
     public @NonNull InteractionResult use(@NonNull Level level, @NonNull Player player, @NonNull InteractionHand hand) {
         var result = super.use(level, player, hand);
-        if (result == InteractionResult.SUCCESS && level instanceof ServerLevel serverLevel) {
-            summonSkyTrader(player, serverLevel);
+        if (result == InteractionResult.SUCCESS) {
+            if (level instanceof ServerLevel serverLevel) {
+                summonSkyTrader(player, serverLevel);
+            }
+            player.getCooldowns().addCooldown(player.getItemInHand(hand), 100);
         }
         return result;
     }
@@ -29,8 +32,13 @@ public class SkyflareItem extends FireworkRocketItem {
     @Override
     public @NonNull InteractionResult useOn(@NonNull UseOnContext context) {
         var result = super.useOn(context);
-        if (result == InteractionResult.SUCCESS && context.getLevel() instanceof ServerLevel serverLevel) {
-            summonSkyTrader(context.getPlayer(), serverLevel);
+        if (result == InteractionResult.SUCCESS) {
+            if (context.getLevel() instanceof ServerLevel serverLevel) {
+                summonSkyTrader(context.getPlayer(), serverLevel);
+            }
+            if (context.getPlayer() instanceof Player player) {
+                player.getCooldowns().addCooldown(context.getItemInHand(), 100);
+            }
         }
         return result;
     }
