@@ -24,7 +24,10 @@ public class Datagen {
                         new SnackRunAdvancementGenerator(),
                         new FirstClassCustomer(),
                         new FreeBirdAdvancementGenerator(),
-                        new NoFlyListAdvancementGenerator()
+                        new NoFlyListAdvancementGenerator(),
+
+                        new YouCalled(),
+                        new TheresNoSkyHere()
                 ))
         );
     }

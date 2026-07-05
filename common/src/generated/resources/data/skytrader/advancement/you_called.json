@@ -1,0 +1,28 @@
+{
+  "parent": "skytrader:root",
+  "criteria": {
+    "use_skyflare": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.you_called.description"
+    },
+    "icon": {
+      "id": "skytrader:skyflare"
+    },
+    "title": {
+      "translate": "advancements.skytrader.you_called.title"
+    }
+  },
+  "requirements": [
+    [
+      "use_skyflare"
+    ]
+  ],
+  "rewards": {
+    "experience": 15
+  },
+  "sends_telemetry_event": true
+}
