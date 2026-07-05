@@ -31,6 +31,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -350,6 +351,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             super.travel(input);
             return;
         }
+
+        if (this.rideState.hasMovement() && this.isOnStillTimeout()) {
+            super.travel(Vec3.ZERO);
+            return;
+        }
+
         switch (this.rideState) {
             case TAKEOFF -> super.travel(computeTakeoffInput());
             case CRUISE -> super.travel(computeCruiseInput());
@@ -717,6 +724,28 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             ModAdvancements.grant(player, ModAdvancements.FREE_BIRD);
         }
     }
+
+    @Override
+    public @NonNull Vec3 getDismountLocationForPassenger(@NonNull LivingEntity passenger) {
+        Vec3 pos = super.getDismountLocationForPassenger(passenger);
+        if (rideState.hasMovement()) {
+            float yMovement = Math.max((float) getDeltaMovement().y + 0.5f, 0);
+            pos = pos.add(0, yMovement, 0);
+        }
+        return pos;
+    }
+
+    @Override
+    public boolean canBeCollidedWith(@Nullable Entity other) {
+        if (this.isBaby() || !this.isAlive()) {
+            return false;
+        }
+        if (other != null && this.getPassengers().contains(other)) {
+            return false;
+        }
+        return true;
+    }
+
 
     protected void sendBoardingCountdown() {
         int secondsRemaining = (this.totalBoardingTime - this.stateTicks) / 20;
