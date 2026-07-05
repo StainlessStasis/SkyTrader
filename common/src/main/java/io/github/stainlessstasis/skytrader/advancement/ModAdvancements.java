@@ -21,6 +21,7 @@ public class ModAdvancements {
     public static final Identifier PERMISSION_DENIED = ModConstants.id("permission_denied");
     public static final Identifier LOCAL_COMMUTER = ModConstants.id("local_commuter");
     public static final Identifier TERRIBLE_DAY_FOR_RAIN = ModConstants.id("terrible_day_for_rain");
+    public static final Identifier NO_REFUNDS = ModConstants.id("no_refunds");
 
     public static final Identifier SNACK_RUN = ModConstants.id("snack_run");
     public static final Identifier FIRST_CLASS_CUSTOMER = ModConstants.id("first_class_customer");

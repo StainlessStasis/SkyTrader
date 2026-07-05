@@ -322,5 +322,25 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
 
         terribleDayBuilder.requirements(AdvancementRequirements.allOf(List.of("turn_trader_ghast_hostile")));
         terribleDayBuilder.save(saver, ModAdvancements.TERRIBLE_DAY_FOR_RAIN);
+
+
+        // NO REFUNDS
+        Advancement.Builder noRefundsBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.EMERALD),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".no_refunds.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".no_refunds.description"),
+                        null,
+                        AdvancementType.CHALLENGE,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(100))
+                .addCriterion("scammed_by_sky_trader", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        noRefundsBuilder.requirements(AdvancementRequirements.allOf(List.of("scammed_by_sky_trader")));
+        noRefundsBuilder.save(saver, ModAdvancements.NO_REFUNDS);
     }
 }
