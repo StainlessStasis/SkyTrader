@@ -196,6 +196,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         this.stateTicks++;
         var flight = SkyTraderConfig.get().flight;
 
+        if (this.rideState.hasMovement() && this.stateTicks%20 == 0) {
+            checkNoFlightDelaysAdvancement();
+        }
+
         if (this.rideState == RideState.BOARDING) {
             boolean anyPlayers = this.getPassengers().stream().anyMatch(e -> e instanceof Player);
             if (!anyPlayers) {
@@ -705,6 +709,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 ModAdvancements.grant(serverPlayer, ModAdvancements.STAR_TRAVELER);
             }
 
+            if (serverPlayer.level().isVillage(serverPlayer.getOnPos())) {
+                ModAdvancements.grant(serverPlayer, ModAdvancements.LOCAL_COMMUTER);
+            }
+
             serverPlayer.awardStat(Stats.CUSTOM.get(ModStats.FLIGHTS_TAKEN));
         }
     }
@@ -764,6 +772,24 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (!player.isPassengerOfSameVehicle(this) && player instanceof ServerPlayer serverPlayer) {
                 ModAdvancements.grant(serverPlayer, ModAdvancements.NOT_A_SEAT);
             }
+        }
+    }
+
+    protected void checkNoFlightDelaysAdvancement() {
+        if (level() instanceof ServerLevel serverLevel && serverLevel.isThundering()) {
+            getPassengers().stream()
+                    .filter(entity -> entity instanceof ServerPlayer)
+                    .forEach(entity -> {
+                        ServerPlayer player = (ServerPlayer) entity;
+                        BlockPos playerPos = player.blockPosition();
+
+                        if (serverLevel.isThundering()) {
+                            var biomeHolder = serverLevel.getBiome(playerPos);
+                            if (biomeHolder.value().hasPrecipitation()) {
+                                ModAdvancements.grant(player, ModAdvancements.NO_FLIGHT_DELAYS);
+                            }
+                        }
+                    });
         }
     }
 

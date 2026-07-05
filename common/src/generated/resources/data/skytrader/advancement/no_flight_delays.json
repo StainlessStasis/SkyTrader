@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "fly_through_thunderstorm": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.no_flight_delays.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:waxed_lightning_rod"
+    },
+    "title": {
+      "translate": "advancements.skytrader.no_flight_delays.title"
+    }
+  },
+  "requirements": [
+    [
+      "fly_through_thunderstorm"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}
