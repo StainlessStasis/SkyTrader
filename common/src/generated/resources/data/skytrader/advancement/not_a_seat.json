@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "block_takeoff": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.not_a_seat.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:saddle"
+    },
+    "title": {
+      "translate": "advancements.skytrader.not_a_seat.title"
+    }
+  },
+  "requirements": [
+    [
+      "block_takeoff"
+    ]
+  ],
+  "rewards": {
+    "experience": 15
+  },
+  "sends_telemetry_event": true
+}

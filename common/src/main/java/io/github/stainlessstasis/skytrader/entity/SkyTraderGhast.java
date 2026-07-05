@@ -186,6 +186,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         if (!level().isClientSide()) {
             tickServer();
+            if (isOnStillTimeout() && this.rideState == RideState.TAKEOFF) {
+                checkNotASeatAdvancement();
+            }
         }
     }
 
@@ -753,6 +756,18 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return true;
     }
 
+    protected void checkNotASeatAdvancement() {
+        AABB bb = this.getBoundingBox();
+        AABB roofBox = new AABB(
+                bb.minX - 1, bb.maxY - 0.5, bb.minZ - 1,
+                bb.maxX + 1, bb.maxY + 0.5, bb.maxZ + 1
+        );
+        for (Player player : level().getEntitiesOfClass(Player.class, roofBox)) {
+            if (!player.isPassengerOfSameVehicle(this) && player instanceof ServerPlayer serverPlayer) {
+                ModAdvancements.grant(serverPlayer, ModAdvancements.NOT_A_SEAT);
+            }
+        }
+    }
 
     protected void sendBoardingCountdown() {
         int secondsRemaining = (this.totalBoardingTime - this.stateTicks) / 20;
