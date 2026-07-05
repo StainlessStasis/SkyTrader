@@ -926,7 +926,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         forceDismountPassengers();
         setRideState(RideState.IDLE);
 
-        Ghast ghast = EntityTypes.GHAST.create(serverLevel, EntitySpawnReason.CONVERSION);
+        Ghast ghast = EntityType.GHAST.create(serverLevel, EntitySpawnReason.CONVERSION);
         if (ghast != null) {
             Vec3 pos = new Vec3(getX(), getY(), getZ());
             float xrot = getXRot();
