@@ -35,7 +35,6 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.minecraft.world.item.trading.VillagerTrade;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.ValueInput;
@@ -213,11 +212,35 @@ public class SkyTrader extends WanderingTrader {
     }
 
     @Override
-    public boolean hurtServer(@NonNull ServerLevel level, DamageSource source, float damage) {
+    public boolean hurtServer(@NonNull ServerLevel level, @NonNull DamageSource source, float damage) {
+        boolean hurt = super.hurtServer(level, source, damage);
+
+        if (source.getEntity() instanceof LivingEntity && getGhast() instanceof SkyTraderGhast ghast && ghast.getRideState().isStartOfRide()) {
+            float health = getHealth();
+            if (health > 0f && health <= getMaxHealth()/2) {
+                fleeBecauseIDontWantToDie(ghast);
+                return hurt;
+            }
+        }
+
         if (source.getEntity() instanceof Player player) {
             registerHitFromRudePassenger(player);
         }
-        return super.hurtServer(level, source, damage);
+
+        return hurt;
+    }
+
+    public void fleeBecauseIDontWantToDie(SkyTraderGhast ghast) {
+        ghast.setRideState(SkyTraderGhast.RideState.RETURNING);
+
+        ghast.sendMessageToPassengers("skytrader.flee", ModConstants.RED);
+        ghast.getPassengers().forEach(entity -> {
+            if (entity instanceof ServerPlayer player) {
+                ModAdvancements.grant(player, ModAdvancements.NO_REFUNDS);
+            }
+        });
+
+        ghast.forceDismountPassengers();
     }
 
     public int registerHitFromRudePassenger(Player player) {
