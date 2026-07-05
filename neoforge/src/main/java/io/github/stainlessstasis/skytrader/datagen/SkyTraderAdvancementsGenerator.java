@@ -265,6 +265,26 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
         noFlightDelaysBuilder.save(saver, ModAdvancements.NO_FLIGHT_DELAYS);
 
 
+        // PERMISSION DENIED
+        Advancement.Builder permissionDeniedBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.NO_FLIGHT_DELAYS.toString()))
+                .display(
+                        new ItemStackTemplate(Items.LIGHTNING_ROD.waxed().oxidized()),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".permission_denied.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".permission_denied.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        true
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("struck_by_lightning_during_flight", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        permissionDeniedBuilder.requirements(AdvancementRequirements.allOf(List.of("struck_by_lightning_during_flight")));
+        permissionDeniedBuilder.save(saver, ModAdvancements.PERMISSION_DENIED);
+
+
         // LOCAL COMMUTER
         Advancement.Builder localCommuterBuilder = Advancement.Builder.advancement()
                 .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))

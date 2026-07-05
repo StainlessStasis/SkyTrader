@@ -29,10 +29,16 @@
 
   "advancements.skytrader.welcome_aboard.title": "Welcome Aboard!",
   "advancements.skytrader.welcome_aboard.description": "Use a Skyfare Ticket to board a flight",
+
   "advancements.skytrader.snack_run.title": "Snack Run",
   "advancements.skytrader.snack_run.description": "Purchase a snack during a flight",
   "advancements.skytrader.first_class_customer.title": "First Class Customer",
   "advancements.skytrader.first_class_customer.description": "Purchase every available snack during a flight",
+
+  "advancements.skytrader.no_flight_delays.title": "No Flight Delays Here!",
+  "advancements.skytrader.no_flight_delays.description": "\"Weather permitting?\" Why do I need permission?",
+  "advancements.skytrader.permission_denied.title": "Permission Denied",
+  "advancements.skytrader.permission_denied.description": "Oh, that's why.",
 
   "advancements.skytrader.free_bird.title": "Free Bird",
   "advancements.skytrader.free_bird.description": "I'm as free as a bird now... And this bird you cannot change!",
@@ -42,8 +48,6 @@
   "advancements.skytrader.not_a_seat.description": "Prevent a flight from taking off by standing on top of it",
   "advancements.skytrader.star_traveler.title": "Star Traveler",
   "advancements.skytrader.star_traveler.description": "Board a flight as close to the stars as you can get!",
-  "advancements.skytrader.no_flight_delays.title": "No Flight Delays Here!",
-  "advancements.skytrader.no_flight_delays.description": "\"Weather permitting?\" Why do I need permission?",
   "advancements.skytrader.local_commuter.title": "Local Commuter",
   "advancements.skytrader.local_commuter.description": "Board a flight while already in a Village",
 

@@ -860,6 +860,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return owner;
     }
 
+    public RideState getRideState() {
+        return rideState;
+    }
+
     @Override
     public boolean canBeLeashed() {
         return false;

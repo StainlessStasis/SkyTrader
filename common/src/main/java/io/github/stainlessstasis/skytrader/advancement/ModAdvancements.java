@@ -1,9 +1,14 @@
 package io.github.stainlessstasis.skytrader.advancement;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
+import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 public class ModAdvancements {
     public static final Identifier ROOT = ModConstants.id("root");
@@ -13,6 +18,7 @@ public class ModAdvancements {
     public static final Identifier NOT_A_SEAT = ModConstants.id("not_a_seat");
     public static final Identifier STAR_TRAVELER = ModConstants.id("star_traveler");
     public static final Identifier NO_FLIGHT_DELAYS = ModConstants.id("no_flight_delays");
+    public static final Identifier PERMISSION_DENIED = ModConstants.id("permission_denied");
     public static final Identifier LOCAL_COMMUTER = ModConstants.id("local_commuter");
 
     public static final Identifier SNACK_RUN = ModConstants.id("snack_run");
@@ -35,6 +41,17 @@ public class ModAdvancements {
 
         for (String criterion : progress.getRemainingCriteria()) {
             player.getAdvancements().award(holder, criterion);
+        }
+    }
+
+    public static void checkPermissionDeniedAdvancement(Entity _player, DamageSource damageSource) {
+        if (!(_player instanceof ServerPlayer player)) return;
+        if (player.isPassenger()
+                && player.getVehicle() instanceof SkyTraderGhast ghast
+                && ghast.getRideState().hasMovement()
+                && damageSource.is(DamageTypes.LIGHTNING_BOLT))
+        {
+            grant(player, PERMISSION_DENIED);
         }
     }
 
