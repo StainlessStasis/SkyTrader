@@ -1,5 +1,7 @@
 package io.github.stainlessstasis.skytrader.trader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import io.github.stainlessstasis.skytrader.ModGameRules;
@@ -9,7 +11,6 @@ import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import io.github.stainlessstasis.skytrader.mixin.ServerLevelAccessorMixin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -42,8 +43,8 @@ public class SkyTraderSpawner implements CustomSpawner {
 
     public static void forceSpawn(@Nullable Player player, ServerLevel level) {
         ((ServerLevelAccessorMixin) level).getCustomSpawners().forEach(customSpawner -> {
-            if (customSpawner instanceof SkyTraderSpawner spawner) {
-                spawner.spawn(level, player, true);
+            if (player != null && customSpawner instanceof SkyTraderSpawner spawner) {
+                spawner.getTraderData().addPendingSpawn(player.getUUID(), 100);
             }
         });
     }
@@ -51,11 +52,33 @@ public class SkyTraderSpawner implements CustomSpawner {
     @Override
     public void tick(ServerLevel level, boolean spawnEnemies) {
         var config = SkyTraderConfig.get().spawning;
+        SkyTraderData data = getTraderData();
 
+        // pending spawns from Skyflare items
+        List<SkyTraderData.PendingSpawn> pending = data.getPendingSpawns();
+        if (!pending.isEmpty()) {
+            List<SkyTraderData.PendingSpawn> updatedList = new ArrayList<>();
+
+            for (SkyTraderData.PendingSpawn spawn : pending) {
+                int nextTicks = spawn.ticksRemaining() - 1;
+
+                if (nextTicks <= 0) {
+                    Player targetPlayer = level.getPlayerByUUID(spawn.playerUUID());
+                    spawn(level, targetPlayer, true);
+                } else {
+                    updatedList.add(new SkyTraderData.PendingSpawn(spawn.playerUUID(), nextTicks));
+                }
+            }
+
+            pending.clear();
+            pending.addAll(updatedList);
+            data.setDirty();
+        }
+
+        // natural spawns
         if (level.getGameRules().get(ModGameRules.SPAWN_SKY_TRADERS.get())) {
             if (--this.tickDelay <= 0) {
                 this.tickDelay = config.tickDelay;
-                SkyTraderData data = this.getTraderData();
                 int spawnDelay = data.spawnDelay() - config.tickDelay;
                 data.setSpawnDelay(spawnDelay);
                 if (spawnDelay <= 0) {
