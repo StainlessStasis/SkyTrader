@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "board_flight_while_in_village": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.local_commuter.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:hay_block"
+    },
+    "title": {
+      "translate": "advancements.skytrader.local_commuter.title"
+    }
+  },
+  "requirements": [
+    [
+      "board_flight_while_in_village"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}

@@ -244,5 +244,44 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
 
         noSkyBuilder.requirements(AdvancementRequirements.allOf(List.of("use_skyflare_not_in_overworld")));
         noSkyBuilder.save(saver, ModAdvancements.THERES_NO_SKY_HERE);
+
+        // NO FLIGHT DELAYS HERE
+        Advancement.Builder noFlightDelaysBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.LIGHTNING_ROD.waxed().unaffected()),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".no_flight_delays.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".no_flight_delays.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("fly_through_thunderstorm", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        noFlightDelaysBuilder.requirements(AdvancementRequirements.allOf(List.of("fly_through_thunderstorm")));
+        noFlightDelaysBuilder.save(saver, ModAdvancements.NO_FLIGHT_DELAYS);
+
+
+        // LOCAL COMMUTER
+        Advancement.Builder localCommuterBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.HAY_BLOCK),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".local_commuter.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".local_commuter.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("board_flight_while_in_village", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        localCommuterBuilder.requirements(AdvancementRequirements.allOf(List.of("board_flight_while_in_village")));
+        localCommuterBuilder.save(saver, ModAdvancements.LOCAL_COMMUTER);
     }
 }

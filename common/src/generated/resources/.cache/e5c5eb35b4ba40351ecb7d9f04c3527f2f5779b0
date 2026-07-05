@@ -1,8 +1,10 @@
-// 26.2	2026-07-05T01:45:25.0546435	Advancements
+// 26.2	2026-07-05T02:39:40.315022	Advancements
 90c2755ca6ee7ce5d7a1623c53dfddb5da8afa33 data/skytrader/advancement/a_bit_redundant.json
 1eb784f1200ac6b4b4c60ce81cad5c7f6df6019b data/skytrader/advancement/first_class_customer.json
 f68e8cf29de014052556eb579fca4bda66a0c156 data/skytrader/advancement/free_bird.json
+efe43da57bee68dce7e03f5338540c89b023418e data/skytrader/advancement/local_commuter.json
 bf084f7e21eaa62fbd73c5a19317aa0dffc8818c data/skytrader/advancement/not_a_seat.json
+6fc8ddfb85eb21ce9e080bf1d4b4864d3406c1a9 data/skytrader/advancement/no_flight_delays.json
 f5b62c6b254f39fb49adc196dc57207c436fc1c7 data/skytrader/advancement/no_fly_list.json
 3ba85c000b6eebd40df127d1ebbb6afdfe9f170b data/skytrader/advancement/root.json
 c9fbd2e3a5e4a1f116fbf0bfd8c350f802b495d0 data/skytrader/advancement/snack_run.json
