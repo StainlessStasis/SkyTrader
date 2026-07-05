@@ -1,0 +1,33 @@
+{
+  "parent": "skytrader:you_called",
+  "criteria": {
+    "use_skyflare_not_in_overworld": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.theres_no_sky_here.description"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "components": {
+        "minecraft:enchantment_glint_override": true
+      },
+      "id": "skytrader:skyfare_ticket"
+    },
+    "title": {
+      "translate": "advancements.skytrader.theres_no_sky_here.title"
+    }
+  },
+  "requirements": [
+    [
+      "use_skyflare_not_in_overworld"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}

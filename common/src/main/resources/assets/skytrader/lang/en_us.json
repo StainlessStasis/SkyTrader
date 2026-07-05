@@ -26,16 +26,23 @@
 
   "advancements.skytrader.root.title": "Sky Trader",
   "advancements.skytrader.root.description": "Here at Farlands Airlines, we believe the sky is for everyone! As long as they have emeralds to spare. Okay, so not quite everyone.",
+
   "advancements.skytrader.welcome_aboard.title": "Welcome Aboard!",
   "advancements.skytrader.welcome_aboard.description": "Use a Skyfare Ticket to board a flight",
   "advancements.skytrader.snack_run.title": "Snack Run",
   "advancements.skytrader.snack_run.description": "Purchase a snack during a flight",
   "advancements.skytrader.first_class_customer.title": "First Class Customer",
   "advancements.skytrader.first_class_customer.description": "Purchase every available snack during a flight",
+
   "advancements.skytrader.free_bird.title": "Free Bird",
   "advancements.skytrader.free_bird.description": "I'm as free as a bird now... And this bird you cannot change!",
   "advancements.skytrader.no_fly_list.title": "No Fly List",
   "advancements.skytrader.no_fly_list.description": "Unruly passengers ought to learn their lesson the hard way. Hope you brought a parachute.",
+
+  "advancements.skytrader.you_called.title": "You Called?",
+  "advancements.skytrader.you_called.description": "Use a Skyflare to summon a Sky Trader",
+  "advancements.skytrader.theres_no_sky_here.title": "There'e No Sky Here",
+  "advancements.skytrader.theres_no_sky_here.description": "Use a Skyflare in the Nether or End, only to realize that it doesn't work...",
 
   "stat.skytrader.flights_taken": "Farlands Airlines Flights Taken"
 }
