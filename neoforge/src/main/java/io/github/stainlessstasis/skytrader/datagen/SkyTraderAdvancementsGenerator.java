@@ -248,7 +248,7 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
         Advancement.Builder noFlightDelaysBuilder = Advancement.Builder.advancement()
                 .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
                 .display(
-                        new ItemStackTemplate(Items.LIGHTNING_ROD.waxed().unaffected()),
+                        new ItemStackTemplate(Items.LIGHTNING_ROD),
                         Component.translatable("advancements." + ModConstants.MOD_ID + ".no_flight_delays.title"),
                         Component.translatable("advancements." + ModConstants.MOD_ID + ".no_flight_delays.description"),
                         null,
@@ -268,7 +268,7 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
         Advancement.Builder permissionDeniedBuilder = Advancement.Builder.advancement()
                 .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.NO_FLIGHT_DELAYS.toString()))
                 .display(
-                        new ItemStackTemplate(Items.LIGHTNING_ROD.waxed().oxidized()),
+                        new ItemStackTemplate(Items.WAXED_OXIDIZED_LIGHTNING_ROD),
                         Component.translatable("advancements." + ModConstants.MOD_ID + ".permission_denied.title"),
                         Component.translatable("advancements." + ModConstants.MOD_ID + ".permission_denied.description"),
                         null,
