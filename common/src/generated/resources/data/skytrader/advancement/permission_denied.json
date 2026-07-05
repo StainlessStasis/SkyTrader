@@ -1,0 +1,30 @@
+{
+  "parent": "skytrader:no_flight_delays",
+  "criteria": {
+    "struck_by_lightning_during_flight": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.permission_denied.description"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "id": "minecraft:waxed_oxidized_lightning_rod"
+    },
+    "title": {
+      "translate": "advancements.skytrader.permission_denied.title"
+    }
+  },
+  "requirements": [
+    [
+      "struck_by_lightning_during_flight"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}

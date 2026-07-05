@@ -6,10 +6,13 @@ import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -48,5 +51,10 @@ public class SkyTraderFabricMod implements ModInitializer {
                     creativeTab.accept(ModItems.SKYFARE_TICKET.get());
                     creativeTab.accept(ModItems.SKYFLARE.get());
                 });
+
+        // damage
+        ServerLivingEntityEvents.AFTER_DAMAGE.register((LivingEntity entity, DamageSource source, float baseDamage, float damage, boolean blocked) -> {
+            ModAdvancements.checkPermissionDeniedAdvancement(entity, source);
+        });
     }
 }
