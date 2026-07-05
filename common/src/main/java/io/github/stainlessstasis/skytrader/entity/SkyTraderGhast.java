@@ -64,9 +64,14 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected @Nullable BlockPos villageCenter;
     protected boolean spawnDescent = false;
     protected @Nullable CompletableFuture<BlockPos> pendingVillageSearch = null;
+
+    // For Transatlantic Travel and Changing Climates
     protected final Set<ResourceKey<Biome>> biomesThisFlight = new HashSet<>();
     protected double oceanBlocksTraveled = 0;
     protected Vec3 lastBiomeSamplePos = null;
+
+    // For Free Bird
+    protected final Map<UUID, Integer> recentlyDismountedToRoof = new HashMap<>();
 
     public SkyTraderGhast(EntityType<? extends HappyGhast> type, Level level) {
         super(type, level);
@@ -197,6 +202,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             if (isOnStillTimeout() && this.rideState == RideState.TAKEOFF) {
                 checkNotASeatAdvancement();
             }
+            checkFreeBirdAdvancement();
         }
     }
 
@@ -795,8 +801,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             ));
         }
 
-        if (rideState == RideState.CRUISE && passenger instanceof ServerPlayer player) {
-            ModAdvancements.grant(player, ModAdvancements.FREE_BIRD);
+        if (rideState == RideState.CRUISE && this.isOnStillTimeout() && passenger instanceof ServerPlayer player) {
+            recentlyDismountedToRoof.put(player.getUUID(), 0);
         }
     }
 
@@ -850,6 +856,38 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                         }
                     });
         }
+    }
+
+    protected void checkFreeBirdAdvancement() {
+        if (recentlyDismountedToRoof.isEmpty() || !(level() instanceof ServerLevel serverLevel)) return;
+        AABB bb = this.getBoundingBox();
+        AABB roofBox = new AABB(
+                bb.minX - 1, bb.maxY - 0.5, bb.minZ - 1,
+                bb.maxX + 1, bb.maxY + 2, bb.maxZ + 1
+        );
+
+        recentlyDismountedToRoof.entrySet().removeIf(entry -> {
+            Player player = serverLevel.getPlayerByUUID(entry.getKey());
+            if (player == null) return true;
+            if (player.isPassengerOfSameVehicle(this)) return true;
+
+            boolean onRoof = roofBox.contains(player.position());
+            if (onRoof) {
+                entry.setValue(0);
+                return false;
+            }
+
+            int ticksGone = entry.getValue() + 1;
+            if (ticksGone >= 60) {
+                if (player instanceof ServerPlayer sp) {
+                    ModAdvancements.grant(sp, ModAdvancements.FREE_BIRD);
+                }
+                return true;
+            }
+
+            entry.setValue(ticksGone);
+            return false;
+        });
     }
 
     protected void sendBoardingCountdown() {
