@@ -232,7 +232,10 @@ public class SkyTrader extends WanderingTrader {
     protected void kickPlayerFromFlight(Player player) {
         SkyTraderGhast ghast = getGhast();
         if (ghast != null && player.isPassengerOfSameVehicle(ghast)) {
+            Vec3 kickDir = player.position().subtract(ghast.position()).normalize();
             player.stopRiding();
+            player.setDeltaMovement(kickDir.x * 2, 0.75, kickDir.z * 2);
+            player.hurtMarked = true;
             player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".kicked_off_flight").withColor(ModConstants.RED));
             if (player instanceof ServerPlayer serverPlayer) {
                 ModAdvancements.grant(serverPlayer, ModAdvancements.NO_FLY_LIST);
