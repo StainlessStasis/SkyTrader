@@ -14,6 +14,7 @@ public class ModAdvancements {
 
     public static final Identifier YOU_CALLED = ModConstants.id("you_called");
     public static final Identifier THERES_NO_SKY_HERE = ModConstants.id("theres_no_sky_here");
+    public static final Identifier A_BIT_REDUNDANT = ModConstants.id("a_bit_redundant");
 
     public static final Identifier FREE_BIRD = ModConstants.id("free_bird");
     public static final Identifier NO_FLY_LIST = ModConstants.id("no_fly_list");

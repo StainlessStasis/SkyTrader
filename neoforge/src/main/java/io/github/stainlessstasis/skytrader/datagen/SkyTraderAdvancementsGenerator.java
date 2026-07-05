@@ -1,0 +1,208 @@
+package io.github.stainlessstasis.skytrader.datagen;
+
+import io.github.stainlessstasis.skytrader.ModConstants;
+import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
+import io.github.stainlessstasis.skytrader.item.ModItems;
+import net.minecraft.advancements.*;
+import net.minecraft.advancements.triggers.CriteriaTriggers;
+import net.minecraft.advancements.triggers.ImpossibleTrigger;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.data.advancements.AdvancementSubProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
+import org.jspecify.annotations.NonNull;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
+    @Override
+    public void generate(HolderLookup.@NonNull Provider provider, @NonNull Consumer<AdvancementHolder> saver) {
+        DataComponentPatch glint = DataComponentPatch.builder()
+                .set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
+                .build();
+
+
+        // ROOT
+        Advancement.Builder rootBuilder = Advancement.Builder.advancement()
+                .display(
+                        new ItemStackTemplate(ModItems.SKYFARE_TICKET.get()),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".root.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".root.description"),
+                        Identifier.withDefaultNamespace("block/light_blue_concrete_powder"),
+                        AdvancementType.TASK,
+                        false,
+                        false,
+                        true
+                )
+                .rewards(AdvancementRewards.Builder.experience(0))
+                .addCriterion("interact_with_sky_trader", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        rootBuilder.requirements(AdvancementRequirements.allOf(List.of("interact_with_sky_trader")));
+        rootBuilder.save(saver, ModAdvancements.ROOT);
+
+
+        // WELCOME ABOARD
+        Advancement.Builder welcomeAboardBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.ROOT.toString()))
+                .display(
+                        new ItemStackTemplate(ModItems.SKYFARE_TICKET.get()),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".welcome_aboard.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".welcome_aboard.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(15))
+                .addCriterion("board_sky_trader_ghast", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        welcomeAboardBuilder.requirements(AdvancementRequirements.allOf(List.of("board_sky_trader_ghast")));
+        welcomeAboardBuilder.save(saver, ModAdvancements.WELCOME_ABOARD);
+
+
+        // FREE BIRD
+        Advancement.Builder freeBirdBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.FEATHER),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".free_bird.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".free_bird.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(50))
+                .addCriterion("jump_off_sky_trader_ghast", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        freeBirdBuilder.requirements(AdvancementRequirements.allOf(List.of("jump_off_sky_trader_ghast")));
+        freeBirdBuilder.save(saver, ModAdvancements.FREE_BIRD);
+
+
+        // NO FLY LIST
+        Advancement.Builder noFlyListBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.BARRIER),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".no_fly_list.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".no_fly_list.description"),
+                        null,
+                        AdvancementType.CHALLENGE,
+                        true,
+                        true,
+                        true
+                )
+                .rewards(AdvancementRewards.Builder.experience(100))
+                .addCriterion("kicked_off_sky_trader_ghast", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        noFlyListBuilder.requirements(AdvancementRequirements.allOf(List.of("kicked_off_sky_trader_ghast")));
+        noFlyListBuilder.save(saver, ModAdvancements.NO_FLY_LIST);
+
+
+        // SNACK RUN
+        Advancement.Builder snackRunBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.COOKIE),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".snack_run.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".snack_run.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("buy_sky_trader_snack", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        snackRunBuilder.requirements(AdvancementRequirements.allOf(List.of("buy_sky_trader_snack")));
+        snackRunBuilder.save(saver, ModAdvancements.SNACK_RUN);
+
+
+        // FIRST CLASS CUSTOMER
+        Advancement.Builder firstClassCustomerBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.SNACK_RUN.toString()))
+                .display(
+                        new ItemStackTemplate(Items.COOKIE, 1, glint),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".first_class_customer.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".first_class_customer.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(50))
+                .addCriterion("buy_all_sky_trader_snack", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        firstClassCustomerBuilder.requirements(AdvancementRequirements.allOf(List.of("buy_all_sky_trader_snack")));
+        firstClassCustomerBuilder.save(saver, ModAdvancements.FIRST_CLASS_CUSTOMER);
+
+
+        // YOU CALLED
+        Advancement.Builder youCalledBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(ModItems.SKYFLARE.get()),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".you_called.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".you_called.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(15))
+                .addCriterion("use_skyflare", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        youCalledBuilder.requirements(AdvancementRequirements.allOf(List.of("use_skyflare")));
+        youCalledBuilder.save(saver, ModAdvancements.YOU_CALLED);
+
+
+        // A BIT REDUNDANT, DON'T YOU THINK
+        Advancement.Builder redundantBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.YOU_CALLED.toString()))
+                .display(
+                        new ItemStackTemplate(Items.ELYTRA),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".a_bit_redundant.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".a_bit_redundant.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("use_skyflare_with_elytra", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        redundantBuilder.requirements(AdvancementRequirements.allOf(List.of("use_skyflare_with_elytra")));
+        redundantBuilder.save(saver, ModAdvancements.A_BIT_REDUNDANT);
+
+
+        // THERE'S NO SKY HERE
+        Advancement.Builder noSkyBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.YOU_CALLED.toString()))
+                .display(
+                        new ItemStackTemplate(ModItems.SKYFLARE.get(), 1, glint),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".theres_no_sky_here.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".theres_no_sky_here.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        true
+                )
+                .rewards(AdvancementRewards.Builder.experience(25))
+                .addCriterion("use_skyflare_not_in_overworld", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        noSkyBuilder.requirements(AdvancementRequirements.allOf(List.of("use_skyflare_not_in_overworld")));
+        noSkyBuilder.save(saver, ModAdvancements.THERES_NO_SKY_HERE);
+    }
+}

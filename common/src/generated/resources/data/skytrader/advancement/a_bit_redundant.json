@@ -1,0 +1,29 @@
+{
+  "parent": "skytrader:you_called",
+  "criteria": {
+    "use_skyflare_with_elytra": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.a_bit_redundant.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:elytra"
+    },
+    "title": {
+      "translate": "advancements.skytrader.a_bit_redundant.title"
+    }
+  },
+  "requirements": [
+    [
+      "use_skyflare_with_elytra"
+    ]
+  ],
+  "rewards": {
+    "experience": 25
+  },
+  "sends_telemetry_event": true
+}

@@ -36,13 +36,15 @@
 
   "advancements.skytrader.free_bird.title": "Free Bird",
   "advancements.skytrader.free_bird.description": "I'm as free as a bird now... And this bird you cannot change!",
-  "advancements.skytrader.no_fly_list.title": "No Fly List",
+  "advancements.skytrader.no_fly_list.title": "No-Fly List",
   "advancements.skytrader.no_fly_list.description": "Unruly passengers ought to learn their lesson the hard way. Hope you brought a parachute.",
 
   "advancements.skytrader.you_called.title": "You Called?",
   "advancements.skytrader.you_called.description": "Use a Skyflare to summon a Sky Trader",
   "advancements.skytrader.theres_no_sky_here.title": "There'e No Sky Here",
   "advancements.skytrader.theres_no_sky_here.description": "Use a Skyflare in the Nether or End, only to realize that it doesn't work...",
+  "advancements.skytrader.a_bit_redundant.title": "A Bit Redundant, Don't You Think?",
+  "advancements.skytrader.a_bit_redundant.description": "Since you want to show off, how about you fly yourself?",
 
   "stat.skytrader.flights_taken": "Farlands Airlines Flights Taken"
 }
