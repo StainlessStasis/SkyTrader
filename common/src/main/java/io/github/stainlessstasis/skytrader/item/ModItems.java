@@ -12,8 +12,8 @@ public class ModItems {
                             .stacksTo(16)
             )
     );
-    public static final Supplier<SkyfareBeaconItem> SKYFARE_BEACON = Services.REGISTRY.registerItem("skyfare_beacon",
-            (key) -> new SkyfareBeaconItem(
+    public static final Supplier<SkyflareItem> SKYFLARE = Services.REGISTRY.registerItem("skyflare",
+            (key) -> new SkyflareItem(
                     new Item.Properties()
                             .setId(key)
                             .stacksTo(4)

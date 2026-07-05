@@ -6,8 +6,6 @@ import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.platform.NeoForgeRegistryHelper;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
-import net.minecraft.advancements.triggers.CriterionTrigger;
-import net.minecraft.advancements.triggers.ImpossibleTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
@@ -66,7 +64,7 @@ public class SkyTraderNeoMod {
     static void registerCreativeTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.SKYFARE_TICKET.get());
-            event.accept(ModItems.SKYFARE_BEACON.get());
+            event.accept(ModItems.SKYFLARE.get());
         }
     }
 }
