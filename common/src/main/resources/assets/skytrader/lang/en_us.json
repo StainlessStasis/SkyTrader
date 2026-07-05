@@ -33,5 +33,7 @@
   "advancements.skytrader.free_bird.title": "Free Bird",
   "advancements.skytrader.free_bird.description": "I'm as free as a bird now... And this bird you cannot change!",
   "advancements.skytrader.no_fly_list.title": "No Fly List",
-  "advancements.skytrader.no_fly_list.description": "Unruly passengers ought to learn their lesson the hard way. Hope you brought a parachute."
+  "advancements.skytrader.no_fly_list.description": "Unruly passengers ought to learn their lesson the hard way. Hope you brought a parachute.",
+
+  "stat.skytrader.flights_taken": "Farlands Airlines Flights Taken"
 }
