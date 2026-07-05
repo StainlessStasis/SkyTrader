@@ -302,5 +302,25 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
 
         localCommuterBuilder.requirements(AdvancementRequirements.allOf(List.of("board_flight_while_in_village")));
         localCommuterBuilder.save(saver, ModAdvancements.LOCAL_COMMUTER);
+
+
+        // A TERRIBLE DAY FOR RAIN
+        Advancement.Builder terribleDayBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.GHAST_TEAR),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".terrible_day_for_rain.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".terrible_day_for_rain.description"),
+                        null,
+                        AdvancementType.GOAL,
+                        true,
+                        true,
+                        true
+                )
+                .rewards(AdvancementRewards.Builder.experience(-25)) // yes the negative is intentional. why would you do that?
+                .addCriterion("turn_trader_ghast_hostile", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        terribleDayBuilder.requirements(AdvancementRequirements.allOf(List.of("turn_trader_ghast_hostile")));
+        terribleDayBuilder.save(saver, ModAdvancements.TERRIBLE_DAY_FOR_RAIN);
     }
 }

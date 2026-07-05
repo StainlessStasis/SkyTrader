@@ -1,0 +1,30 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "turn_trader_ghast_hostile": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.terrible_day_for_rain.description"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "id": "minecraft:ghast_tear"
+    },
+    "title": {
+      "translate": "advancements.skytrader.terrible_day_for_rain.title"
+    }
+  },
+  "requirements": [
+    [
+      "turn_trader_ghast_hostile"
+    ]
+  ],
+  "rewards": {
+    "experience": -25
+  },
+  "sends_telemetry_event": true
+}

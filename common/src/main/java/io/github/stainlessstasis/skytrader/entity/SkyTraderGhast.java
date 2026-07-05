@@ -811,6 +811,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return;
         }
 
+        if (target instanceof ServerPlayer player) {
+            ModAdvancements.grant(player, ModAdvancements.TERRIBLE_DAY_FOR_RAIN);
+        }
+
         if (isLeashed()) {
             dropLeash();
         }
