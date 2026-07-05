@@ -125,7 +125,7 @@ public class SkyTraderTrades {
         TradeBuilder.sell("sell_apple", Items.APPLE).count(2).price(1).build(SKY_TRADER_SNACKS, context);
         TradeBuilder.sell("sell_melon_slice", Items.MELON_SLICE).count(3).price(1).build(SKY_TRADER_SNACKS, context);
         TradeBuilder.sell("sell_honey_bottle", Items.HONEY_BOTTLE).price(2).build(SKY_TRADER_SNACKS, context);
-        TradeBuilder.sell("sell_milk_bucket", Items.MILK_BUCKET).price(5).maxUses(6).build(SKY_TRADER_SNACKS, context);
+        TradeBuilder.sell("sell_milk_bucket", Items.MILK_BUCKET).price(5).maxUses(3).build(SKY_TRADER_SNACKS, context);
         TradeBuilder.sell("sell_pumpkin_pie", Items.PUMPKIN_PIE).price(2).build(SKY_TRADER_SNACKS, context);
         TradeBuilder.sell("sell_cooked_chicken", Items.COOKED_CHICKEN).price(3).build(SKY_TRADER_SNACKS, context);
     }
@@ -163,7 +163,7 @@ public class SkyTraderTrades {
             else if (tradeSetKey.equals(SKY_TRADER_MOUNT_UTILITY)) rolls = ConstantValue.exactly(2);
             else if (tradeSetKey.equals(SKY_TRADER_COMMON)) rolls = UniformGenerator.between(2, 3);
             else if (tradeSetKey.equals(SKY_TRADER_RARE)) rolls = UniformGenerator.between(1, 2);
-            else if (tradeSetKey.equals(SKY_TRADER_SNACKS)) rolls = UniformGenerator.between(3, 4);
+            else if (tradeSetKey.equals(SKY_TRADER_SNACKS)) rolls = ConstantValue.exactly(holders.size());
 
             context.register(tradeSetKey, new TradeSet(HolderSet.direct(holders), rolls, false, Optional.empty()));
         });
