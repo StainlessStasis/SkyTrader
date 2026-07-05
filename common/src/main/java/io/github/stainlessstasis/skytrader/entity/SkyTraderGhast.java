@@ -7,6 +7,7 @@ import io.github.stainlessstasis.skytrader.ModStats;
 import io.github.stainlessstasis.skytrader.VillageLocator;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.item.ModItems;
+import io.github.stainlessstasis.skytrader.mixin.HappyGhastInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
@@ -278,6 +279,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
     protected void completeSpawnDescent() {
         this.spawnDescent = false;
+        ((HappyGhastInvoker) this).invokeSetServerStillTimeout(0);
         setRideState(RideState.IDLE);
 
         if (getOwner() instanceof SkyTrader trader && !trader.isRemoved()) {
@@ -579,7 +581,12 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         if (this.destination == null) {
             if (this.spawnDescent) {
-                completeSpawnDescent();
+                boolean notMovingVertically = Math.abs(getDeltaMovement().y) < 0.05;
+                boolean lowEnough = getY() - terrainHeightAt(blockPosition()) <= flight.landingHoverHeight + 3;
+                if (notMovingVertically && lowEnough) {
+                    completeSpawnDescent();
+                    return Vec3.ZERO;
+                }
             } else {
                 setRideState(RideState.ARRIVED);
                 sendMessageToPassengers(ModConstants.MOD_ID + ".arrived", WHITE);
@@ -589,8 +596,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
 
         if (this.spawnDescent && getOwner() instanceof SkyTrader trader
                 && trader.isPassenger() && trader.getVehicle() == this) {
-            int jumpTerrainY = terrainHeightAt(this.blockPosition());
-            double heightAboveTarget = this.getY() - (jumpTerrainY + flight.landingHoverHeight);
+            int terrainY = terrainHeightAt(this.blockPosition());
+            double heightAboveTarget = this.getY() - (terrainY + flight.landingHoverHeight);
             if (heightAboveTarget <= flight.spawnJumpOffHeight) {
                 BlockPos landingSpot = this.destination != null ? this.destination : this.blockPosition();
                 trader.jumpOffSpawnDescent(landingSpot);

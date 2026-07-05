@@ -4,6 +4,7 @@
   "package": "io.github.stainlessstasis.skytrader.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "HappyGhastInvoker",
     "HappyGhastMixin",
     "MinecraftServerMixin",
     "ProjectileUtilMixin",
