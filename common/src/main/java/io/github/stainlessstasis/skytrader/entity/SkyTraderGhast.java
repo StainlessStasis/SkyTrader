@@ -700,6 +700,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         if (player instanceof ServerPlayer serverPlayer) {
             player.startRiding(this);
             ModAdvancements.grant(serverPlayer, ModAdvancements.WELCOME_ABOARD);
+
+            if (serverPlayer.getY() >= serverPlayer.level().getMaxY()-4) {
+                ModAdvancements.grant(serverPlayer, ModAdvancements.STAR_TRAVELER);
+            }
+
             serverPlayer.awardStat(Stats.CUSTOM.get(ModStats.FLIGHTS_TAKEN));
         }
     }

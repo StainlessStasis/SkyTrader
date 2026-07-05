@@ -19,6 +19,7 @@ public class ModAdvancements {
     public static final Identifier FREE_BIRD = ModConstants.id("free_bird");
     public static final Identifier NO_FLY_LIST = ModConstants.id("no_fly_list");
     public static final Identifier NOT_A_SEAT = ModConstants.id("not_a_seat");
+    public static final Identifier STAR_TRAVELER = ModConstants.id("star_traveler");
 
     public static void grant(ServerPlayer player, Identifier advancementId) {
         AdvancementHolder holder = player.level().getServer().getAdvancements().get(advancementId);
