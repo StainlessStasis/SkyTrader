@@ -1,5 +1,19 @@
 {
   "gives": {
+    "components": {
+      "minecraft:fireworks": {
+        "explosions": [
+          {
+            "colors": [
+              16777215,
+              3381759
+            ],
+            "shape": "burst"
+          }
+        ],
+        "flight_duration": 3
+      }
+    },
     "id": "skytrader:skyflare"
   },
   "reputation_discount": 0.05,
