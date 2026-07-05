@@ -14,6 +14,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
@@ -27,8 +28,10 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SkyTraderTrades {
@@ -44,7 +47,9 @@ public class SkyTraderTrades {
     public static final ResourceKey<TradeSet> SKY_TRADER_MOUNT_UTILITY = tradeSetKey("sky_trader/mount_utility");
     public static final ResourceKey<TradeSet> SKY_TRADER_COMMON = tradeSetKey("sky_trader/common");
     public static final ResourceKey<TradeSet> SKY_TRADER_RARE = tradeSetKey("sky_trader/rare");
+
     public static final ResourceKey<TradeSet> SKY_TRADER_SNACKS = tradeSetKey("sky_trader/snacks");
+    public static int SNACK_ITEM_COUNT = 8;
 
     public static ResourceKey<TradeSet> tradeSetKey(String path) {
         return ResourceKey.create(Registries.TRADE_SET, ModConstants.id(path));
@@ -163,7 +168,10 @@ public class SkyTraderTrades {
             else if (tradeSetKey.equals(SKY_TRADER_MOUNT_UTILITY)) rolls = ConstantValue.exactly(2);
             else if (tradeSetKey.equals(SKY_TRADER_COMMON)) rolls = UniformGenerator.between(2, 3);
             else if (tradeSetKey.equals(SKY_TRADER_RARE)) rolls = UniformGenerator.between(1, 2);
-            else if (tradeSetKey.equals(SKY_TRADER_SNACKS)) rolls = ConstantValue.exactly(holders.size());
+            else if (tradeSetKey.equals(SKY_TRADER_SNACKS)) {
+                rolls = ConstantValue.exactly(holders.size());
+                SNACK_ITEM_COUNT = holders.size();
+            }
 
             context.register(tradeSetKey, new TradeSet(HolderSet.direct(holders), rolls, false, Optional.empty()));
         });

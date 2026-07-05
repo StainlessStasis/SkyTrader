@@ -9,6 +9,7 @@ public class ModAdvancements {
     public static final Identifier ROOT = ModConstants.id("root");
     public static final Identifier WELCOME_ABOARD = ModConstants.id("welcome_aboard");
     public static final Identifier SNACK_RUN = ModConstants.id("snack_run");
+    public static final Identifier FIRST_CLASS_CUSTOMER = ModConstants.id("first_class_customer");
     public static final Identifier FREE_BIRD = ModConstants.id("free_bird");
     public static final Identifier NO_FLY_LIST = ModConstants.id("no_fly_list");
 

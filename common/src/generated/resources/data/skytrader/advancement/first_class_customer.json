@@ -1,0 +1,32 @@
+{
+  "parent": "skytrader:snack_run",
+  "criteria": {
+    "buy_all_sky_trader_snack": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.first_class_customer.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "components": {
+        "minecraft:enchantment_glint_override": true
+      },
+      "id": "minecraft:cookie"
+    },
+    "title": {
+      "translate": "advancements.skytrader.first_class_customer.title"
+    }
+  },
+  "requirements": [
+    [
+      "buy_all_sky_trader_snack"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  },
+  "sends_telemetry_event": true
+}

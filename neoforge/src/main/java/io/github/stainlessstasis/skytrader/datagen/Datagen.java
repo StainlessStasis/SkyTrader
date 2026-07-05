@@ -22,6 +22,7 @@ public class Datagen {
                         new RootAdvancementGenerator(),
                         new WelcomeAboardAdvancementGenerator(),
                         new SnackRunAdvancementGenerator(),
+                        new FirstClassCustomer(),
                         new FreeBirdAdvancementGenerator(),
                         new NoFlyListAdvancementGenerator()
                 ))
