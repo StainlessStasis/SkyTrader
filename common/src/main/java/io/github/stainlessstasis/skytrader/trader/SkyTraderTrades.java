@@ -92,6 +92,7 @@ public class SkyTraderTrades {
         TradeBuilder.sell("sell_scaffolding", Items.SCAFFOLDING).count(16).price(2).build(SKY_TRADER_SKY_UTILITY, context);
         TradeBuilder.sell("sell_feather", Items.FEATHER).count(3).price(1).build(SKY_TRADER_SKY_UTILITY, context);
         TradeBuilder.sell("sell_water_bucket", Items.WATER_BUCKET).price(8).build(SKY_TRADER_SKY_UTILITY, context);
+        TradeBuilder.sell("sell_empty_map", Items.MAP).price(3).build(SKY_TRADER_SKY_UTILITY, context);
 
         TradeBuilder.sell("sell_jump_stew", Items.SUSPICIOUS_STEW).price(4)
                 .withFunction(SetStewEffectFunction.stewEffect().withEffect(MobEffects.JUMP_BOOST, UniformGenerator.between(5, 8)).build()).build(SKY_TRADER_SKY_UTILITY, context);
