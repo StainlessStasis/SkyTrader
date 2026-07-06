@@ -167,16 +167,28 @@ public class SkyTrader extends WanderingTrader {
         }
 
         boolean wasOverride = ghast.hasManualDestination();
-        ghast.setManualDestination(destination);
 
         if (playerId != null && this.level() instanceof ServerLevel serverLevel) {
             var player = serverLevel.getPlayerByUUID(playerId);
             if (player instanceof ServerPlayer serverPlayer) {
-                String messageKey = wasOverride ? ModConstants.MOD_ID + ".route_overridden" : ModConstants.MOD_ID + ".route_planned";
+                String messageKey;
+
+                double dist = this.position().distanceTo(Vec3.atCenterOf(destination));
+                int maxDist = SkyTraderConfig.get().search.manualRouteMaxDistance;
+                if (dist > maxDist) {
+                    messageKey = ModConstants.MOD_ID + ".destination_too_far";
+                    serverPlayer.sendOverlayMessage(Component.translatable(messageKey, (int)dist, maxDist).withColor(ModConstants.RED));
+                    return;
+                }
+
+                messageKey = wasOverride ? ModConstants.MOD_ID + ".route_overridden" : ModConstants.MOD_ID + ".route_planned";
                 serverPlayer.sendOverlayMessage(Component.translatable(messageKey).withColor(ModConstants.WHITE));
+                if (wasOverride) ghast.sendMessageToPassengers(messageKey, ModConstants.WHITE);
                 ModAdvancements.grant(serverPlayer, ModAdvancements.FLIGHT_PLAN);
             }
         }
+
+        ghast.setManualDestination(destination);
     }
 
     @Override
@@ -275,7 +287,9 @@ public class SkyTrader extends WanderingTrader {
                 SkyTraderGhast ghast = getGhast();
                 if (ghast != null && ghast.hasManualDestination() && ghast.canAcceptMapDestination()) {
                     ghast.clearManualDestination();
-                    player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".route_cleared").withColor(ModConstants.WHITE));
+                    String messageKey = ModConstants.MOD_ID + ".route_cleared";
+                    player.sendOverlayMessage(Component.translatable(messageKey).withColor(ModConstants.WHITE));
+                    ghast.sendMessageToPassengers(messageKey, ModConstants.WHITE);
                 }
                 return InteractionResult.SUCCESS;
             }
