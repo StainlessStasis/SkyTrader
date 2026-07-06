@@ -389,7 +389,7 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
         Advancement.Builder flightPlanBuilder = Advancement.Builder.advancement()
                 .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
                 .display(
-                        new ItemStackTemplate(Items.WRITTEN_BOOK),
+                        new ItemStackTemplate(Items.WRITABLE_BOOK),
                         Component.translatable("advancements." + ModConstants.MOD_ID + ".flight_plan.title"),
                         Component.translatable("advancements." + ModConstants.MOD_ID + ".flight_plan.description"),
                         null,

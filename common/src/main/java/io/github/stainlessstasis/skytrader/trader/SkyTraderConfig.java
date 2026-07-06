@@ -14,8 +14,10 @@ public class SkyTraderConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static Path configPath;
     private static Data data = new Data();
+    private static int CURRENT_VERSION = 2;
 
     public static class Data {
+        public int configVersion = -1;
         public Spawning spawning = new Spawning();
         public Flight flight = new Flight();
         public Search search = new Search();
@@ -50,7 +52,7 @@ public class SkyTraderConfig {
         public float takeoffForwardSpeed = 0.15f;
 
         public int cruiseHoverHeight = 75;
-        public float cruiseSpeed = 0.6f;
+        public float cruiseSpeed = 0.8f;
         public int glideStartDistance = 200;
 
         public double finalApproachDistance = 4d;
@@ -93,7 +95,10 @@ public class SkyTraderConfig {
         if (Files.exists(configPath)) {
             try (Reader reader = Files.newBufferedReader(configPath)) {
                 Data loaded = GSON.fromJson(reader, Data.class);
-                if (loaded != null) data = loaded;
+                if (loaded != null) {
+                    data = loaded;
+                    migrate();
+                }
             } catch (IOException e) {
                 throw new RuntimeException("Failed to read " + configPath, e);
             }
@@ -110,6 +115,27 @@ public class SkyTraderConfig {
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to save " + configPath, e);
+        }
+    }
+
+    private static void migrate() {
+        System.out.println("MIGRATING CONFIG");
+        boolean changed = false;
+        System.out.println(data.configVersion);
+
+        if (data.configVersion < 2) {
+            // version 0/1 (1.0.0 / 1.1.0) -> 2 (1.2.0): configVersion field was added, and cruising flight speed was increased
+            data.configVersion = 2;
+            if (data.flight.cruiseSpeed == 0.6f) {
+                System.out.println("UPDATING CRUISE SPEED");
+                data.flight.cruiseSpeed = 0.8f;
+            }
+            changed = true;
+        }
+
+        data.configVersion = CURRENT_VERSION;
+        if (changed) {
+            save();
         }
     }
 }
