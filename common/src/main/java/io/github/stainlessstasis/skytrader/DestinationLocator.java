@@ -10,16 +10,12 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Locates the nearest village structure.
- * Runs during the SEARCHING phase of the {@link SkyTraderGhast}.
- */
-public class VillageLocator {
+public class DestinationLocator {
 
-    private VillageLocator() {}
+    private DestinationLocator() {}
 
     /**
-     * Starts a search for the nearest village.
+     * Starts a search for the nearest village. Runs during the SEARCHING phase of the {@link SkyTraderGhast}.
      * Returns null (via the future) if no village could be found.
      * Callers must resolve the real surface height themselves via {@link #resolveSurfacePosition}.
      */
@@ -60,15 +56,15 @@ public class VillageLocator {
     }
 
     /**
-     * Resolves the real surface Y for a structure center.
+     * Resolves the real surface Y for a given position.
      */
-    public static BlockPos resolveSurfacePosition(ServerLevel serverLevel, BlockPos structureCenter) {
-        int surfaceY = serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, structureCenter.getX(), structureCenter.getZ());
+    public static BlockPos resolveSurfacePosition(ServerLevel serverLevel, BlockPos pos) {
+        int surfaceY = serverLevel.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ());
         if (surfaceY <= serverLevel.getMinY()) {
             var randomState = serverLevel.getChunkSource().randomState();
             surfaceY = serverLevel.getChunkSource().getGenerator().getBaseHeight(
-                    structureCenter.getX(),
-                    structureCenter.getZ(),
+                    pos.getX(),
+                    pos.getZ(),
                     Heightmap.Types.WORLD_SURFACE,
                     serverLevel,
                     randomState
@@ -79,6 +75,6 @@ public class VillageLocator {
             surfaceY = serverLevel.getSeaLevel();
         }
 
-        return new BlockPos(structureCenter.getX(), surfaceY, structureCenter.getZ());
+        return new BlockPos(pos.getX(), surfaceY, pos.getZ());
     }
 }

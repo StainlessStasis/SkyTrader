@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.ModGameRules;
 import io.github.stainlessstasis.skytrader.ModStats;
-import io.github.stainlessstasis.skytrader.VillageLocator;
+import io.github.stainlessstasis.skytrader.DestinationLocator;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.mixin.HappyGhastInvoker;
@@ -65,7 +65,8 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected @Nullable BlockPos villageCenter;
     protected boolean spawnDescent = false;
     protected @Nullable CompletableFuture<BlockPos> pendingVillageSearch = null;
-    protected @Nullable BlockPos manualDestination;
+    protected BlockPos.@Nullable MutableBlockPos manualDestination = null;
+    boolean manualFlight = false;
 
     // For Transatlantic Travel and Changing Climates
     protected final Set<ResourceKey<Biome>> biomesThisFlight = new HashSet<>();
@@ -312,7 +313,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         setRideState(RideState.SEARCHING);
 
         BlockPos searchOrigin = this.blockPosition();
-        this.pendingVillageSearch = VillageLocator.findNearestVillageStructure(
+        this.pendingVillageSearch = DestinationLocator.findNearestVillageStructure(
                 serverLevel, searchOrigin, SkyTraderConfig.get().search.searchRadius);
 
         this.pendingVillageSearch.whenComplete((structureCenter, throwable) ->
@@ -332,9 +333,13 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     protected void useManualDestination() {
-        this.destination = this.manualDestination;
-        this.villageCenter = this.manualDestination;
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+        if (this.manualDestination == null) return;
+        BlockPos surfacePos = DestinationLocator.resolveSurfacePosition(serverLevel, this.manualDestination);
+        this.destination = surfacePos;
+        this.villageCenter = surfacePos;
         this.manualDestination = null;
+        this.manualFlight = true;
         this.departureAttempts = 0;
         this.landingAttempts = 0;
         sendMessageToPassengers(ModConstants.MOD_ID + ".using_planned_route", WHITE);
@@ -349,7 +354,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         this.destination = structureCenter != null
-                ? VillageLocator.resolveSurfacePosition(serverLevel, structureCenter)
+                ? DestinationLocator.resolveSurfacePosition(serverLevel, structureCenter)
                 : null;
 
         if (this.destination == null) {
@@ -445,6 +450,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             max = Math.max(max, terrainHeightAt(sample));
         }
         this.cachedTerrainHeight = max;
+
         return max;
     }
 
@@ -555,7 +561,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         float up = computeVerticalInput(terrainY, flight.cruiseHoverHeight, flight.maxVerticalSpeed);
 
         if (this.stateTicks > 20 && this.stateTicks % 20 == 0) {
-            sendMessageToPassengers(ModConstants.MOD_ID + ".en_route_status", WHITE, Math.round(horizontalDist), estimateTravelSeconds(horizontalDist));
+            sendEnRouteStatus(horizontalDist);
         }
 
         return new Vec3(0, up, flight.cruiseSpeed);
@@ -592,7 +598,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         float up = computeVerticalInput(terrainY, targetHoverHeight, flight.maxVerticalSpeed);
 
         if (this.stateTicks > 20 && this.stateTicks % 20 == 0) {
-            sendMessageToPassengers(ModConstants.MOD_ID + ".en_route_status", WHITE, Math.round(horizontalDist), estimateTravelSeconds(horizontalDist));
+            sendEnRouteStatus(horizontalDist);
         }
 
         return new Vec3(0, up, flight.cruiseSpeed);
@@ -650,12 +656,15 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         double horizontalDist = Math.sqrt(dx * dx + dz * dz);
 
         int terrainY = terrainHeightAt(this.blockPosition());
-        double targetY = terrainY + flight.landingHoverHeight;
+        double targetY = terrainY + (this.manualFlight ? 1 : flight.landingHoverHeight);
         double dy = targetY - this.getY();
-        boolean nearGround = Math.abs(dy) < flight.landingArrivedThreshold;
+
+        double threshold = this.manualFlight ? flight.landingArrivedThreshold+2 : flight.landingArrivedThreshold;
+        boolean nearGround = Math.abs(dy) < threshold;
 
         boolean closeEnough = horizontalDist < flight.finalApproachDistance
-                || (nearGround && horizontalDist < flight.landingArrivedRadius);
+                || (nearGround && horizontalDist < flight.landingArrivedRadius)
+                || (this.manualFlight && horizontalDist < 15);
 
         if (nearGround && closeEnough) {
             if (this.spawnDescent) {
@@ -668,7 +677,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         }
 
         float descentSpeed = this.spawnDescent ? flight.spawnDescentSpeed : flight.descendSpeed;
-        float up = (float) Mth.clamp(dy * 0.05, -descentSpeed, descentSpeed);
+        float up = (float) Mth.clamp(dy * 0.15, -descentSpeed, descentSpeed);
         float forward = 0f;
         if (horizontalDist > flight.finalApproachDistance) {
             steerYawToward(dx, dz);
@@ -727,6 +736,18 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 player.sendOverlayMessage(Component.translatable(translationKey, args).withColor(color));
             }
         }
+    }
+
+    protected void sendEnRouteStatus(double horizontalDist) {
+        long totalSeconds = estimateTravelSeconds(horizontalDist);
+        long h = totalSeconds / 3600;
+        long m = (totalSeconds % 3600) / 60;
+        long s = totalSeconds % 60;
+        String time = (h > 0)
+                ? String.format("%d:%02d:%02d", h, m, s)
+                : String.format("%02d:%02d", m, s);
+
+        sendMessageToPassengers(ModConstants.MOD_ID + ".en_route_status", WHITE, Math.round(horizontalDist), time);
     }
 
     protected int estimateTravelSeconds(double blocksRemaining) {
@@ -1001,7 +1022,15 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     }
 
     public void setManualDestination(@Nullable BlockPos pos) {
-        this.manualDestination = pos;
+        if (pos == null) {
+            manualDestination = null;
+            return;
+        }
+
+        if (manualDestination == null){
+            manualDestination = new BlockPos.MutableBlockPos();
+        }
+        manualDestination.set(pos);
     }
 
     @Override
@@ -1038,6 +1067,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         if (this.manualDestination != null) {
             output.store("ManualDestination", BlockPos.CODEC, this.manualDestination);
         }
+        output.putBoolean("ManualFlight", this.manualFlight);
     }
 
     @Override
@@ -1063,7 +1093,13 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 .forEach(this.biomesThisFlight::add);
         this.oceanBlocksTraveled = input.getDoubleOr("OceanBlocksTraveled", 0);
         this.lastBiomeSamplePos = input.read("LastBiomeSamplePos", Vec3.CODEC).orElse(null);
-        this.manualDestination = input.read("ManualDestination", BlockPos.CODEC).orElse(null);
+
+        this.manualDestination = null;
+        input.read("ManualDestination", BlockPos.CODEC).ifPresent(blockPos -> {
+            manualDestination = new BlockPos.MutableBlockPos();
+            manualDestination.set(blockPos);
+        });
+        this.manualFlight = input.getBooleanOr("ManualFlight", false);
         applyGoalsForState(this.rideState);
     }
 

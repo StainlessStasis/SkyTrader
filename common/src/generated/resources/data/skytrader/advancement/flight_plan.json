@@ -10,7 +10,7 @@
       "translate": "advancements.skytrader.flight_plan.description"
     },
     "icon": {
-      "id": "minecraft:written_book"
+      "id": "minecraft:writable_book"
     },
     "title": {
       "translate": "advancements.skytrader.flight_plan.title"
