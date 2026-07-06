@@ -1,5 +1,5 @@
 # Sky Trader
-The Sky Trader is a rare trader who soars the skies aboard their friendly Happy Ghast. Purchase a Skyfare Ticket and hit a ride to the nearest village, or call a taxi using a Skyflare!
+The Sky Trader is a rare trader who soars the skies aboard their friendly Happy Ghast. Purchase a Skyfare Ticket and hitch a ride to the nearest village, or call a taxi using a Skyflare!
 ![The Sky Trader](https://cdn.modrinth.com/data/cached_images/e97720b46eb92e1ba0bd4f7aca625abde28357d2_0.webp)
 
 # Features
