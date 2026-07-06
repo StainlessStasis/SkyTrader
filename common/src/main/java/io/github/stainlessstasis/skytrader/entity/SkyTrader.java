@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -52,9 +53,10 @@ public class SkyTrader extends WanderingTrader {
     protected int despawnTicks = -1;
     protected @Nullable MerchantOffers flightOffers;
     protected final Map<UUID, Integer> hitCounts = new HashMap<>();
-    protected int mapExaminationTicks = 0;
-    protected @Nullable BlockPos pendingMapDestination;
-    protected @Nullable UUID mapExaminationPlayer;
+    protected int itemExaminationTicks = 0;
+    protected @Nullable BlockPos pendingManualDestination;
+    protected @Nullable UUID itemExaminationPlayer;
+    protected @Nullable String pendingCompletionMessageKey;
 
     public SkyTrader(EntityType<? extends WanderingTrader> type, Level level) {
         super(type, level);
@@ -125,38 +127,41 @@ public class SkyTrader extends WanderingTrader {
     }
 
     protected void tickMapExamination() {
-        if (this.mapExaminationTicks <= 0) {
+        if (this.itemExaminationTicks <= 0) {
             return;
         }
 
         this.setXRot(45f);
 
-        this.mapExaminationTicks--;
-        if (this.mapExaminationTicks == 0) {
+        this.itemExaminationTicks--;
+        if (this.itemExaminationTicks == 0) {
             this.setXRot(0f);
-            finishMapExamination();
+            finishItemExamination();
         }
     }
 
-    protected void startMapExamination(Player player, BlockPos destination, ItemStack mapStack) {
-        this.pendingMapDestination = destination;
-        this.mapExaminationPlayer = player.getUUID();
-        this.mapExaminationTicks = 40;
+    protected void startItemExamination(Player player, BlockPos destination, ItemStack itemStack, @Nullable String completionMessageKey) {
+        this.pendingManualDestination = destination;
+        this.itemExaminationPlayer = player.getUUID();
+        this.pendingCompletionMessageKey = completionMessageKey;
+        this.itemExaminationTicks = 40;
 
-        this.setItemSlot(EquipmentSlot.MAINHAND, mapStack.copy());
+        this.setItemSlot(EquipmentSlot.MAINHAND, itemStack.copy());
         this.setDropChance(EquipmentSlot.MAINHAND, 0);
 
-        player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".examining_map").withColor(ModConstants.WHITE));
+        player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".planning_route").withColor(ModConstants.WHITE));
         this.level().playSound(null, this.blockPosition(), SoundEvents.BOOK_PAGE_TURN, this.getSoundSource(), 1f, 1f);
     }
 
-    protected void finishMapExamination() {
+    protected void finishItemExamination() {
         this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 
-        BlockPos destination = this.pendingMapDestination;
-        UUID playerId = this.mapExaminationPlayer;
-        this.pendingMapDestination = null;
-        this.mapExaminationPlayer = null;
+        BlockPos destination = this.pendingManualDestination;
+        UUID playerId = this.itemExaminationPlayer;
+        String completionOverride = this.pendingCompletionMessageKey;
+        this.pendingManualDestination = null;
+        this.itemExaminationPlayer = null;
+        this.pendingCompletionMessageKey = null;
         if (destination == null) {
             return;
         }
@@ -171,17 +176,17 @@ public class SkyTrader extends WanderingTrader {
         if (playerId != null && this.level() instanceof ServerLevel serverLevel) {
             var player = serverLevel.getPlayerByUUID(playerId);
             if (player instanceof ServerPlayer serverPlayer) {
-                String messageKey;
-
                 double dist = this.position().distanceTo(Vec3.atCenterOf(destination));
                 int maxDist = SkyTraderConfig.get().search.manualRouteMaxDistance;
                 if (dist > maxDist) {
-                    messageKey = ModConstants.MOD_ID + ".destination_too_far";
-                    serverPlayer.sendOverlayMessage(Component.translatable(messageKey, (int)dist, maxDist).withColor(ModConstants.RED));
+                    serverPlayer.sendOverlayMessage(Component.translatable(
+                            ModConstants.MOD_ID + ".destination_too_far", (int) dist, maxDist).withColor(ModConstants.RED));
                     return;
                 }
 
-                messageKey = wasOverride ? ModConstants.MOD_ID + ".route_overridden" : ModConstants.MOD_ID + ".route_planned";
+                String messageKey = completionOverride != null
+                        ? completionOverride
+                        : (wasOverride ? ModConstants.MOD_ID + ".route_overridden" : ModConstants.MOD_ID + ".route_planned");
                 serverPlayer.sendOverlayMessage(Component.translatable(messageKey).withColor(ModConstants.WHITE));
                 if (wasOverride) ghast.sendMessageToPassengers(messageKey, ModConstants.WHITE);
                 ModAdvancements.grant(serverPlayer, ModAdvancements.FLIGHT_PLAN);
@@ -283,6 +288,7 @@ public class SkyTrader extends WanderingTrader {
 
             ItemStack held = player.getItemInHand(hand);
 
+            // clear the route with empty hand
             if (held.isEmpty() && player.isSecondaryUseActive()) {
                 SkyTraderGhast ghast = getGhast();
                 if (ghast != null && ghast.hasManualDestination() && ghast.canAcceptMapDestination()) {
@@ -294,16 +300,41 @@ public class SkyTrader extends WanderingTrader {
                 return InteractionResult.SUCCESS;
             }
 
+            // bed -> player's own spawn point
+            if (held.is(ItemTags.BEDS)) {
+                SkyTraderGhast ghast = getGhast();
+                if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
+                    var respawnConfig = serverPlayer.getRespawnConfig();
+                    if (respawnConfig == null) {
+                        player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".no_spawn_point").withColor(ModConstants.RED));
+                        return InteractionResult.SUCCESS;
+                    }
+                    startItemExamination(player, respawnConfig.respawnData().pos(), held, ModConstants.MOD_ID + ".route_planned_player_spawn");
+                    return InteractionResult.SUCCESS;
+                }
+            }
+
+            // compass -> world spawn
+            if (held.is(Items.COMPASS) && level() instanceof ServerLevel serverLevel) {
+                BlockPos worldSpawn = serverLevel.getServer().getRespawnData().pos();
+                SkyTraderGhast ghast = getGhast();
+                if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
+                    startItemExamination(player, worldSpawn, held, ModConstants.MOD_ID + ".route_planned_world_spawn");
+                    return InteractionResult.SUCCESS;
+                }
+            }
+
+            // explorer map -> destination marked on map
             BlockPos mapDest = MapHelper.getMapDestination(held);
             if (mapDest != null) {
-                if (this.mapExaminationTicks > 0) {
-                    player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".already_examining").withColor(ModConstants.RED));
+                if (this.itemExaminationTicks > 0) {
+                    player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".already_planning").withColor(ModConstants.RED));
                     return InteractionResult.SUCCESS;
                 }
 
                 SkyTraderGhast ghast = getGhast();
                 if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
-                    startMapExamination(player, mapDest, held);
+                    startItemExamination(player, mapDest, held, null);
                     return InteractionResult.SUCCESS;
                 }
             }
