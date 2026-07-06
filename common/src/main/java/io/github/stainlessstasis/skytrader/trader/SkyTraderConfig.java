@@ -78,6 +78,7 @@ public class SkyTraderConfig {
 
     public static class Search {
         public int searchRadius = 2048;
+        public int manualRouteMaxDistance = 10240;
     }
 
     private SkyTraderConfig() {}
@@ -122,7 +123,10 @@ public class SkyTraderConfig {
         boolean changed = false;
 
         if (data.configVersion < 2) {
-            // version 1 (1.0.0 / 1.1.0) -> 2 (1.2.0): configVersion field was added, and cruising flight speed was increased
+            // version 1 (1.0.0 / 1.1.0) -> 2 (1.2.0):
+            // configVersion field was added (2)
+            // manualRouteMaxDistance was added (10240)
+            // cruising flight speed was increased from 0.6 -> 0.8
             data.configVersion = 2;
             if (data.flight.cruiseSpeed == 0.6f) {
                 data.flight.cruiseSpeed = 0.8f;

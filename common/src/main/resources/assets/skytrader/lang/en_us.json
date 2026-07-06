@@ -23,6 +23,7 @@
   "skytrader.route_planned": "Route planned!",
   "skytrader.route_cleared": "Route cleared. Defaulting to nearest village.",
   "skytrader.route_overridden": "Route updated - previous route replaced.",
+  "skytrader.destination_too_far": "This destination is too far away. (%s > %s)",
   "skytrader.using_planned_route": "Using your planned route. Preparing for takeoff...",
   "skytrader.already_examining": "The trader is already examining a map.",
 
