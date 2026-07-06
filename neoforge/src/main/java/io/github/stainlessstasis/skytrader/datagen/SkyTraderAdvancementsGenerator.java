@@ -383,5 +383,25 @@ public class SkyTraderAdvancementsGenerator implements AdvancementSubProvider {
 
         changingClimatesBuilder.requirements(AdvancementRequirements.allOf(List.of("fly_over_a_lot_of_biomes")));
         changingClimatesBuilder.save(saver, ModAdvancements.CHANGING_CLIMATES);
+
+
+        // FLIGHT PLAN
+        Advancement.Builder flightPlanBuilder = Advancement.Builder.advancement()
+                .parent(AdvancementSubProvider.createPlaceholder(ModAdvancements.WELCOME_ABOARD.toString()))
+                .display(
+                        new ItemStackTemplate(Items.WRITTEN_BOOK),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".flight_plan.title"),
+                        Component.translatable("advancements." + ModConstants.MOD_ID + ".flight_plan.description"),
+                        null,
+                        AdvancementType.TASK,
+                        true,
+                        true,
+                        false
+                )
+                .rewards(AdvancementRewards.Builder.experience(15))
+                .addCriterion("plan_a_flight", CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance()));
+
+        flightPlanBuilder.requirements(AdvancementRequirements.allOf(List.of("plan_a_flight")));
+        flightPlanBuilder.save(saver, ModAdvancements.FLIGHT_PLAN);
     }
 }

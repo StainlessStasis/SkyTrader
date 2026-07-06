@@ -1,0 +1,28 @@
+{
+  "parent": "skytrader:welcome_aboard",
+  "criteria": {
+    "plan_a_flight": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.skytrader.flight_plan.description"
+    },
+    "icon": {
+      "id": "minecraft:written_book"
+    },
+    "title": {
+      "translate": "advancements.skytrader.flight_plan.title"
+    }
+  },
+  "requirements": [
+    [
+      "plan_a_flight"
+    ]
+  ],
+  "rewards": {
+    "experience": 15
+  },
+  "sends_telemetry_event": true
+}
