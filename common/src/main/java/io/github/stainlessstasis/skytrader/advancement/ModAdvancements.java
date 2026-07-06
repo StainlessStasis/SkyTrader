@@ -31,6 +31,8 @@ public class ModAdvancements {
     public static final Identifier THERES_NO_SKY_HERE = ModConstants.id("theres_no_sky_here");
     public static final Identifier A_BIT_REDUNDANT = ModConstants.id("a_bit_redundant");
 
+    public static final Identifier FLIGHT_PLAN = ModConstants.id("flight_plan");
+
     public static void grant(ServerPlayer player, Identifier advancementId) {
         AdvancementHolder holder = player.level().getServer().getAdvancements().get(advancementId);
         if (holder == null) {

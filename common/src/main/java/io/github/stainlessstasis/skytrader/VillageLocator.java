@@ -23,7 +23,7 @@ public class VillageLocator {
      * Returns null (via the future) if no village could be found.
      * Callers must resolve the real surface height themselves via {@link #resolveSurfacePosition}.
      */
-    public static CompletableFuture<@Nullable BlockPos> findNearestVillageStructureAsync(
+    public static CompletableFuture<@Nullable BlockPos> findNearestVillageStructure(
             ServerLevel serverLevel, BlockPos origin, int searchRadius) {
 
         CompletableFuture<@Nullable BlockPos> future = new CompletableFuture<>();

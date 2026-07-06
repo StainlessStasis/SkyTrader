@@ -2,6 +2,7 @@ package io.github.stainlessstasis.skytrader.entity;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.stainlessstasis.skytrader.MapHelper;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
@@ -30,6 +31,7 @@ import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -50,6 +52,9 @@ public class SkyTrader extends WanderingTrader {
     protected int despawnTicks = -1;
     protected @Nullable MerchantOffers flightOffers;
     protected final Map<UUID, Integer> hitCounts = new HashMap<>();
+    protected int mapExaminationTicks = 0;
+    protected @Nullable BlockPos pendingMapDestination;
+    protected @Nullable UUID mapExaminationPlayer;
 
     public SkyTrader(EntityType<? extends WanderingTrader> type, Level level) {
         super(type, level);
@@ -75,6 +80,7 @@ public class SkyTrader extends WanderingTrader {
         if (!this.level().isClientSide()) {
             tickDespawn();
             syncRotationToGhast();
+            tickMapExamination();
         }
     }
 
@@ -115,6 +121,49 @@ public class SkyTrader extends WanderingTrader {
         if (ghast.rideState == SkyTraderGhast.RideState.IDLE) {
             discard();
             ghast.discard();
+        }
+    }
+
+    protected void tickMapExamination() {
+        if (this.mapExaminationTicks <= 0) {
+            return;
+        }
+        this.mapExaminationTicks--;
+        if (this.mapExaminationTicks == 0) {
+            finishMapExamination();
+        }
+    }
+
+    protected void startMapExamination(Player player, BlockPos destination) {
+        this.pendingMapDestination = destination;
+        this.mapExaminationPlayer = player.getUUID();
+        this.mapExaminationTicks = 40;
+        player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".examining_map").withColor(ModConstants.WHITE));
+        this.level().playSound(null, this.blockPosition(), SoundEvents.BOOK_PAGE_TURN, this.getSoundSource(), 1f, 1f);
+    }
+
+    protected void finishMapExamination() {
+        BlockPos destination = this.pendingMapDestination;
+        UUID playerId = this.mapExaminationPlayer;
+        this.pendingMapDestination = null;
+        this.mapExaminationPlayer = null;
+        if (destination == null) {
+            return;
+        }
+
+        SkyTraderGhast ghast = getGhast();
+        if (ghast == null || !ghast.canAcceptMapDestination()) {
+            return;
+        }
+
+        ghast.setManualDestination(destination);
+
+        if (playerId != null && this.level() instanceof ServerLevel serverLevel) {
+            var player = serverLevel.getPlayerByUUID(playerId);
+            if (player instanceof ServerPlayer serverPlayer) {
+                serverPlayer.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".route_planned").withColor(ModConstants.WHITE));
+                ModAdvancements.grant(serverPlayer, ModAdvancements.FLIGHT_PLAN);
+            }
         }
     }
 
@@ -207,7 +256,23 @@ public class SkyTrader extends WanderingTrader {
     public @NonNull InteractionResult mobInteract(@NonNull Player player, @NonNull InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
             ModAdvancements.grant(serverPlayer, ModAdvancements.ROOT);
+
+            ItemStack held = player.getItemInHand(hand);
+            BlockPos mapDest = MapHelper.getMapDestination(held);
+            if (mapDest != null) {
+                if (this.mapExaminationTicks > 0) {
+                    player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".already_examining").withColor(ModConstants.RED));
+                    return InteractionResult.SUCCESS;
+                }
+
+                SkyTraderGhast ghast = getGhast();
+                if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
+                    startMapExamination(player, mapDest);
+                    return InteractionResult.SUCCESS;
+                }
+            }
         }
+
         return super.mobInteract(player, hand);
     }
 
