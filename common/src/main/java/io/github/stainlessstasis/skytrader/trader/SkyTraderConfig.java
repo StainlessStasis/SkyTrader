@@ -119,15 +119,12 @@ public class SkyTraderConfig {
     }
 
     private static void migrate() {
-        System.out.println("MIGRATING CONFIG");
         boolean changed = false;
-        System.out.println(data.configVersion);
 
         if (data.configVersion < 2) {
-            // version 0/1 (1.0.0 / 1.1.0) -> 2 (1.2.0): configVersion field was added, and cruising flight speed was increased
+            // version 1 (1.0.0 / 1.1.0) -> 2 (1.2.0): configVersion field was added, and cruising flight speed was increased
             data.configVersion = 2;
             if (data.flight.cruiseSpeed == 0.6f) {
-                System.out.println("UPDATING CRUISE SPEED");
                 data.flight.cruiseSpeed = 0.8f;
             }
             changed = true;

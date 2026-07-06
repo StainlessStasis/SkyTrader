@@ -166,12 +166,14 @@ public class SkyTrader extends WanderingTrader {
             return;
         }
 
+        boolean wasOverride = ghast.hasManualDestination();
         ghast.setManualDestination(destination);
 
         if (playerId != null && this.level() instanceof ServerLevel serverLevel) {
             var player = serverLevel.getPlayerByUUID(playerId);
             if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".route_planned").withColor(ModConstants.WHITE));
+                String messageKey = wasOverride ? ModConstants.MOD_ID + ".route_overridden" : ModConstants.MOD_ID + ".route_planned";
+                serverPlayer.sendOverlayMessage(Component.translatable(messageKey).withColor(ModConstants.WHITE));
                 ModAdvancements.grant(serverPlayer, ModAdvancements.FLIGHT_PLAN);
             }
         }
@@ -268,6 +270,16 @@ public class SkyTrader extends WanderingTrader {
             ModAdvancements.grant(serverPlayer, ModAdvancements.ROOT);
 
             ItemStack held = player.getItemInHand(hand);
+
+            if (held.isEmpty() && player.isSecondaryUseActive()) {
+                SkyTraderGhast ghast = getGhast();
+                if (ghast != null && ghast.hasManualDestination() && ghast.canAcceptMapDestination()) {
+                    ghast.clearManualDestination();
+                    player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".route_cleared").withColor(ModConstants.WHITE));
+                }
+                return InteractionResult.SUCCESS;
+            }
+
             BlockPos mapDest = MapHelper.getMapDestination(held);
             if (mapDest != null) {
                 if (this.mapExaminationTicks > 0) {

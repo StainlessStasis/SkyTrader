@@ -347,6 +347,15 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         setOwnerRiding();
     }
 
+    public void clearManualDestination() {
+        this.manualDestination = null;
+        this.manualFlight = false;
+    }
+
+    public boolean hasManualDestination() {
+        return this.manualFlight;
+    }
+
     protected void handleVillageSearchResult(@Nullable BlockPos structureCenter, ServerLevel serverLevel) {
         if (this.manualDestination != null) {
             useManualDestination();
@@ -1031,6 +1040,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             manualDestination = new BlockPos.MutableBlockPos();
         }
         manualDestination.set(pos);
+        manualFlight = true;
     }
 
     @Override

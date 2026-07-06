@@ -21,6 +21,8 @@
   "skytrader.flee": "Sorry, I don't want to die! No refunds!",
   "skytrader.examining_map": "The trader examines your map...",
   "skytrader.route_planned": "Route planned!",
+  "skytrader.route_cleared": "Route cleared. Defaulting to nearest village.",
+  "skytrader.route_overridden": "Route updated - previous route replaced.",
   "skytrader.using_planned_route": "Using your planned route. Preparing for takeoff...",
   "skytrader.already_examining": "The trader is already examining a map.",
 
