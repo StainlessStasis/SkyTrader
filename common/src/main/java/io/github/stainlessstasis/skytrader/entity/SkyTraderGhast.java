@@ -65,6 +65,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
     protected @Nullable BlockPos villageCenter;
     protected boolean spawnDescent = false;
     protected @Nullable CompletableFuture<BlockPos> pendingVillageSearch = null;
+    protected @Nullable BlockPos manualDestination;
 
     // For Transatlantic Travel and Changing Climates
     protected final Set<ResourceKey<Biome>> biomesThisFlight = new HashSet<>();
@@ -295,6 +296,11 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return;
         }
 
+        if (this.manualDestination != null) {
+            useManualDestination();
+            return;
+        }
+
         if (this.pendingVillageSearch != null) {
             return;
         }
@@ -306,10 +312,10 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         setRideState(RideState.SEARCHING);
 
         BlockPos searchOrigin = this.blockPosition();
-        this.pendingVillageSearch = VillageLocator.findNearestVillageStructureAsync(
+        this.pendingVillageSearch = VillageLocator.findNearestVillageStructure(
                 serverLevel, searchOrigin, SkyTraderConfig.get().search.searchRadius);
 
-        this.pendingVillageSearch.whenCompleteAsync((structureCenter, throwable) ->
+        this.pendingVillageSearch.whenComplete((structureCenter, throwable) ->
                 serverLevel.getServer().execute(() -> {
                     this.pendingVillageSearch = null;
                     if (this.isRemoved()) {
@@ -325,7 +331,23 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         );
     }
 
+    protected void useManualDestination() {
+        this.destination = this.manualDestination;
+        this.villageCenter = this.manualDestination;
+        this.manualDestination = null;
+        this.departureAttempts = 0;
+        this.landingAttempts = 0;
+        sendMessageToPassengers(ModConstants.MOD_ID + ".using_planned_route", WHITE);
+        setRideState(RideState.TAKEOFF);
+        setOwnerRiding();
+    }
+
     protected void handleVillageSearchResult(@Nullable BlockPos structureCenter, ServerLevel serverLevel) {
+        if (this.manualDestination != null) {
+            useManualDestination();
+            return;
+        }
+
         this.destination = structureCenter != null
                 ? VillageLocator.resolveSurfacePosition(serverLevel, structureCenter)
                 : null;
@@ -974,6 +996,14 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return false;
     }
 
+    public boolean canAcceptMapDestination() {
+        return this.rideState.isStartOfRide() && !this.spawnDescent;
+    }
+
+    public void setManualDestination(@Nullable BlockPos pos) {
+        this.manualDestination = pos;
+    }
+
     @Override
     public void addAdditionalSaveData(@NonNull ValueOutput output) {
         super.addAdditionalSaveData(output);
@@ -1005,6 +1035,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         if (this.lastBiomeSamplePos != null) {
             output.store("LastBiomeSamplePos", Vec3.CODEC, this.lastBiomeSamplePos);
         }
+        if (this.manualDestination != null) {
+            output.store("ManualDestination", BlockPos.CODEC, this.manualDestination);
+        }
     }
 
     @Override
@@ -1030,6 +1063,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 .forEach(this.biomesThisFlight::add);
         this.oceanBlocksTraveled = input.getDoubleOr("OceanBlocksTraveled", 0);
         this.lastBiomeSamplePos = input.read("LastBiomeSamplePos", Vec3.CODEC).orElse(null);
+        this.manualDestination = input.read("ManualDestination", BlockPos.CODEC).orElse(null);
         applyGoalsForState(this.rideState);
     }
 

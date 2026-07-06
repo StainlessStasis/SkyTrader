@@ -19,6 +19,10 @@
   "skytrader.flight_departing": "This flight has ended!",
   "skytrader.kicked_off_flight": "Go learn your lesson.",
   "skytrader.flee": "Sorry, I don't want to die! No refunds!",
+  "skytrader.examining_map": "The trader examines your map...",
+  "skytrader.route_planned": "Route planned!",
+  "skytrader.using_planned_route": "Using your planned route...",
+  "skytrader.already_examining": "The trader is already examining a map.",
 
   "item.skytrader.skyfare_ticket": "Skyfare Ticket",
   "item.skytrader.skyflare": "Skyflare",
