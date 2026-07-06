@@ -128,21 +128,32 @@ public class SkyTrader extends WanderingTrader {
         if (this.mapExaminationTicks <= 0) {
             return;
         }
+
+        this.setXRot(45f);
+//        this.yHeadRot = this.getYRot();
+
         this.mapExaminationTicks--;
         if (this.mapExaminationTicks == 0) {
+            this.setXRot(0f);
             finishMapExamination();
         }
     }
 
-    protected void startMapExamination(Player player, BlockPos destination) {
+    protected void startMapExamination(Player player, BlockPos destination, ItemStack mapStack) {
         this.pendingMapDestination = destination;
         this.mapExaminationPlayer = player.getUUID();
         this.mapExaminationTicks = 40;
+
+        this.setItemSlot(EquipmentSlot.MAINHAND, mapStack.copy());
+        this.setDropChance(EquipmentSlot.MAINHAND, 0);
+
         player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".examining_map").withColor(ModConstants.WHITE));
         this.level().playSound(null, this.blockPosition(), SoundEvents.BOOK_PAGE_TURN, this.getSoundSource(), 1f, 1f);
     }
 
     protected void finishMapExamination() {
+        this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+
         BlockPos destination = this.pendingMapDestination;
         UUID playerId = this.mapExaminationPlayer;
         this.pendingMapDestination = null;
@@ -267,7 +278,7 @@ public class SkyTrader extends WanderingTrader {
 
                 SkyTraderGhast ghast = getGhast();
                 if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
-                    startMapExamination(player, mapDest);
+                    startMapExamination(player, mapDest, held);
                     return InteractionResult.SUCCESS;
                 }
             }
