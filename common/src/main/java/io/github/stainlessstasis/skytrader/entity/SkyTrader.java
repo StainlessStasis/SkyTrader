@@ -130,7 +130,6 @@ public class SkyTrader extends WanderingTrader {
         }
 
         this.setXRot(45f);
-//        this.yHeadRot = this.getYRot();
 
         this.mapExaminationTicks--;
         if (this.mapExaminationTicks == 0) {

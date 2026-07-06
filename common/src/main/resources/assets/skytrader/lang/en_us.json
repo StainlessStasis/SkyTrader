@@ -71,5 +71,8 @@
   "advancements.skytrader.a_bit_redundant.title": "A Bit Redundant, Don't You Think?",
   "advancements.skytrader.a_bit_redundant.description": "Since you want to show off, how about you fly yourself?",
 
+  "advancements.skytrader.flight_plan.title": "Flight Plan",
+  "advancements.skytrader.flight_plan.description": "Map out your next destination by handing an Explorer map to a Sky Trader",
+
   "stat.skytrader.flights_taken": "Farlands Airlines Flights Taken"
 }
