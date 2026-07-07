@@ -1,9 +1,7 @@
 package io.github.stainlessstasis.skytrader.mixin;
 
 import io.github.stainlessstasis.skytrader.SkyTraderSavedData;
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.criterion.KilledTrigger;
-import net.minecraft.resources.Identifier;
+import net.minecraft.advancements.triggers.KilledTrigger;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
