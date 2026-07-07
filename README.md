@@ -3,12 +3,13 @@ The Sky Trader is a rare trader who soars the skies aboard their friendly Happy 
 ![The Sky Trader](https://cdn.modrinth.com/data/cached_images/e97720b46eb92e1ba0bd4f7aca625abde28357d2_0.webp)
 
 # Features
-- Sky Trader: Spawns randomly in the sky with similar frequency to Wandering Traders. Offers up to 3 players a one-way trip to the nearest village, and sells flight/sky and nether-themed items. They also sell snacks during your flight!
-- Skyflare: A purchasable item that lets you summon a Sky Trader on demand. No more waiting around
-- Smooth & Configurable Flight: The Sky Trader's Ghast has several phases, like takeoff, cruising, or landing, all of which smoothly follow the terrain, whether it's natural or even player-built. Properties such as flight speed, height, and more can be customized via the config (see below)
-- Advancements: A dedicated advancements tab with 15+ advancements. Can you discover the hidden ones?
-- Statistics: Track the number of flights you've taken with Farlands Airlines as a custom statistic
-- ???: Your actions have consequences.
+- **Sky Trader:** Spawns randomly in the sky with similar frequency to Wandering Traders. Offers up to 3 players a one-way trip to the nearest village, and sells flight/sky and nether-themed items. They also sell snacks during your flight!
+- **Custom Routes:** Give the Sky Trader an Explorer map to be taken to the structure marked on that map, a bed to be taken to your spawn point, or a compass to go to world spawn
+- **Smooth & Configurable Flight:** The Sky Trader's Ghast has several phases, like takeoff, cruising, or landing, all of which smoothly follow the terrain, whether it's natural or even player-built. Properties such as flight speed, height, and more can be customized via the config (see below)
+- **Skyflare:** A purchasable item that lets you summon a Sky Trader on demand. No more waiting around
+- **Advancements:** A dedicated advancements tab with 15+ advancements. Can you discover the hidden ones?
+- **Statistics:** Track the number of flights you've taken with Farlands Airlines as a custom statistic
+- **???:** Your actions have consequences.
 
 ![Flying toward a village](https://cdn.modrinth.com/data/cached_images/08ebffa31445f44ccd4e933dca3cb48c2bf1e49c.png)
 
