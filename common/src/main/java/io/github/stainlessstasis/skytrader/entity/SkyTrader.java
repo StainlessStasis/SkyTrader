@@ -13,6 +13,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.DifficultyInstance;
@@ -150,7 +151,6 @@ public class SkyTrader extends WanderingTrader {
         this.setDropChance(EquipmentSlot.MAINHAND, 0);
 
         player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".planning_route").withColor(ModConstants.WHITE));
-        this.level().playSound(null, this.blockPosition(), SoundEvents.BOOK_PAGE_TURN, this.getSoundSource(), 1f, 1f);
     }
 
     protected void finishItemExamination() {
@@ -181,6 +181,7 @@ public class SkyTrader extends WanderingTrader {
                 if (dist > maxDist) {
                     serverPlayer.sendOverlayMessage(Component.translatable(
                             ModConstants.MOD_ID + ".destination_too_far", (int) dist, maxDist).withColor(ModConstants.RED));
+                    this.playSound(SoundEvents.WANDERING_TRADER_NO);
                     return;
                 }
 
@@ -190,10 +191,19 @@ public class SkyTrader extends WanderingTrader {
                 serverPlayer.sendOverlayMessage(Component.translatable(messageKey).withColor(ModConstants.WHITE));
                 if (wasOverride) ghast.sendMessageToPassengers(messageKey, ModConstants.WHITE);
                 ModAdvancements.grant(serverPlayer, ModAdvancements.FLIGHT_PLAN);
+                this.playSound(SoundEvents.WANDERING_TRADER_YES);
             }
         }
 
         ghast.setManualDestination(destination);
+    }
+
+    @Override
+    protected @NonNull SoundEvent getAmbientSound() {
+        if (this.itemExaminationTicks > 0) {
+            return SoundEvents.EMPTY;
+        }
+        return super.getAmbientSound();
     }
 
     @Override
@@ -302,6 +312,10 @@ public class SkyTrader extends WanderingTrader {
 
             // bed -> player's own spawn point
             if (held.is(ItemTags.BEDS)) {
+                if (this.isPlanningRoute(player)) {
+                    return InteractionResult.SUCCESS;
+                }
+
                 SkyTraderGhast ghast = getGhast();
                 if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
                     var respawnConfig = serverPlayer.getRespawnConfig();
@@ -316,6 +330,10 @@ public class SkyTrader extends WanderingTrader {
 
             // compass -> world spawn
             if (held.is(Items.COMPASS) && level() instanceof ServerLevel serverLevel) {
+                if (this.isPlanningRoute(player)) {
+                    return InteractionResult.SUCCESS;
+                }
+
                 BlockPos worldSpawn = serverLevel.getServer().getRespawnData().pos();
                 SkyTraderGhast ghast = getGhast();
                 if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
@@ -327,20 +345,28 @@ public class SkyTrader extends WanderingTrader {
             // explorer map -> destination marked on map
             BlockPos mapDest = MapHelper.getMapDestination(held);
             if (mapDest != null) {
-                if (this.itemExaminationTicks > 0) {
-                    player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".already_planning").withColor(ModConstants.RED));
+                if (this.isPlanningRoute(player)) {
                     return InteractionResult.SUCCESS;
                 }
 
                 SkyTraderGhast ghast = getGhast();
                 if (ghast != null && ghast.canAcceptMapDestination() && !isTrading()) {
                     startItemExamination(player, mapDest, held, null);
+                    this.level().playSound(null, this.blockPosition(), SoundEvents.BOOK_PAGE_TURN, this.getSoundSource(), 1f, 1f);
                     return InteractionResult.SUCCESS;
                 }
             }
         }
 
         return super.mobInteract(player, hand);
+    }
+
+    boolean isPlanningRoute(Player player) {
+        if (this.itemExaminationTicks > 0) {
+            player.sendOverlayMessage(Component.translatable(ModConstants.MOD_ID + ".already_planning").withColor(ModConstants.RED));
+            return true;
+        }
+        return false;
     }
 
     @Override
