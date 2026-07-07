@@ -1,6 +1,5 @@
-package io.github.stainlessstasis.skytrader.advancement;
+package io.github.stainlessstasis.skytrader;
 
-import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.resources.Identifier;

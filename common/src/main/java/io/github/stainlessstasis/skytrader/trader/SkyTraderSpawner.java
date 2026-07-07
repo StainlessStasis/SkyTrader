@@ -33,7 +33,7 @@ public class SkyTraderSpawner implements CustomSpawner {
     private final RandomSource random = RandomSource.create();
     private final SavedDataStorage savedDataStorage;
     private int tickDelay;
-    private @Nullable SkyTraderData traderData;
+    private @Nullable SkyTraderSpawnerData traderData;
 
     public SkyTraderSpawner(SavedDataStorage savedDataStorage) {
         this.savedDataStorage = savedDataStorage;
@@ -52,21 +52,21 @@ public class SkyTraderSpawner implements CustomSpawner {
     @Override
     public void tick(ServerLevel level, boolean spawnEnemies) {
         var config = SkyTraderConfig.get().spawning;
-        SkyTraderData data = getTraderData();
+        SkyTraderSpawnerData data = getTraderData();
 
         // pending spawns from Skyflare items
-        List<SkyTraderData.PendingSpawn> pending = data.getPendingSpawns();
+        List<SkyTraderSpawnerData.PendingSpawn> pending = data.getPendingSpawns();
         if (!pending.isEmpty()) {
-            List<SkyTraderData.PendingSpawn> updatedList = new ArrayList<>();
+            List<SkyTraderSpawnerData.PendingSpawn> updatedList = new ArrayList<>();
 
-            for (SkyTraderData.PendingSpawn spawn : pending) {
+            for (SkyTraderSpawnerData.PendingSpawn spawn : pending) {
                 int nextTicks = spawn.ticksRemaining() - 1;
 
                 if (nextTicks <= 0) {
                     Player targetPlayer = level.getPlayerByUUID(spawn.playerUUID());
                     spawn(level, targetPlayer, true);
                 } else {
-                    updatedList.add(new SkyTraderData.PendingSpawn(spawn.playerUUID(), nextTicks));
+                    updatedList.add(new SkyTraderSpawnerData.PendingSpawn(spawn.playerUUID(), nextTicks));
                 }
             }
 
@@ -96,9 +96,9 @@ public class SkyTraderSpawner implements CustomSpawner {
         }
     }
 
-    private SkyTraderData getTraderData() {
+    private SkyTraderSpawnerData getTraderData() {
         if (this.traderData == null) {
-            this.traderData = this.savedDataStorage.computeIfAbsent(SkyTraderData.TYPE);
+            this.traderData = this.savedDataStorage.computeIfAbsent(SkyTraderSpawnerData.TYPE);
         }
         return this.traderData;
     }

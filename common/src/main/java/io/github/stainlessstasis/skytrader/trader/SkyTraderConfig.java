@@ -43,6 +43,9 @@ public class SkyTraderConfig {
         public float maxVerticalSpeed = 0.5f;
         public float turnSpeed = 0.25f;
 
+        public float rainTurbulenceStrength = 0.04f;
+        public float thunderTurbulenceStrength = 0.1f;
+
         public int boardingTicks = 300;
         public int boardingExtensionOnNewPassenger = 100;
         public int maxDepartureAttempts = 3;
@@ -126,6 +129,8 @@ public class SkyTraderConfig {
             // version 1 (1.0.0 / 1.1.0) -> 2 (1.2.0):
             // configVersion field was added (2)
             // manualRouteMaxDistance was added (10240)
+            // rainTurbulenceStrength was added (0.04)
+            // thunderTurbulenceStrength was added (0.1)
             // cruising flight speed was increased from 0.6 -> 0.8
             data.configVersion = 2;
             if (data.flight.cruiseSpeed == 0.6f) {

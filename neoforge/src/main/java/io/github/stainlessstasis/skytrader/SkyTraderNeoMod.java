@@ -1,6 +1,5 @@
 package io.github.stainlessstasis.skytrader;
 
-import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.entity.SkyTrader;
 import io.github.stainlessstasis.skytrader.entity.SkyTraderGhast;
@@ -8,7 +7,6 @@ import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.platform.NeoForgeRegistryHelper;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.npc.villager.Villager;
@@ -21,7 +19,6 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
