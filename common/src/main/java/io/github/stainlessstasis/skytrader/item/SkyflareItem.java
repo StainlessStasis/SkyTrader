@@ -1,6 +1,6 @@
 package io.github.stainlessstasis.skytrader.item;
 
-import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
+import io.github.stainlessstasis.skytrader.ModAdvancements;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderSpawner;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

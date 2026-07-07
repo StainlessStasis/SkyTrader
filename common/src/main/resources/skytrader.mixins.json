@@ -6,6 +6,7 @@
   "mixins": [
     "HappyGhastInvoker",
     "HappyGhastMixin",
+    "KilledTriggerMixin",
     "MinecraftServerMixin",
     "ProjectileUtilMixin",
     "ServerLevelAccessorMixin",

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.stainlessstasis.skytrader.MapHelper;
 import io.github.stainlessstasis.skytrader.ModConstants;
-import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
+import io.github.stainlessstasis.skytrader.ModAdvancements;
 import io.github.stainlessstasis.skytrader.mixin.WanderingTraderInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderTrades;

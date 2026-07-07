@@ -1,6 +1,5 @@
 package io.github.stainlessstasis.skytrader;
 
-import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
 import io.github.stainlessstasis.skytrader.entity.ModEntities;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;

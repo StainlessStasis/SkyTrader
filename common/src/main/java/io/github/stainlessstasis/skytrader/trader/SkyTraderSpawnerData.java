@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SkyTraderData extends SavedData {
+public class SkyTraderSpawnerData extends SavedData {
 
     public record PendingSpawn(UUID playerUUID, int ticksRemaining) {
         public static final Codec<PendingSpawn> CODEC = RecordCodecBuilder.create(
@@ -23,28 +23,28 @@ public class SkyTraderData extends SavedData {
         );
     }
 
-    public static final Codec<SkyTraderData> CODEC = RecordCodecBuilder.create(
+    public static final Codec<SkyTraderSpawnerData> CODEC = RecordCodecBuilder.create(
             i -> i.group(
                             Codec.INT.optionalFieldOf("spawn_delay", 1200).forGetter(data -> data.spawnDelay),
                             Codec.INT.optionalFieldOf("spawn_chance", 25).forGetter(data -> data.spawnChance),
                             PendingSpawn.CODEC.listOf().optionalFieldOf("pending_spawns", List.of()).forGetter(data -> data.pendingSpawns)
                     )
-                    .apply(i, SkyTraderData::new)
+                    .apply(i, SkyTraderSpawnerData::new)
     );
 
-    public static final SavedDataType<SkyTraderData> TYPE = new SavedDataType<>(
-            ModConstants.id("sky_trader"), SkyTraderData::new, CODEC, DataFixTypes.SAVED_DATA_WANDERING_TRADER
+    public static final SavedDataType<SkyTraderSpawnerData> TYPE = new SavedDataType<>(
+            ModConstants.id("sky_trader"), SkyTraderSpawnerData::new, CODEC, DataFixTypes.SAVED_DATA_WANDERING_TRADER
     );
 
     private int spawnDelay;
     private int spawnChance;
     private final List<PendingSpawn> pendingSpawns;
 
-    public SkyTraderData() {
+    public SkyTraderSpawnerData() {
         this(1200, 25, new ArrayList<>());
     }
 
-    public SkyTraderData(int spawnDelay, int spawnChance, List<PendingSpawn> pendingSpawns) {
+    public SkyTraderSpawnerData(int spawnDelay, int spawnChance, List<PendingSpawn> pendingSpawns) {
         this.spawnDelay = spawnDelay;
         this.spawnChance = spawnChance;
         this.pendingSpawns = new ArrayList<>(pendingSpawns);

@@ -1,7 +1,7 @@
 package io.github.stainlessstasis.skytrader.datagen;
 
 import io.github.stainlessstasis.skytrader.ModConstants;
-import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
+import io.github.stainlessstasis.skytrader.ModAdvancements;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.criterion.ImpossibleTrigger;

@@ -1,11 +1,7 @@
 package io.github.stainlessstasis.skytrader.entity;
 
 import com.mojang.serialization.Codec;
-import io.github.stainlessstasis.skytrader.ModConstants;
-import io.github.stainlessstasis.skytrader.ModGameRules;
-import io.github.stainlessstasis.skytrader.ModStats;
-import io.github.stainlessstasis.skytrader.DestinationLocator;
-import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
+import io.github.stainlessstasis.skytrader.*;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import io.github.stainlessstasis.skytrader.mixin.HappyGhastInvoker;
 import io.github.stainlessstasis.skytrader.trader.SkyTraderConfig;
@@ -427,14 +423,23 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             return;
         }
 
-        switch (this.rideState) {
-            case TAKEOFF -> super.travel(computeTakeoffInput());
-            case CRUISE -> super.travel(computeCruiseInput());
-            case GLIDING -> super.travel(computeGlidingInput());
-            case ARRIVING -> super.travel(computeArrivingInput());
-            case ARRIVED, SEARCHING -> {}
-            case RETURNING -> super.travel(computeReturnInput());
-            default -> super.travel(input);
+        Vec3 newInput = switch (this.rideState) {
+            case TAKEOFF -> computeTakeoffInput();
+            case CRUISE -> computeCruiseInput();
+            case GLIDING -> computeGlidingInput();
+            case ARRIVING -> computeArrivingInput();
+            case ARRIVED, SEARCHING -> Vec3.ZERO;
+            case RETURNING -> computeReturnInput();
+            default -> input;
+        };
+
+        super.travel(newInput);
+
+        if (this.rideState.hasMovement()) {
+            Vec3 turbulence = computeTurbulence();
+            if (!turbulence.equals(Vec3.ZERO)) {
+                this.setDeltaMovement(this.getDeltaMovement().add(turbulence));
+            }
         }
     }
 
@@ -728,6 +733,37 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
         return new Vec3(0, up, flight.returnSpeed);
     }
 
+    protected Vec3 computeTurbulence() {
+        if (!(level() instanceof ServerLevel serverLevel)) {
+            return Vec3.ZERO;
+        }
+
+        boolean thundering = serverLevel.isThundering();
+        boolean raining = serverLevel.isRaining();
+        if (!raining && !thundering) {
+            return Vec3.ZERO;
+        }
+
+        var biomeHolder = serverLevel.getBiome(this.blockPosition());
+        if (!biomeHolder.value().hasPrecipitation()) {
+            return Vec3.ZERO;
+        }
+
+        float intensity = thundering
+                ? SkyTraderConfig.get().flight.thunderTurbulenceStrength
+                : SkyTraderConfig.get().flight.rainTurbulenceStrength;
+
+        if (intensity <= 0) {
+            return Vec3.ZERO;
+        }
+
+        double jitterX = (this.random.nextDouble() - 0.5) * 2 * intensity;
+        double jitterY = (this.random.nextDouble() - 0.5) * intensity * 0.3;
+        double jitterZ = (this.random.nextDouble() - 0.5) * 2 * intensity;
+
+        return new Vec3(jitterX, jitterY, jitterZ);
+    }
+
     protected void forceDismountPassengers() {
         for (Entity passenger : List.copyOf(this.getPassengers())) {
             if (!(passenger instanceof SkyTrader)) {
@@ -834,7 +870,7 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
                 ModAdvancements.grant(serverPlayer, ModAdvancements.STAR_TRAVELER);
             }
 
-            if (serverPlayer.level().isVillage(serverPlayer.getOnPos())) {
+            if (!this.manualFlight && serverPlayer.level().isVillage(serverPlayer.getOnPos())) {
                 ModAdvancements.grant(serverPlayer, ModAdvancements.LOCAL_COMMUTER);
             }
 
@@ -998,6 +1034,9 @@ public class SkyTraderGhast extends HappyGhast implements TraceableEntity, Ownab
             }
 
             serverLevel.addFreshEntity(ghast);
+
+            SkyTraderSavedData.get(serverLevel).formerTraderGhasts.add(ghast.getUUID());
+            SkyTraderSavedData.get(serverLevel).setDirty();
         }
 
         discard();

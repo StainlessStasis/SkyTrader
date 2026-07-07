@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import io.github.stainlessstasis.skytrader.ModConstants;
 import io.github.stainlessstasis.skytrader.ModGameRules;
 import io.github.stainlessstasis.skytrader.ModStats;
-import io.github.stainlessstasis.skytrader.advancement.ModAdvancements;
+import io.github.stainlessstasis.skytrader.ModAdvancements;
 import io.github.stainlessstasis.skytrader.item.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
